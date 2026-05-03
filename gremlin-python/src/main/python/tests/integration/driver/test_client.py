@@ -198,8 +198,8 @@ async def async_connect(enable):
 
 
 def test_from_event_loop():
-    assert not asyncio.get_event_loop().run_until_complete(async_connect(False))
-    assert asyncio.get_event_loop().run_until_complete(async_connect(True))
+    assert not asyncio.run(async_connect(False))
+    assert asyncio.run(async_connect(True))
 
 
 def test_client_submit(client):
@@ -501,7 +501,7 @@ async def asyncio_func():
 
 def test_asyncio(client):
     try:
-        asyncio.get_event_loop().run_until_complete(asyncio_func())
+        asyncio.run(asyncio_func())
     except RuntimeError:
         assert False
 
