@@ -21,6 +21,7 @@ import json
 import aiohttp
 import asyncio
 import sys
+import threading
 
 if sys.version_info >= (3, 11):
     import asyncio as async_timeout
@@ -37,19 +38,17 @@ class AiohttpHTTPTransport(AbstractBaseTransport):
     nest_asyncio_applied = False
 
     def __init__(self, call_from_event_loop=None, read_timeout=None, write_timeout=None, **kwargs):
-        if call_from_event_loop is not None and call_from_event_loop and not AiohttpHTTPTransport.nest_asyncio_applied:
-            """ 
-                The AiohttpTransport implementation uses the asyncio event loop. Because of this, it cannot be called 
-                within an event loop without nest_asyncio. If the code is ever refactored so that it can be called 
-                within an event loop this import and call can be removed. Without this, applications which use the 
-                event loop to call gremlin-python (such as Jupyter) will not work.
-            """
-            import nest_asyncio
-            nest_asyncio.apply()
-            AiohttpHTTPTransport.nest_asyncio_applied = True
-
-        # Start event loop and initialize client session and response to None
         self._loop = asyncio.new_event_loop()
+        self._call_from_event_loop = call_from_event_loop is not None and call_from_event_loop
+        self._thread = None
+        if self._call_from_event_loop:
+            def run_loop(loop):
+                asyncio.set_event_loop(loop)
+                loop.run_forever()
+
+            self._thread = threading.Thread(target=run_loop, args=(self._loop,), daemon=True)
+            self._thread.start()
+
         self._client_session = None
         self._http_req_resp = None
         self._enable_ssl = False
@@ -66,6 +65,13 @@ class AiohttpHTTPTransport(AbstractBaseTransport):
         if "ssl_options" in self._aiohttp_kwargs:
             self._ssl_context = self._aiohttp_kwargs.pop("ssl_options")
             self._enable_ssl = True
+
+    def _run_until_complete(self, coro):
+        if self._call_from_event_loop:
+            return asyncio.run_coroutine_threadsafe(coro, self._loop).result()
+
+        task = self._loop.create_task(coro)
+        return self._loop.run_until_complete(task)
 
     def __del__(self):
         # Close will only actually close if things are left open, so this is safe to call.
@@ -86,7 +92,7 @@ class AiohttpHTTPTransport(AbstractBaseTransport):
                 self._client_session = aiohttp.ClientSession(headers=headers, loop=self._loop)
 
         # Execute the async connect synchronously.
-        self._loop.run_until_complete(async_connect())
+        self._run_until_complete(async_connect())
 
     def write(self, message):
         # Inner function to perform async write.
@@ -103,7 +109,7 @@ class AiohttpHTTPTransport(AbstractBaseTransport):
                                                                       **self._aiohttp_kwargs)
 
         # Execute the async write synchronously.
-        self._loop.run_until_complete(async_write())
+        self._run_until_complete(async_write())
 
     def read(self, stream_chunk=None):
         if not stream_chunk:
@@ -130,7 +136,7 @@ class AiohttpHTTPTransport(AbstractBaseTransport):
                         err = message.get('message')
                         raise Exception(f'Server disconnected with error message: "{err}" - please try to reconnect')
                     return data_buffer
-            return self._loop.run_until_complete(async_read())
+            return self._run_until_complete(async_read())
             # raise Exception('missing handling of streamed responses to protocol')
 
         # Inner function to perform async read.
@@ -159,7 +165,7 @@ class AiohttpHTTPTransport(AbstractBaseTransport):
                 read_completed = True
                 stream_chunk(data_buffer, read_completed, self._http_req_resp.ok)
 
-        return self._loop.run_until_complete(async_read())
+        return self._run_until_complete(async_read())
 
     def close(self):
         # Inner function to perform async close.
@@ -168,13 +174,21 @@ class AiohttpHTTPTransport(AbstractBaseTransport):
                 await self._client_session.close()
                 self._client_session = None
 
-        # If the loop is not closed (connection hasn't already been closed)
-        if not self._loop.is_closed():
-            # Execute the async close synchronously.
-            self._loop.run_until_complete(async_close())
+        if self._call_from_event_loop:
+            if not self._loop.is_closed():
+                self._run_until_complete(async_close())
+                self._loop.call_soon_threadsafe(self._loop.stop)
+                if self._thread is not None:
+                    self._thread.join(timeout=1)
+                self._loop.close()
+        else:
+            # If the loop is not closed (connection hasn't already been closed)
+            if not self._loop.is_closed():
+                # Execute the async close synchronously.
+                self._run_until_complete(async_close())
 
-            # Close the event loop.
-            self._loop.close()
+                # Close the event loop.
+                self._loop.close()
 
     @property
     def closed(self):
