@@ -31,6 +31,7 @@ import asyncio
 import io
 import queue
 import struct
+import threading
 from concurrent.futures import Future
 from unittest.mock import MagicMock, AsyncMock, patch, PropertyMock
 
@@ -162,6 +163,16 @@ class TestAiohttpSyncStream:
     - Raise asyncio.IncompleteReadError on premature disconnect
     """
 
+    @staticmethod
+    def _make_transport(loop):
+        """Build a minimal AiohttpHTTPTransport stub that AiohttpSyncStream can call into."""
+        from gremlin_python.driver.aiohttp.transport import AiohttpHTTPTransport
+        transport = AiohttpHTTPTransport.__new__(AiohttpHTTPTransport)
+        transport._loop = loop
+        transport._call_from_event_loop = False
+        transport._thread = None
+        return transport
+
     def test_read_returns_exact_bytes(self):
         """read(n) should return exactly n bytes from the async stream."""
         from gremlin_python.driver.aiohttp.transport import AiohttpSyncStream
@@ -171,7 +182,7 @@ class TestAiohttpSyncStream:
         mock_response.content = MagicMock()
         mock_response.content.readexactly = AsyncMock(return_value=b'\x01\x02\x03\x04')
 
-        stream = AiohttpSyncStream(mock_response, loop, read_timeout=30)
+        stream = AiohttpSyncStream(mock_response, self._make_transport(loop), read_timeout=30)
         result = stream.read(4)
 
         assert result == b'\x01\x02\x03\x04'
@@ -187,7 +198,7 @@ class TestAiohttpSyncStream:
         mock_response.content = MagicMock()
         mock_response.content.readexactly = AsyncMock(return_value=b'\x84')
 
-        stream = AiohttpSyncStream(mock_response, loop, read_timeout=30)
+        stream = AiohttpSyncStream(mock_response, self._make_transport(loop), read_timeout=30)
         result = stream.read(1)
 
         assert result == b'\x84'
@@ -202,7 +213,7 @@ class TestAiohttpSyncStream:
         mock_response.content = MagicMock()
         mock_response.content.readexactly = AsyncMock(side_effect=[b'\x84', b'\x00', b'\x01\x02\x03\x04'])
 
-        stream = AiohttpSyncStream(mock_response, loop, read_timeout=30)
+        stream = AiohttpSyncStream(mock_response, self._make_transport(loop), read_timeout=30)
         assert stream.read(1) == b'\x84'
         assert stream.read(1) == b'\x00'
         assert stream.read(4) == b'\x01\x02\x03\x04'
@@ -220,7 +231,7 @@ class TestAiohttpSyncStream:
             side_effect=asyncio.IncompleteReadError(partial=b'\x01', expected=4)
         )
 
-        stream = AiohttpSyncStream(mock_response, loop, read_timeout=30)
+        stream = AiohttpSyncStream(mock_response, self._make_transport(loop), read_timeout=30)
         with pytest.raises(asyncio.IncompleteReadError):
             stream.read(4)
         loop.close()
@@ -234,7 +245,7 @@ class TestAiohttpSyncStream:
         mock_response.content = MagicMock()
         mock_response.content.readexactly = AsyncMock(side_effect=asyncio.TimeoutError())
 
-        stream = AiohttpSyncStream(mock_response, loop, read_timeout=1)
+        stream = AiohttpSyncStream(mock_response, self._make_transport(loop), read_timeout=1)
         with pytest.raises(asyncio.TimeoutError):
             stream.read(4)
         loop.close()
@@ -252,6 +263,8 @@ class TestTransportGetStream:
 
         transport = AiohttpHTTPTransport.__new__(AiohttpHTTPTransport)
         transport._loop = asyncio.new_event_loop()
+        transport._call_from_event_loop = False
+        transport._thread = None
         transport._read_timeout = 30
         transport._http_req_resp = MagicMock()
 
@@ -265,6 +278,8 @@ class TestTransportGetStream:
 
         transport = AiohttpHTTPTransport.__new__(AiohttpHTTPTransport)
         transport._loop = asyncio.new_event_loop()
+        transport._call_from_event_loop = False
+        transport._thread = None
         transport._read_timeout = 30
         mock_resp = MagicMock()
         mock_resp.content = MagicMock()
@@ -275,6 +290,141 @@ class TestTransportGetStream:
         result = stream.read(1)
         assert result == b'\x84'
         transport._loop.close()
+
+
+class TestTransportLifecycle:
+    """
+    Tests for AiohttpHTTPTransport close/lifecycle safeguards added to
+    eliminate hang and leak hazards introduced by the loop-on-thread
+    design used when ``call_from_event_loop=True``.
+    """
+
+    def test_close_is_idempotent_inline(self):
+        """Calling close() twice on the inline (non-threaded) path must be a no-op."""
+        from gremlin_python.driver.aiohttp.transport import AiohttpHTTPTransport
+
+        transport = AiohttpHTTPTransport()
+        transport.close()
+        # Second call must not raise even though the loop is already closed.
+        transport.close()
+        assert transport._closed is True
+
+    def test_close_is_idempotent_threaded(self):
+        """Calling close() twice on the threaded path must be a no-op and must not hang."""
+        from gremlin_python.driver.aiohttp.transport import AiohttpHTTPTransport
+
+        transport = AiohttpHTTPTransport(call_from_event_loop=True)
+        transport.close(timeout=2)
+        # Second call must not call_soon_threadsafe on a closed loop, must
+        # not double-stop, must not raise.
+        transport.close(timeout=2)
+        assert transport._closed is True
+        assert transport._loop.is_closed()
+        assert transport._thread is not None and not transport._thread.is_alive()
+
+    def test_close_threaded_returns_within_timeout_when_loop_wedged(self):
+        """If the background loop is stuck running a long task, close() must still return promptly."""
+        import time
+        from gremlin_python.driver.aiohttp.transport import AiohttpHTTPTransport
+
+        transport = AiohttpHTTPTransport(call_from_event_loop=True)
+
+        async def hang():
+            # Simulate a wedged in-flight request by sleeping longer than
+            # the close timeout. close() should not wait for this.
+            await asyncio.sleep(30)
+
+        # Submit the hanging coroutine to the background loop without
+        # waiting for it.
+        asyncio.run_coroutine_threadsafe(hang(), transport._loop)
+
+        start = time.monotonic()
+        transport.close(timeout=0.5)
+        elapsed = time.monotonic() - start
+
+        # Bounded by ~ (async_close timeout + thread.join timeout) =
+        # ~1.0s in the worst case, well under 30s.
+        assert elapsed < 5.0, f"close() blocked for {elapsed:.2f}s on a wedged loop"
+        assert transport._closed is True
+
+    def test_run_until_complete_cancels_on_keyboard_interrupt(self):
+        """A KeyboardInterrupt in the caller thread must cancel the in-flight coroutine on the bg loop."""
+        from gremlin_python.driver.aiohttp.transport import AiohttpHTTPTransport
+
+        transport = AiohttpHTTPTransport(call_from_event_loop=True)
+        try:
+            started = threading.Event()
+            cancelled = threading.Event()
+
+            async def watch_for_cancel():
+                started.set()
+                try:
+                    await asyncio.sleep(30)
+                except asyncio.CancelledError:
+                    cancelled.set()
+                    raise
+
+            # Patch run_coroutine_threadsafe so we can trigger
+            # KeyboardInterrupt on .result() *after* the coroutine has
+            # actually begun running on the bg loop. Otherwise cancel()
+            # short-circuits the future before the coroutine ever
+            # observes a CancelledError.
+            real_submit = asyncio.run_coroutine_threadsafe
+
+            def submit(coro, loop):
+                fut = real_submit(coro, loop)
+
+                def fake_result(timeout=None):
+                    # Wait for the coroutine to start before "interrupting".
+                    if not started.wait(timeout=2.0):
+                        raise AssertionError("coroutine never started on bg loop")
+                    raise KeyboardInterrupt()
+                fut.result = fake_result
+                return fut
+
+            with patch('gremlin_python.driver.aiohttp.transport.asyncio.run_coroutine_threadsafe', side_effect=submit):
+                with pytest.raises(KeyboardInterrupt):
+                    transport._run_until_complete(watch_for_cancel())
+
+            # The cancel() call from the BaseException handler should
+            # have propagated to the coroutine. Wait briefly for the bg
+            # loop to deliver CancelledError.
+            assert cancelled.wait(timeout=2.0), \
+                "in-flight coroutine was not cancelled after KeyboardInterrupt"
+        finally:
+            transport.close(timeout=2)
+
+    def test_close_after_loop_already_closed_does_not_raise(self):
+        """close() must not raise if the underlying loop was closed externally."""
+        from gremlin_python.driver.aiohttp.transport import AiohttpHTTPTransport
+
+        transport = AiohttpHTTPTransport()
+        transport._loop.close()
+        # Should not raise; idempotent close path.
+        transport.close()
+
+    def test_del_does_not_block(self):
+        """__del__ during normal GC must not block the caller."""
+        import time
+        from gremlin_python.driver.aiohttp.transport import AiohttpHTTPTransport
+
+        transport = AiohttpHTTPTransport(call_from_event_loop=True)
+
+        async def hang():
+            await asyncio.sleep(30)
+
+        asyncio.run_coroutine_threadsafe(hang(), transport._loop)
+
+        start = time.monotonic()
+        # Trigger finalization via explicit del + manual __del__ call to
+        # exercise the same code path GC would. close(timeout=0.1) is the
+        # documented bound.
+        transport.__del__()
+        elapsed = time.monotonic() - start
+        assert elapsed < 1.0, f"__del__ blocked for {elapsed:.2f}s"
+
+        # Real cleanup so the test doesn't leak the bg thread/loop.
+        transport.close(timeout=2)
 
 
 # ===========================================================================
