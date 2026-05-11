@@ -292,7 +292,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dotnet-version: ['2.0.x', '6.0.x']
+        dotnet-version: ['2.x', '6.0.x']
     steps:
       - uses: actions/checkout@v6
       - name: Set up JDK11
