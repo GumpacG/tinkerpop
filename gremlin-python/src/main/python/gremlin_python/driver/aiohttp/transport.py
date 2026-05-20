@@ -86,8 +86,8 @@ class AiohttpHTTPTransport:
                 within an event loop this import and call can be removed. Without this, applications which use the 
                 event loop to call gremlin-python (such as Jupyter) will not work.
             """
-            import nest_asyncio
-            nest_asyncio.apply()
+            import nest_asyncio2
+            nest_asyncio2.apply()
             AiohttpHTTPTransport.nest_asyncio_applied = True
 
         # Start event loop and initialize client session and response to None
