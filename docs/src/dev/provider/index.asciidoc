@@ -535,6 +535,29 @@ serializer in Java is not sufficient for full support of Gremlin, as users of no
 will not be able to consume them. Getting full support would mean writing similar classes for each GLV. While
 developing  those classes is not hard, it also means more code to support.
 
+A custom GraphBinary serializer reads bytes that may not be trusted, so any length or element count it reads from the
+`Buffer` must be validated before it is used to size an allocation or bound a read loop. A crafted message can declare
+a count far larger than the bytes it actually carries, and allocating on that count first turns a few bytes into an
+arbitrarily large allocation. Since every counted element or byte needs at least one byte on the wire, a count that
+exceeds `Buffer.readableBytes()` cannot be satisfied and should be rejected with an `IOException`. The serializers
+TinkerPop ships do this, but the check is internal to them, so an implementation of `CustomTypeSerializer` needs its
+own:
+
+[source,java]
+----
+public MyType read(final Buffer buffer, final GraphBinaryReader context) throws IOException {
+    final int length = buffer.readInt();
+    if (length < 0 || length > buffer.readableBytes())
+        throw new IOException("Invalid length prefix for MyType: " + length);
+
+    // only now is it safe to allocate against length
+}
+----
+
+Prefer growing a collection as elements are read over pre-sizing it to the declared count, and treat a count read as a
+`long` (a repeat count, for example) the same way, since a large positive value can drive unbounded work even when no
+allocation is involved.
+
 ===== Supporting Gremlin-Python IO
 
 The serialization system of Gremlin-Python provides ways to add new types by creating serializers and deserializers in
