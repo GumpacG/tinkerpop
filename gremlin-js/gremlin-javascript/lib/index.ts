@@ -25,6 +25,7 @@ import * as t from './process/traversal.js';
 import * as gt from './process/graph-traversal.js';
 import * as strategiesModule from './process/traversal-strategy.js';
 import * as graph from './structure/graph.js';
+import * as geo from './structure/geo.js';
 import { PDTRegistry } from './structure/PDTRegistry.js';
 import * as rc from './driver/remote-connection.js';
 import GremlinLang from './process/gremlin-lang.js';
@@ -93,6 +94,19 @@ export const structure = {
   PrimitivePDT: graph.PrimitivePDT,
   CompositePDT: graph.CompositePDT,
   PDTRegistry,
+  Model: geo.Model,
+  Geometry: geo.Geometry,
+  Curve: geo.Curve,
+  Surface: geo.Surface,
+  MultiCurve: geo.MultiCurve,
+  MultiSurface: geo.MultiSurface,
+  Point: geo.Point,
+  LineString: geo.LineString,
+  Polygon: geo.Polygon,
+  GeometryCollection: geo.GeometryCollection,
+  MultiPoint: geo.MultiPoint,
+  MultiLineString: geo.MultiLineString,
+  MultiPolygon: geo.MultiPolygon,
   Vertex: graph.Vertex,
   VertexProperty: graph.VertexProperty,
   toLong: utils.toLong,
