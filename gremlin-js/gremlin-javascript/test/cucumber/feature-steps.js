@@ -31,6 +31,7 @@ import { inspect, format, inherits } from 'util';
 import { gremlin } from './gremlin.js';
 import { Path, Vertex, Edge, Property, Graph, Tree } from '../../lib/structure/graph.js';
 import { T, Direction, Merge } from '../../lib/process/traversal.js';
+import { parseWkt } from '../../lib/structure/geo-wkt.js';
 import { GValue } from '../../lib/process/gvalue.js';
 import anon from '../../lib/process/anonymous-traversal.js';
 const parameterize = process.env.PARAMETERIZE === 'true';
@@ -43,6 +44,7 @@ const parsers = [
   [ 'prop\\[(.+)\\]', toProperty ],
   [ 'dt\\[(.+)\\]', toDateTime ],
   [ 'uuid\\[(.+)\\]', toUuid ],
+  [ 'geo\\[(.+)\\]', toGeometry ],
   [ 'd\\[(.*)\\]\\.[bsilfdmn]', toNumeric ],
   [ 'bin\\[(.*)\\]', toBinary ],
   [ 'v\\[(.+)\\]', toVertex ],
@@ -72,6 +74,7 @@ const ignoreReason = {
   nullKeysInMapNotSupportedWell: "Javascript does not nicely support 'null' as a key in Map instances",
   floatingPointIssues: "Javascript floating point numbers not working in this case",
   uuidSerializationIssues: "Javascript does not serialize to a UUID object, which complicates test assertions",
+  emptyGeometryWithZ: "Javascript has no factory for an empty 3D geometry, so the traversal cannot be written",
   needsFurtherInvestigation: '',
 };
 
@@ -89,6 +92,8 @@ const ignoredScenarios = {
   'g_V_hasLabelXsoftwareX_hasXname_rippleX_pageRankX1X_withXedges_inEXcreatedX_withXtimes_1X_withXpropertyName_priorsX_inXcreatedX_unionXboth__identityX_valueMapXname_priorsX': new IgnoreError(ignoreReason.floatingPointIssues),
   'g_V_outXcreatedX_groupXmX_byXlabelX_pageRankX1X_withXpropertyName_pageRankX_withXedges_inEX_withXtimes_1X_inXcreatedX_groupXmX_byXpageRankX_capXmX': new IgnoreError(ignoreReason.floatingPointIssues),
   'g_V_peerPressure_withXpropertyName_clusterX_withXedges_outEXknowsXX_pageRankX1X_byXrankX_withXedges_outEXknowsX_withXtimes_2X_group_byXclusterX_byXrank_sumX_limitX100X': new IgnoreError(ignoreReason.floatingPointIssues),
+  // empty 3D geometries
+  'g_injectXGeometryXPOINT_Z_EMPTYXX': new IgnoreError(ignoreReason.emptyGeometryWithZ),
 };
 
 Given(/^the (.+) graph$/, function (graphName) {
@@ -538,6 +543,12 @@ function toMerge(value) {
 
 function toBinary(value) {
   return Buffer.from(value, 'base64');
+}
+
+// the token holds EWKT when the SRID is not zero, as in geo[SRID=4326;POINT(1 2)],
+// and plain WKT otherwise
+function toGeometry(value) {
+  return parseWkt(value);
 }
 
 function splitByElement(s) {

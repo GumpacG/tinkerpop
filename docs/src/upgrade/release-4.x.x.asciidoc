@@ -504,9 +504,9 @@ provider defined type and each graph settled on a representation of its own, whi
 between them. TinkerPop 4.0.0 adds `Geometry` as a Gremlin value type with the kinds `Point`, `LineString`, `Polygon`,
 `MultiPoint`, `MultiLineString`, `MultiPolygon` and `GeometryCollection`.
 
-The `geoWithin` and `geoContains` predicates filter geometries by their spatial relationship to another geometry. The
-following Gremlin Console session, with `g` bound to an empty TinkerGraph, finds a store whose location lies inside a
-neighborhood:
+The `geoWithin` and `geoContains` predicates filter geometries by their spatial relationship to another geometry, as do
+`geoIntersects`, `geoDisjoint` and `geoEquals`. The following Gremlin Console session, with `g` bound to an empty
+TinkerGraph, finds a store whose location lies inside a neighborhood:
 
 [source,groovy]
 ----
@@ -515,11 +515,15 @@ gremlin> g.V().has('store','loc',geoWithin(Geometry.fromWkt("POLYGON((-74 40.7, 
 ==>Midtown
 ----
 
+The geometry kinds also join the `GType` enum, so `typeOf(GType.POINT)` and `typeOf(GType.GEOGRAPHIC)`
+filter values by kind and by coordinate model.
+
 A Gremlin query string parsed by the `gremlin-lang` grammar writes a geometry as a literal such as
-`Geometry("POINT(1 2)")`. GraphBinary, GraphSON 4.0 and Gryo serialize geometries, and the language variants have
-geometry types, so a geometry can be stored in a data file or returned to a remote client. The language variants do not
-yet have the geo predicates. The Java and Groovy translators render geometries, while the Python, .NET, Go and
-JavaScript translators reject them.
+`Geometry("POINT(1 2)")`. GraphBinary, GraphSON 4.0 and Gryo serialize geometries, so a geometry can be stored in a
+data file or returned to a remote client. The Python, .NET, Go and JavaScript variants have geometry types, the five
+`GeoP` predicates and the geometry `GType` constants, so the same spatial filter can be written in any of them. A
+traversal that holds a geometry literal translates to every variant, apart from an empty 3D geometry, which no variant
+can construct. Each translator renders the literal as a chain of constructor calls in that variant's geometry API.
 
 To try the predicates on realistic data, `TinkerFactory.createTheDelivery()` builds the
 link:https://tinkerpop.apache.org/docs/x.y.z/data/#the-delivery[delivery graph], a toy graph of delivery hubs, zones,
@@ -628,9 +632,10 @@ holds `CARTESIAN` and `GEOGRAPHIC` values in the same graph carries `@AllowMixed
 graph cannot hold geometry values should add `and not @DataGeometry` to its `@CucumberOptions` tag filter. In this
 release the scenarios are run by the embedded Java runners and by the remote Java runners against Gremlin Server. The
 Hadoop and Spark runners exclude them, since their feature test worlds have no delivery graph. The language variants
-do not yet have the geo predicates and their translators reject geometry literals, the geo predicates and the geometry
-`GType` tokens, so the generated test files for Python, .NET, Go and JavaScript hold a placeholder for each of these
-scenarios and the language variant runners skip `@DataGeometry`.
+have the `GeoP` predicates and their translators render geometry literals, the geo predicates and the geometry `GType`
+tokens, so the generated test files for Python, .NET, Go and JavaScript hold the real traversals. The variant test
+suites run the geometry scenarios against the delivery graph, apart from the one that injects an empty 3D geometry,
+which no variant can construct.
 
 See: link:https://tinkerpop.apache.org/docs/x.y.z/dev/developer/#gherkin-tags[Gherkin Tags],
 link:https://tinkerpop.apache.org/docs/x.y.z/data/#the-delivery[The Delivery]

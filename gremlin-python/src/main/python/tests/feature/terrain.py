@@ -53,6 +53,9 @@ def prepare_static_traversal_source(features, marker):
     # air-routes scenarios only return values so the graph needs no element lookups
     cache["airroutes"] = {"remote_conn": __create_remote("gairroutes"), "lookup_v": {}, "lookup_e": {}, "lookup_vp": {}}
 
+    # delivery scenarios only return values so the graph needs no element lookups
+    cache["delivery"] = {"remote_conn": __create_remote("gdelivery"), "lookup_v": {}, "lookup_e": {}, "lookup_vp": {}}
+
     # store the cache on the global context so that remotes can be shutdown cleanly at the end of the tests
     world.cache = cache
 
@@ -65,7 +68,7 @@ def prepare_static_traversal_source(features, marker):
             scenario.context.lookup_e = {}
             scenario.context.lookup_vp = {}
 
-            for graph_name in ("modern", "classic", "crew", "grateful", "sink", "zoo", "airroutes"):
+            for graph_name in ("modern", "classic", "crew", "grateful", "sink", "zoo", "airroutes", "delivery"):
                 scenario.context.remote_conn[graph_name] = cache[graph_name]["remote_conn"]
                 scenario.context.lookup_v[graph_name] = cache[graph_name]["lookup_v"]
                 scenario.context.lookup_e[graph_name] = cache[graph_name]["lookup_e"]

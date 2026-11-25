@@ -23,9 +23,13 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tinkerpop.gremlin.language.antlr.GremlinParser;
+import org.apache.tinkerpop.gremlin.process.traversal.GType;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategy;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.decoration.OptionsStrategy;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.geo.Geometry;
+import org.apache.tinkerpop.gremlin.structure.geo.Model;
+import org.apache.tinkerpop.gremlin.structure.geo.Point;
 import org.apache.tinkerpop.gremlin.util.DatetimeHelper;
 
 import java.time.OffsetDateTime;
@@ -34,6 +38,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -166,19 +171,75 @@ public class GoTranslateVisitor extends AbstractTranslateVisitor {
         throw new TranslatorException("Go does not support range literals");
     }
 
+    /**
+     * Builds a geometry with the panicking constructors of the driver, which take the parts of a kind as arguments
+     * and always take a model, or an SRID through a {@code WithSrid} form.
+     */
     @Override
     public Void visitGeometryLiteral(final GremlinParser.GeometryLiteralContext ctx) {
-        throw new TranslatorException("Go does not support geometry literals");
+        appendGeometry(parseGeometryLiteral(ctx));
+        return null;
     }
 
     @Override
-    public Void visitTraversalPredicate_geoWithin(final GremlinParser.TraversalPredicate_geoWithinContext ctx) {
-        throw new TranslatorException("Go does not support geo predicates");
+    protected String geometryConstructorOf(final String kind) {
+        return GO_PACKAGE_NAME + "MustNew" + kind + "(";
     }
 
     @Override
-    public Void visitTraversalPredicate_geoContains(final GremlinParser.TraversalPredicate_geoContainsContext ctx) {
-        throw new TranslatorException("Go does not support geo predicates");
+    protected void appendGeometryCoordinate(final double value) {
+        // a Go constant expression has no negative zero, so the sign is set at run time
+        if (value == 0.0 && Double.doubleToRawLongBits(value) != 0L) {
+            sb.append("math.Copysign(0, -1)");
+            return;
+        }
+        super.appendGeometryCoordinate(value);
+    }
+
+    @Override
+    protected void appendGeometryPoint(final Point point) {
+        final boolean withSrid = point.model() == Model.OTHER;
+        sb.append(GO_PACKAGE_NAME).append("MustNewPoint");
+        if (point.hasZ()) sb.append("Z");
+        if (withSrid) sb.append("WithSrid");
+        sb.append("(");
+        appendGeometryCoordinate(point.x());
+        sb.append(", ");
+        appendGeometryCoordinate(point.y());
+        if (point.hasZ()) {
+            sb.append(", ");
+            appendGeometryCoordinate(point.z());
+        }
+        sb.append(", ");
+        if (withSrid)
+            sb.append(point.srid());
+        else
+            appendGeometryModel(point);
+        sb.append(")");
+    }
+
+    /**
+     * Appends the empty form of a kind, which in another spatial reference system is built with
+     * {@code NewEmptyXWithSrid}. That form returns no error because an empty geometry holds no coordinate to
+     * validate, so there is no panicking {@code MustNew} form to call.
+     */
+    @Override
+    protected void appendEmptyGeometry(final String kind, final Geometry geometry) {
+        if (geometry.hasZ())
+            throw new TranslatorException("Go has no constructor for an empty 3D geometry: " + geometry.toWKT());
+        if (geometry.model() == Model.OTHER) {
+            sb.append(GO_PACKAGE_NAME).append("NewEmpty").append(kind).append("WithSrid(")
+                    .append(geometry.srid()).append(")");
+            return;
+        }
+        sb.append(GO_PACKAGE_NAME).append("MustNewEmpty").append(kind).append("(");
+        appendGeometryModel(geometry);
+        sb.append(")");
+    }
+
+    private void appendGeometryModel(final Geometry geometry) {
+        sb.append(GO_PACKAGE_NAME).append("Model.")
+                .append(geometry.model() == Model.GEOGRAPHIC ? "Geographic" : "Cartesian");
     }
 
     @Override
@@ -263,19 +324,17 @@ public class GoTranslateVisitor extends AbstractTranslateVisitor {
 
     @Override
     public Void visitTraversalGType(GremlinParser.TraversalGTypeContext ctx) {
-        if (isGeometryGType(ctx))
-            throw new TranslatorException("Go does not support geometry types");
-
-        final String[] split = ctx.getText().split("\\.");
         sb.append(GO_PACKAGE_NAME);
-        sb.append(processGremlinSymbol(split[0])).append(".");
-        sb.append(processGremlinSymbol(split[1].toLowerCase()));
+        sb.append(GType.class.getSimpleName()).append(".");
+        sb.append(processGremlinSymbol(extractGTypeName(ctx).toLowerCase()));
         return null;
     }
 
     @Override
     public Void visitGeoModel(final GremlinParser.GeoModelContext ctx) {
-        throw new TranslatorException("Go does not support geometry models");
+        // the model is written in upper case in Gremlin, while the Go field is Pascal case
+        appendExplicitNaming(extractGeoModelName(ctx).toLowerCase(Locale.ROOT), Model.class.getSimpleName());
+        return null;
     }
 
     @Override
@@ -536,6 +595,11 @@ public class GoTranslateVisitor extends AbstractTranslateVisitor {
             TO_GO_MAP.put("datetime", "DateTime");
             TO_GO_MAP.put("uuid", "UUID");
             TO_GO_MAP.put("vproperty", "VProperty");
+            TO_GO_MAP.put("linestring", "LineString");
+            TO_GO_MAP.put("multipoint", "MultiPoint");
+            TO_GO_MAP.put("multilinestring", "MultiLineString");
+            TO_GO_MAP.put("multipolygon", "MultiPolygon");
+            TO_GO_MAP.put("geometrycollection", "GeometryCollection");
             TO_GO_MAP.put("WithOptions", GO_PACKAGE_NAME + "WithOptions");
             TO_GO_MAP.put("IO", GO_PACKAGE_NAME + "IO");
             TO_GO_MAP.put("__", GO_PACKAGE_NAME + "T__");

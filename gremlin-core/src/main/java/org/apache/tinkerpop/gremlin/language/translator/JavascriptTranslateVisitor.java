@@ -21,6 +21,10 @@ package org.apache.tinkerpop.gremlin.language.translator;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.tinkerpop.gremlin.language.antlr.GremlinParser;
+import org.apache.tinkerpop.gremlin.process.traversal.GType;
+import org.apache.tinkerpop.gremlin.structure.geo.Geometry;
+import org.apache.tinkerpop.gremlin.structure.geo.Model;
+import org.apache.tinkerpop.gremlin.structure.geo.Point;
 import org.apache.tinkerpop.gremlin.util.DatetimeHelper;
 
 import java.time.OffsetDateTime;
@@ -86,12 +90,8 @@ public class JavascriptTranslateVisitor extends AbstractTranslateVisitor {
 
     @Override
     public Void visitTraversalGType(GremlinParser.TraversalGTypeContext ctx) {
-        if (isGeometryGType(ctx))
-            throw new TranslatorException("Javascript does not support geometry types");
-
-        final String[] split = ctx.getText().split("\\.");
-        sb.append(processGremlinSymbol(split[0])).append(".");
-        sb.append(processGremlinSymbol(split[1].toLowerCase()));
+        sb.append(GType.class.getSimpleName()).append(".");
+        sb.append(processGremlinSymbol(extractGTypeName(ctx).toLowerCase()));
         return null;
     }
 
@@ -195,24 +195,54 @@ public class JavascriptTranslateVisitor extends AbstractTranslateVisitor {
         throw new TranslatorException("Javascript does not support range literals");
     }
 
+    /**
+     * Builds a geometry with the factories of {@code gremlin.structure.geo}, which take the parts of a kind as
+     * arguments and take a model or an SRID as a last argument.
+     */
     @Override
     public Void visitGeometryLiteral(final GremlinParser.GeometryLiteralContext ctx) {
-        throw new TranslatorException("Javascript does not support geometry literals");
+        appendGeometry(parseGeometryLiteral(ctx));
+        return null;
     }
 
     @Override
-    public Void visitGeoModel(final GremlinParser.GeoModelContext ctx) {
-        throw new TranslatorException("Javascript does not support geometry models");
+    protected String geometryConstructorOf(final String kind) {
+        return kind + ".of(";
     }
 
     @Override
-    public Void visitTraversalPredicate_geoWithin(final GremlinParser.TraversalPredicate_geoWithinContext ctx) {
-        throw new TranslatorException("Javascript does not support geo predicates");
+    protected void appendGeometryPoint(final Point point) {
+        sb.append(point.hasZ() ? "Point.ofZ(" : "Point.of(");
+        appendGeometryCoordinate(point.x());
+        sb.append(", ");
+        appendGeometryCoordinate(point.y());
+        if (point.hasZ()) {
+            sb.append(", ");
+            appendGeometryCoordinate(point.z());
+        }
+        if (point.model() != Model.CARTESIAN) {
+            sb.append(", ");
+            appendGeometryModelOrSrid(point);
+        }
+        sb.append(")");
     }
 
     @Override
-    public Void visitTraversalPredicate_geoContains(final GremlinParser.TraversalPredicate_geoContainsContext ctx) {
-        throw new TranslatorException("Javascript does not support geo predicates");
+    protected void appendEmptyGeometry(final String kind, final Geometry geometry) {
+        if (geometry.hasZ())
+            throw new TranslatorException("Javascript has no constructor for an empty 3D geometry: "
+                    + geometry.toWKT());
+        sb.append(kind).append(".empty(");
+        if (geometry.model() != Model.CARTESIAN)
+            appendGeometryModelOrSrid(geometry);
+        sb.append(")");
+    }
+
+    private void appendGeometryModelOrSrid(final Geometry geometry) {
+        if (geometry.model() == Model.GEOGRAPHIC)
+            sb.append("Model.GEOGRAPHIC");
+        else
+            sb.append(geometry.srid());
     }
 
     @Override
@@ -316,6 +346,11 @@ public class JavascriptTranslateVisitor extends AbstractTranslateVisitor {
             TO_JS_MAP.put("with", "with_");
             TO_JS_MAP.put("bigdecimal", "bigDecimal");
             TO_JS_MAP.put("bigint", "bigInt");
+            TO_JS_MAP.put("linestring", "lineString");
+            TO_JS_MAP.put("multipoint", "multiPoint");
+            TO_JS_MAP.put("multilinestring", "multiLineString");
+            TO_JS_MAP.put("multipolygon", "multiPolygon");
+            TO_JS_MAP.put("geometrycollection", "geometryCollection");
             //
             TO_JS_MAP.forEach((k, v) -> FROM_JS_MAP.put(v, k));
         }

@@ -171,6 +171,94 @@ public class GeoP extends P<Geometry> {
         return new GeoP(Geo.geoContains, traversalValue.asAdmin());
     }
 
+    /**
+     * Determines if a geometry shares at least one point with the given geometry, where a point of
+     * either boundary counts. An empty geometry holds no point, so it intersects nothing.
+     *
+     * @since 4.0.0
+     */
+    public static GeoP geoIntersects(final Geometry value) {
+        return new GeoP(Geo.geoIntersects, value);
+    }
+
+    /**
+     * Determines if a geometry shares at least one point with the geometry a variable holds.
+     *
+     * @since 4.0.0
+     */
+    public static GeoP geoIntersects(final GValue<Geometry> value) {
+        return ofGeometry(Geo.geoIntersects, value);
+    }
+
+    /**
+     * Determines if a geometry shares at least one point with the geometry resolved from a child
+     * traversal at runtime.
+     *
+     * @since 4.0.0
+     */
+    public static GeoP geoIntersects(final Traversal<?, ?> traversalValue) {
+        return new GeoP(Geo.geoIntersects, traversalValue.asAdmin());
+    }
+
+    /**
+     * Determines if a geometry shares no point with the given geometry, which an empty geometry
+     * does with every geometry.
+     *
+     * @since 4.0.0
+     */
+    public static GeoP geoDisjoint(final Geometry value) {
+        return new GeoP(Geo.geoDisjoint, value);
+    }
+
+    /**
+     * Determines if a geometry shares no point with the geometry a variable holds.
+     *
+     * @since 4.0.0
+     */
+    public static GeoP geoDisjoint(final GValue<Geometry> value) {
+        return ofGeometry(Geo.geoDisjoint, value);
+    }
+
+    /**
+     * Determines if a geometry shares no point with the geometry resolved from a child traversal at
+     * runtime.
+     *
+     * @since 4.0.0
+     */
+    public static GeoP geoDisjoint(final Traversal<?, ?> traversalValue) {
+        return new GeoP(Geo.geoDisjoint, traversalValue.asAdmin());
+    }
+
+    /**
+     * Determines if a geometry covers the same points as the given geometry, however each one is
+     * written. Two empty geometries are equal whatever their kinds, and an empty geometry equals
+     * nothing else.
+     *
+     * @since 4.0.0
+     */
+    public static GeoP geoEquals(final Geometry value) {
+        return new GeoP(Geo.geoEquals, value);
+    }
+
+    /**
+     * Determines if a geometry covers the same points as the geometry a variable holds.
+     *
+     * @since 4.0.0
+     */
+    public static GeoP geoEquals(final GValue<Geometry> value) {
+        return ofGeometry(Geo.geoEquals, value);
+    }
+
+    /**
+     * Determines if a geometry covers the same points as the geometry resolved from a child
+     * traversal at runtime.
+     *
+     * @since 4.0.0
+     */
+    public static GeoP geoEquals(final Traversal<?, ?> traversalValue) {
+        return new GeoP(Geo.geoEquals, traversalValue.asAdmin());
+    }
+
     //////////////// argument assembly
 
     /**

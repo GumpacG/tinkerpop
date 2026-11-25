@@ -636,6 +636,8 @@ public class GremlinGroovyScriptEngineTest {
         engine.eval("g.addV(\"store\").property(\"loc\", Point.of(2, 2)).iterate()", bindings);
         engine.eval("g.addV(\"store\").property(\"loc\", Geometry.fromWkt(\"POINT(5 5)\")).iterate()", bindings);
         engine.eval("g.addV(\"zone\").property(\"loc\", Geometry.fromWkt(\"POLYGON((10 10, 14 10, 14 14, 10 14, 10 10))\")).iterate()", bindings);
+        // a geographic point, which no cartesian argument can be compared with
+        engine.eval("g.addV(\"city\").property(\"loc\", Point.of(13.4d, 52.5d, Model.GEOGRAPHIC)).iterate()", bindings);
 
         // only the point inside the polygon is within it
         assertEquals(1L, engine.eval(
@@ -650,5 +652,22 @@ public class GremlinGroovyScriptEngineTest {
                 "g.V().has(\"loc\", geoContains(Point.of(12, 12))).label().next()", bindings));
         assertEquals(0L, engine.eval(
                 "g.V().has(\"loc\", geoContains(Geometry.fromWkt(\"POINT(20 20)\"))).count().next()", bindings));
+
+        // the polygon meets a box that touches its edge, and the two points lie away from it
+        assertEquals("zone", engine.eval(
+                "g.V().has(\"loc\", geoIntersects(Geometry.fromWkt(\"POLYGON((14 10, 18 10, 18 14, 14 14, 14 10))\"))).label().next()", bindings));
+
+        // the two points share no point with a box that overlaps part of the polygon, while the
+        // geographic point cannot be compared with it, so it is neither disjoint nor intersecting
+        assertEquals(2L, engine.eval(
+                "g.V().has(\"loc\", geoDisjoint(Geometry.fromWkt(\"POLYGON((12 12, 16 12, 16 16, 12 16, 12 12))\"))).count().next()", bindings));
+        assertEquals(3L, engine.eval(
+                "g.V().not(__.has(\"loc\", geoIntersects(Geometry.fromWkt(\"POLYGON((12 12, 16 12, 16 16, 12 16, 12 12))\")))).count().next()", bindings));
+
+        // a geometry equals one in another model only when the two carry the same SRID
+        assertEquals(0L, engine.eval(
+                "g.V().has(\"loc\", geoEquals(Point.of(13.4d, 52.5d))).count().next()", bindings));
+        assertEquals("city", engine.eval(
+                "g.V().has(\"loc\", geoEquals(Point.of(13.4d, 52.5d, Model.GEOGRAPHIC))).label().next()", bindings));
     }
 }

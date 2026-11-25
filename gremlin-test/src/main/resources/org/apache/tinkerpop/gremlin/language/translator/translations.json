@@ -4562,8 +4562,12 @@
                 "language": "g.inject(Geometry(\"POINT(1 2)\"), Geometry(\"LINESTRING(0 0, 1 1)\"), Geometry(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))\"), Geometry(\"MULTIPOINT((1 1), (2 2))\"), Geometry(\"MULTILINESTRING((0 0, 1 1), (2 2, 3 3))\"), Geometry(\"MULTIPOLYGON(((0 0, 1 0, 1 1, 0 0)))\"), Geometry(\"GEOMETRYCOLLECTION(POINT(1 1), LINESTRING(2 2, 3 3))\"))",
                 "canonical": "g.inject(Geometry(\"POINT(1 2)\"), Geometry(\"LINESTRING(0 0, 1 1)\"), Geometry(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))\"), Geometry(\"MULTIPOINT((1 1), (2 2))\"), Geometry(\"MULTILINESTRING((0 0, 1 1), (2 2, 3 3))\"), Geometry(\"MULTIPOLYGON(((0 0, 1 0, 1 1, 0 0)))\"), Geometry(\"GEOMETRYCOLLECTION(POINT(1 1), LINESTRING(2 2, 3 3))\"))",
                 "anonymized": "g.inject(point0, linestring0, polygon0, multipoint0, multilinestring0, multipolygon0, geometrycollection0)",
+                "dotnet": "g.Inject<object>(new Point(1.0, 2.0), new LineString(new Point(0.0, 0.0), new Point(1.0, 1.0)), new Polygon(new LineString(new Point(0.0, 0.0), new Point(4.0, 0.0), new Point(4.0, 4.0), new Point(0.0, 4.0), new Point(0.0, 0.0)), new LineString(new Point(1.0, 1.0), new Point(1.0, 2.0), new Point(2.0, 2.0), new Point(2.0, 1.0), new Point(1.0, 1.0))), new MultiPoint(new Point(1.0, 1.0), new Point(2.0, 2.0)), new MultiLineString(new LineString(new Point(0.0, 0.0), new Point(1.0, 1.0)), new LineString(new Point(2.0, 2.0), new Point(3.0, 3.0))), new MultiPolygon(new Polygon(new LineString(new Point(0.0, 0.0), new Point(1.0, 0.0), new Point(1.0, 1.0), new Point(0.0, 0.0)))), new GeometryCollection(new Point(1.0, 1.0), new LineString(new Point(2.0, 2.0), new Point(3.0, 3.0))))",
+                "go": "g.Inject(gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian), gremlingo.MustNewLineString(gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian)), gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(4.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(4.0, 4.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 4.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian)), gremlingo.MustNewLineString(gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(2.0, 2.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(2.0, 1.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian))), gremlingo.MustNewMultiPoint(gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(2.0, 2.0, gremlingo.Model.Cartesian)), gremlingo.MustNewMultiLineString(gremlingo.MustNewLineString(gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian)), gremlingo.MustNewLineString(gremlingo.MustNewPoint(2.0, 2.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(3.0, 3.0, gremlingo.Model.Cartesian))), gremlingo.MustNewMultiPolygon(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian)))), gremlingo.MustNewGeometryCollection(gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian), gremlingo.MustNewLineString(gremlingo.MustNewPoint(2.0, 2.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(3.0, 3.0, gremlingo.Model.Cartesian))))",
                 "groovy": "g.inject(Geometry.fromWkt(\"POINT(1 2)\"), Geometry.fromWkt(\"LINESTRING(0 0, 1 1)\"), Geometry.fromWkt(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))\"), Geometry.fromWkt(\"MULTIPOINT((1 1), (2 2))\"), Geometry.fromWkt(\"MULTILINESTRING((0 0, 1 1), (2 2, 3 3))\"), Geometry.fromWkt(\"MULTIPOLYGON(((0 0, 1 0, 1 1, 0 0)))\"), Geometry.fromWkt(\"GEOMETRYCOLLECTION(POINT(1 1), LINESTRING(2 2, 3 3))\"))",
-                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\"), Geometry.fromWkt(\"LINESTRING(0 0, 1 1)\"), Geometry.fromWkt(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))\"), Geometry.fromWkt(\"MULTIPOINT((1 1), (2 2))\"), Geometry.fromWkt(\"MULTILINESTRING((0 0, 1 1), (2 2, 3 3))\"), Geometry.fromWkt(\"MULTIPOLYGON(((0 0, 1 0, 1 1, 0 0)))\"), Geometry.fromWkt(\"GEOMETRYCOLLECTION(POINT(1 1), LINESTRING(2 2, 3 3))\"))"
+                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\"), Geometry.fromWkt(\"LINESTRING(0 0, 1 1)\"), Geometry.fromWkt(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))\"), Geometry.fromWkt(\"MULTIPOINT((1 1), (2 2))\"), Geometry.fromWkt(\"MULTILINESTRING((0 0, 1 1), (2 2, 3 3))\"), Geometry.fromWkt(\"MULTIPOLYGON(((0 0, 1 0, 1 1, 0 0)))\"), Geometry.fromWkt(\"GEOMETRYCOLLECTION(POINT(1 1), LINESTRING(2 2, 3 3))\"))",
+                "javascript": "g.inject(Point.of(1.0, 2.0), LineString.of(Point.of(0.0, 0.0), Point.of(1.0, 1.0)), Polygon.of(LineString.of(Point.of(0.0, 0.0), Point.of(4.0, 0.0), Point.of(4.0, 4.0), Point.of(0.0, 4.0), Point.of(0.0, 0.0)), LineString.of(Point.of(1.0, 1.0), Point.of(1.0, 2.0), Point.of(2.0, 2.0), Point.of(2.0, 1.0), Point.of(1.0, 1.0))), MultiPoint.of(Point.of(1.0, 1.0), Point.of(2.0, 2.0)), MultiLineString.of(LineString.of(Point.of(0.0, 0.0), Point.of(1.0, 1.0)), LineString.of(Point.of(2.0, 2.0), Point.of(3.0, 3.0))), MultiPolygon.of(Polygon.of(LineString.of(Point.of(0.0, 0.0), Point.of(1.0, 0.0), Point.of(1.0, 1.0), Point.of(0.0, 0.0)))), GeometryCollection.of(Point.of(1.0, 1.0), LineString.of(Point.of(2.0, 2.0), Point.of(3.0, 3.0))))",
+                "python": "g.inject(Point(1.0, 2.0), LineString([Point(0.0, 0.0), Point(1.0, 1.0)]), Polygon(LineString([Point(0.0, 0.0), Point(4.0, 0.0), Point(4.0, 4.0), Point(0.0, 4.0), Point(0.0, 0.0)]), [LineString([Point(1.0, 1.0), Point(1.0, 2.0), Point(2.0, 2.0), Point(2.0, 1.0), Point(1.0, 1.0)])]), MultiPoint([Point(1.0, 1.0), Point(2.0, 2.0)]), MultiLineString([LineString([Point(0.0, 0.0), Point(1.0, 1.0)]), LineString([Point(2.0, 2.0), Point(3.0, 3.0)])]), MultiPolygon([Polygon(LineString([Point(0.0, 0.0), Point(1.0, 0.0), Point(1.0, 1.0), Point(0.0, 0.0)]))]), GeometryCollection([Point(1.0, 1.0), LineString([Point(2.0, 2.0), Point(3.0, 3.0)])]))"
             }
         ]
     },
@@ -4575,8 +4579,12 @@
                 "language": "g.inject(geometry(\"POINT(1 2)\"), Geometry(\"POINT(1 2)\"))",
                 "canonical": "g.inject(geometry(\"POINT(1 2)\"), Geometry(\"POINT(1 2)\"))",
                 "anonymized": "g.inject(point0, point1)",
+                "dotnet": "g.Inject<object>(new Point(1.0, 2.0), new Point(1.0, 2.0))",
+                "go": "g.Inject(gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian))",
                 "groovy": "g.inject(Geometry.fromWkt(\"POINT(1 2)\"), Geometry.fromWkt(\"POINT(1 2)\"))",
-                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\"), Geometry.fromWkt(\"POINT(1 2)\"))"
+                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\"), Geometry.fromWkt(\"POINT(1 2)\"))",
+                "javascript": "g.inject(Point.of(1.0, 2.0), Point.of(1.0, 2.0))",
+                "python": "g.inject(Point(1.0, 2.0), Point(1.0, 2.0))"
             }
         ]
     },
@@ -4605,8 +4613,12 @@
                 "language": "g.inject(Geometry(\"POINT(1 2)\", 32618))",
                 "canonical": "g.inject(Geometry(\"POINT(1 2)\", 32618))",
                 "anonymized": "g.inject(point0)",
+                "dotnet": "g.Inject<object>(Point.WithSrid(1.0, 2.0, 32618))",
+                "go": "g.Inject(gremlingo.MustNewPointWithSrid(1.0, 2.0, 32618))",
                 "groovy": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", 32618))",
-                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", 32618))"
+                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", 32618))",
+                "javascript": "g.inject(Point.of(1.0, 2.0, 32618))",
+                "python": "g.inject(Point(1.0, 2.0, srid=32618))"
             }
         ]
     },
@@ -4618,8 +4630,12 @@
                 "language": "g.inject(Geometry(\"POINT EMPTY\"), Geometry(\"POLYGON EMPTY\"), Geometry(\"GEOMETRYCOLLECTION EMPTY\"))",
                 "canonical": "g.inject(Geometry(\"POINT EMPTY\"), Geometry(\"POLYGON EMPTY\"), Geometry(\"GEOMETRYCOLLECTION EMPTY\"))",
                 "anonymized": "g.inject(point0, polygon0, geometrycollection0)",
+                "dotnet": "g.Inject<object>(Point.Empty(), Polygon.Empty(), GeometryCollection.Empty())",
+                "go": "g.Inject(gremlingo.MustNewEmptyPoint(gremlingo.Model.Cartesian), gremlingo.MustNewEmptyPolygon(gremlingo.Model.Cartesian), gremlingo.MustNewEmptyGeometryCollection(gremlingo.Model.Cartesian))",
                 "groovy": "g.inject(Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POLYGON EMPTY\"), Geometry.fromWkt(\"GEOMETRYCOLLECTION EMPTY\"))",
-                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POLYGON EMPTY\"), Geometry.fromWkt(\"GEOMETRYCOLLECTION EMPTY\"))"
+                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POLYGON EMPTY\"), Geometry.fromWkt(\"GEOMETRYCOLLECTION EMPTY\"))",
+                "javascript": "g.inject(Point.empty(), Polygon.empty(), GeometryCollection.empty())",
+                "python": "g.inject(Point.empty(), Polygon.empty(), GeometryCollection.empty())"
             }
         ]
     },
@@ -4712,8 +4728,12 @@
                 "language": "g.V().has(\"loc\", Geometry(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", GEOGRAPHIC)).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", Geometry(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", GEOGRAPHIC)).values(\"name\")",
                 "anonymized": "g.V().has(string0, polygon0).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", new Polygon(new LineString(new Point(-74.02, 40.74, Model.Geographic), new Point(-73.93, 40.74, Model.Geographic), new Point(-73.93, 40.81, Model.Geographic), new Point(-74.02, 40.81, Model.Geographic), new Point(-74.02, 40.74, Model.Geographic)), new LineString(new Point(-73.9819, 40.7681, Model.Geographic), new Point(-73.973, 40.7644, Model.Geographic), new Point(-73.9498, 40.7968, Model.Geographic), new Point(-73.958, 40.8006, Model.Geographic), new Point(-73.9819, 40.7681, Model.Geographic)))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-74.02, 40.74, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.93, 40.74, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.93, 40.81, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.02, 40.81, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.02, 40.74, gremlingo.Model.Geographic)), gremlingo.MustNewLineString(gremlingo.MustNewPoint(-73.9819, 40.7681, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.973, 40.7644, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.9498, 40.7968, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.958, 40.8006, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.9819, 40.7681, gremlingo.Model.Geographic)))).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", Geometry.fromWkt(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", Model.GEOGRAPHIC)).values(\"name\")",
-                "java": "g.V().has(\"loc\", Geometry.fromWkt(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", Model.GEOGRAPHIC)).values(\"name\")"
+                "java": "g.V().has(\"loc\", Geometry.fromWkt(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", Model.GEOGRAPHIC)).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", Polygon.of(LineString.of(Point.of(-74.02, 40.74, Model.GEOGRAPHIC), Point.of(-73.93, 40.74, Model.GEOGRAPHIC), Point.of(-73.93, 40.81, Model.GEOGRAPHIC), Point.of(-74.02, 40.81, Model.GEOGRAPHIC), Point.of(-74.02, 40.74, Model.GEOGRAPHIC)), LineString.of(Point.of(-73.9819, 40.7681, Model.GEOGRAPHIC), Point.of(-73.973, 40.7644, Model.GEOGRAPHIC), Point.of(-73.9498, 40.7968, Model.GEOGRAPHIC), Point.of(-73.958, 40.8006, Model.GEOGRAPHIC), Point.of(-73.9819, 40.7681, Model.GEOGRAPHIC)))).values(\"name\")",
+                "python": "g.V().has('loc', Polygon(LineString([Point(-74.02, 40.74, model=Model.GEOGRAPHIC), Point(-73.93, 40.74, model=Model.GEOGRAPHIC), Point(-73.93, 40.81, model=Model.GEOGRAPHIC), Point(-74.02, 40.81, model=Model.GEOGRAPHIC), Point(-74.02, 40.74, model=Model.GEOGRAPHIC)]), [LineString([Point(-73.9819, 40.7681, model=Model.GEOGRAPHIC), Point(-73.973, 40.7644, model=Model.GEOGRAPHIC), Point(-73.9498, 40.7968, model=Model.GEOGRAPHIC), Point(-73.958, 40.8006, model=Model.GEOGRAPHIC), Point(-73.9819, 40.7681, model=Model.GEOGRAPHIC)])])).values('name')"
             }
         ]
     },
@@ -8262,8 +8282,12 @@
                 "language": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(Geometry(\"POLYGON((-73.97 40.69, -73.88 40.69, -73.88 40.8, -73.93 40.8, -73.93 40.735, -73.97 40.735, -73.97 40.69))\", GEOGRAPHIC))).values(\"name\")",
                 "canonical": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(Geometry(\"POLYGON((-73.97 40.69, -73.88 40.69, -73.88 40.8, -73.93 40.8, -73.93 40.735, -73.97 40.735, -73.97 40.69))\", GEOGRAPHIC))).values(\"name\")",
                 "anonymized": "g.V().hasLabel(string0, string1).has(string2, GeoP.geoWithin(polygon0)).values(string3)",
+                "dotnet": "g.V().HasLabel(\"hub\", \"customer\").Has(\"loc\", GeoP.GeoWithin(new Polygon(new LineString(new Point(-73.97, 40.69, Model.Geographic), new Point(-73.88, 40.69, Model.Geographic), new Point(-73.88, 40.8, Model.Geographic), new Point(-73.93, 40.8, Model.Geographic), new Point(-73.93, 40.735, Model.Geographic), new Point(-73.97, 40.735, Model.Geographic), new Point(-73.97, 40.69, Model.Geographic))))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"hub\", \"customer\").Has(\"loc\", gremlingo.GeoP.GeoWithin(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-73.97, 40.69, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.88, 40.69, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.88, 40.8, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.93, 40.8, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.93, 40.735, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.97, 40.735, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.97, 40.69, gremlingo.Model.Geographic))))).Values(\"name\")",
                 "groovy": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-73.97 40.69, -73.88 40.69, -73.88 40.8, -73.93 40.8, -73.93 40.735, -73.97 40.735, -73.97 40.69))\", Model.GEOGRAPHIC))).values(\"name\")",
-                "java": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-73.97 40.69, -73.88 40.69, -73.88 40.8, -73.93 40.8, -73.93 40.735, -73.97 40.735, -73.97 40.69))\", Model.GEOGRAPHIC))).values(\"name\")"
+                "java": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-73.97 40.69, -73.88 40.69, -73.88 40.8, -73.93 40.8, -73.93 40.735, -73.97 40.735, -73.97 40.69))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(Polygon.of(LineString.of(Point.of(-73.97, 40.69, Model.GEOGRAPHIC), Point.of(-73.88, 40.69, Model.GEOGRAPHIC), Point.of(-73.88, 40.8, Model.GEOGRAPHIC), Point.of(-73.93, 40.8, Model.GEOGRAPHIC), Point.of(-73.93, 40.735, Model.GEOGRAPHIC), Point.of(-73.97, 40.735, Model.GEOGRAPHIC), Point.of(-73.97, 40.69, Model.GEOGRAPHIC))))).values(\"name\")",
+                "python": "g.V().has_label('hub', 'customer').has('loc', GeoP.geo_within(Polygon(LineString([Point(-73.97, 40.69, model=Model.GEOGRAPHIC), Point(-73.88, 40.69, model=Model.GEOGRAPHIC), Point(-73.88, 40.8, model=Model.GEOGRAPHIC), Point(-73.93, 40.8, model=Model.GEOGRAPHIC), Point(-73.93, 40.735, model=Model.GEOGRAPHIC), Point(-73.97, 40.735, model=Model.GEOGRAPHIC), Point(-73.97, 40.69, model=Model.GEOGRAPHIC)])))).values('name')"
             }
         ]
     },
@@ -8275,8 +8299,12 @@
                 "language": "g.V().union(__.hasLabel(\"zone\", \"waterway\").values(\"loc\"), __.outE(\"delivered\").values(\"path\")).is(GeoP.geoWithin(Geometry(\"POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))\", GEOGRAPHIC)))",
                 "canonical": "g.V().union(__.hasLabel(\"zone\", \"waterway\").values(\"loc\"), __.outE(\"delivered\").values(\"path\")).is(GeoP.geoWithin(Geometry(\"POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))\", GEOGRAPHIC)))",
                 "anonymized": "g.V().union(__.hasLabel(string0, string1).values(string2), __.outE(string3).values(string4)).is(GeoP.geoWithin(polygon0))",
+                "dotnet": "g.V().Union<object>(__.HasLabel(\"zone\", \"waterway\").Values<object>(\"loc\"), __.OutE(\"delivered\").Values<object>(\"path\")).Is(GeoP.GeoWithin(new Polygon(new LineString(new Point(-74.03, 40.69, Model.Geographic), new Point(-73.95, 40.69, Model.Geographic), new Point(-73.95, 40.766, Model.Geographic), new Point(-74.03, 40.766, Model.Geographic), new Point(-74.03, 40.69, Model.Geographic)))))",
+                "go": "g.V().Union(gremlingo.T__.HasLabel(\"zone\", \"waterway\").Values(\"loc\"), gremlingo.T__.OutE(\"delivered\").Values(\"path\")).Is(gremlingo.GeoP.GeoWithin(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-74.03, 40.69, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.95, 40.69, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.95, 40.766, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.03, 40.766, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.03, 40.69, gremlingo.Model.Geographic)))))",
                 "groovy": "g.V().union(__.hasLabel(\"zone\", \"waterway\").values(\"loc\"), __.outE(\"delivered\").values(\"path\")).is(GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))\", Model.GEOGRAPHIC)))",
-                "java": "g.V().union(__.hasLabel(\"zone\", \"waterway\").values(\"loc\"), __.outE(\"delivered\").values(\"path\")).is(GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))\", Model.GEOGRAPHIC)))"
+                "java": "g.V().union(__.hasLabel(\"zone\", \"waterway\").values(\"loc\"), __.outE(\"delivered\").values(\"path\")).is(GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))\", Model.GEOGRAPHIC)))",
+                "javascript": "g.V().union(__.hasLabel(\"zone\", \"waterway\").values(\"loc\"), __.outE(\"delivered\").values(\"path\")).is(GeoP.geoWithin(Polygon.of(LineString.of(Point.of(-74.03, 40.69, Model.GEOGRAPHIC), Point.of(-73.95, 40.69, Model.GEOGRAPHIC), Point.of(-73.95, 40.766, Model.GEOGRAPHIC), Point.of(-74.03, 40.766, Model.GEOGRAPHIC), Point.of(-74.03, 40.69, Model.GEOGRAPHIC)))))",
+                "python": "g.V().union(__.has_label('zone', 'waterway').values('loc'), __.out_e('delivered').values('path')).is_(GeoP.geo_within(Polygon(LineString([Point(-74.03, 40.69, model=Model.GEOGRAPHIC), Point(-73.95, 40.69, model=Model.GEOGRAPHIC), Point(-73.95, 40.766, model=Model.GEOGRAPHIC), Point(-74.03, 40.766, model=Model.GEOGRAPHIC), Point(-74.03, 40.69, model=Model.GEOGRAPHIC)]))))"
             }
         ]
     },
@@ -8288,8 +8316,12 @@
                 "language": "g.inject(Geometry(\"POINT EMPTY\"), Geometry(\"POINT(2 2)\", GEOGRAPHIC), Geometry(\"POINT Z (2 2 9)\")).is(GeoP.geoWithin(Geometry(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\")))",
                 "canonical": "g.inject(Geometry(\"POINT EMPTY\"), Geometry(\"POINT(2 2)\", GEOGRAPHIC), Geometry(\"POINT Z (2 2 9)\")).is(GeoP.geoWithin(Geometry(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\")))",
                 "anonymized": "g.inject(point0, point1, point2).is(GeoP.geoWithin(polygon0))",
+                "dotnet": "g.Inject<object>(Point.Empty(), new Point(2.0, 2.0, Model.Geographic), new Point(2.0, 2.0, 9.0)).Is(GeoP.GeoWithin(new Polygon(new LineString(new Point(0.0, 0.0), new Point(4.0, 0.0), new Point(4.0, 4.0), new Point(0.0, 4.0), new Point(0.0, 0.0)))))",
+                "go": "g.Inject(gremlingo.MustNewEmptyPoint(gremlingo.Model.Cartesian), gremlingo.MustNewPoint(2.0, 2.0, gremlingo.Model.Geographic), gremlingo.MustNewPointZ(2.0, 2.0, 9.0, gremlingo.Model.Cartesian)).Is(gremlingo.GeoP.GeoWithin(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(4.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(4.0, 4.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 4.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian)))))",
                 "groovy": "g.inject(Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POINT(2 2)\", Model.GEOGRAPHIC), Geometry.fromWkt(\"POINT Z (2 2 9)\")).is(GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\")))",
-                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POINT(2 2)\", Model.GEOGRAPHIC), Geometry.fromWkt(\"POINT Z (2 2 9)\")).is(GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\")))"
+                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POINT(2 2)\", Model.GEOGRAPHIC), Geometry.fromWkt(\"POINT Z (2 2 9)\")).is(GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\")))",
+                "javascript": "g.inject(Point.empty(), Point.of(2.0, 2.0, Model.GEOGRAPHIC), Point.ofZ(2.0, 2.0, 9.0)).is(GeoP.geoWithin(Polygon.of(LineString.of(Point.of(0.0, 0.0), Point.of(4.0, 0.0), Point.of(4.0, 4.0), Point.of(0.0, 4.0), Point.of(0.0, 0.0)))))",
+                "python": "g.inject(Point.empty(), Point(2.0, 2.0, model=Model.GEOGRAPHIC), Point(2.0, 2.0, 9.0)).is_(GeoP.geo_within(Polygon(LineString([Point(0.0, 0.0), Point(4.0, 0.0), Point(4.0, 4.0), Point(0.0, 4.0), Point(0.0, 0.0)]))))"
             }
         ]
     },
@@ -8301,8 +8333,12 @@
                 "language": "g.inject(Geometry(\"POINT(2 2)\")).is(GeoP.geoWithin(Geometry(\"POLYGON EMPTY\")))",
                 "canonical": "g.inject(Geometry(\"POINT(2 2)\")).is(GeoP.geoWithin(Geometry(\"POLYGON EMPTY\")))",
                 "anonymized": "g.inject(point0).is(GeoP.geoWithin(polygon0))",
+                "dotnet": "g.Inject<object>(new Point(2.0, 2.0)).Is(GeoP.GeoWithin(Polygon.Empty()))",
+                "go": "g.Inject(gremlingo.MustNewPoint(2.0, 2.0, gremlingo.Model.Cartesian)).Is(gremlingo.GeoP.GeoWithin(gremlingo.MustNewEmptyPolygon(gremlingo.Model.Cartesian)))",
                 "groovy": "g.inject(Geometry.fromWkt(\"POINT(2 2)\")).is(GeoP.geoWithin(Geometry.fromWkt(\"POLYGON EMPTY\")))",
-                "java": "g.inject(Geometry.fromWkt(\"POINT(2 2)\")).is(GeoP.geoWithin(Geometry.fromWkt(\"POLYGON EMPTY\")))"
+                "java": "g.inject(Geometry.fromWkt(\"POINT(2 2)\")).is(GeoP.geoWithin(Geometry.fromWkt(\"POLYGON EMPTY\")))",
+                "javascript": "g.inject(Point.of(2.0, 2.0)).is(GeoP.geoWithin(Polygon.empty()))",
+                "python": "g.inject(Point(2.0, 2.0)).is_(GeoP.geo_within(Polygon.empty()))"
             }
         ]
     },
@@ -8314,8 +8350,12 @@
                 "language": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(__.constant(Geometry(\"POLYGON((-0.03 51.46, 0.03 51.46, 0.03 51.5, -0.03 51.5, -0.03 51.46))\", GEOGRAPHIC)))).values(\"name\")",
                 "canonical": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(__.constant(Geometry(\"POLYGON((-0.03 51.46, 0.03 51.46, 0.03 51.5, -0.03 51.5, -0.03 51.46))\", GEOGRAPHIC)))).values(\"name\")",
                 "anonymized": "g.V().hasLabel(string0, string1).has(string2, GeoP.geoWithin(__.constant(polygon0))).values(string3)",
+                "dotnet": "g.V().HasLabel(\"hub\", \"customer\").Has(\"loc\", GeoP.GeoWithin(__.Constant<object>(new Polygon(new LineString(new Point(-0.03, 51.46, Model.Geographic), new Point(0.03, 51.46, Model.Geographic), new Point(0.03, 51.5, Model.Geographic), new Point(-0.03, 51.5, Model.Geographic), new Point(-0.03, 51.46, Model.Geographic)))))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"hub\", \"customer\").Has(\"loc\", gremlingo.GeoP.GeoWithin(gremlingo.T__.Constant(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-0.03, 51.46, gremlingo.Model.Geographic), gremlingo.MustNewPoint(0.03, 51.46, gremlingo.Model.Geographic), gremlingo.MustNewPoint(0.03, 51.5, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-0.03, 51.5, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-0.03, 51.46, gremlingo.Model.Geographic)))))).Values(\"name\")",
                 "groovy": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(__.constant(Geometry.fromWkt(\"POLYGON((-0.03 51.46, 0.03 51.46, 0.03 51.5, -0.03 51.5, -0.03 51.46))\", Model.GEOGRAPHIC)))).values(\"name\")",
-                "java": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(__.constant(Geometry.fromWkt(\"POLYGON((-0.03 51.46, 0.03 51.46, 0.03 51.5, -0.03 51.5, -0.03 51.46))\", Model.GEOGRAPHIC)))).values(\"name\")"
+                "java": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(__.constant(Geometry.fromWkt(\"POLYGON((-0.03 51.46, 0.03 51.46, 0.03 51.5, -0.03 51.5, -0.03 51.46))\", Model.GEOGRAPHIC)))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"hub\", \"customer\").has(\"loc\", GeoP.geoWithin(__.constant(Polygon.of(LineString.of(Point.of(-0.03, 51.46, Model.GEOGRAPHIC), Point.of(0.03, 51.46, Model.GEOGRAPHIC), Point.of(0.03, 51.5, Model.GEOGRAPHIC), Point.of(-0.03, 51.5, Model.GEOGRAPHIC), Point.of(-0.03, 51.46, Model.GEOGRAPHIC)))))).values(\"name\")",
+                "python": "g.V().has_label('hub', 'customer').has('loc', GeoP.geo_within(__.constant(Polygon(LineString([Point(-0.03, 51.46, model=Model.GEOGRAPHIC), Point(0.03, 51.46, model=Model.GEOGRAPHIC), Point(0.03, 51.5, model=Model.GEOGRAPHIC), Point(-0.03, 51.5, model=Model.GEOGRAPHIC), Point(-0.03, 51.46, model=Model.GEOGRAPHIC)]))))).values('name')"
             }
         ]
     },
@@ -8327,8 +8367,12 @@
                 "language": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))",
                 "canonical": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))",
                 "anonymized": "g.V().hasLabel(string0).as(string1).out(string2).out(string3).values(string4).as(string5).select(string1).values(string4).is(GeoP.geoWithin(__.select(string5)))",
+                "dotnet": "g.V().HasLabel(\"customer\").As(\"c\").Out(\"orderedFrom\").Out(\"serves\").Values<object>(\"loc\").As(\"z\").Select<object>(\"c\").Values<object>(\"loc\").Is(GeoP.GeoWithin(__.Select<object>(\"z\")))",
+                "go": "g.V().HasLabel(\"customer\").As(\"c\").Out(\"orderedFrom\").Out(\"serves\").Values(\"loc\").As(\"z\").Select(\"c\").Values(\"loc\").Is(gremlingo.GeoP.GeoWithin(gremlingo.T__.Select(\"z\")))",
                 "groovy": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))",
-                "java": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))"
+                "java": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))",
+                "javascript": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))",
+                "python": "g.V().has_label('customer').as_('c').out('orderedFrom').out('serves').values('loc').as_('z').select('c').values('loc').is_(GeoP.geo_within(__.select('z')))"
             }
         ]
     },
@@ -8340,8 +8384,12 @@
                 "language": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))).values(\"name\")",
                 "canonical": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))).values(\"name\")",
                 "anonymized": "g.V().has(string0, string1, string2).out(string3).values(string4).as(string5).V().hasLabel(string6).where(__.values(string4).is(GeoP.geoWithin(__.select(string5)))).values(string1)",
+                "dotnet": "g.V().Has(\"hub\", \"name\", \"Hell's Kitchen\").Out(\"serves\").Values<object>(\"loc\").As(\"z\").V().HasLabel(\"customer\").Where(__.Values<object>(\"loc\").Is(GeoP.GeoWithin(__.Select<object>(\"z\")))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"hub\", \"name\", \"Hell's Kitchen\").Out(\"serves\").Values(\"loc\").As(\"z\").V().HasLabel(\"customer\").Where(gremlingo.T__.Values(\"loc\").Is(gremlingo.GeoP.GeoWithin(gremlingo.T__.Select(\"z\")))).Values(\"name\")",
                 "groovy": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))).values(\"name\")",
-                "java": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))).values(\"name\")"
+                "java": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))).values(\"name\")",
+                "javascript": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\")))).values(\"name\")",
+                "python": "g.V().has('hub', 'name', \"Hell's Kitchen\").out('serves').values('loc').as_('z').V().has_label('customer').where(__.values('loc').is_(GeoP.geo_within(__.select('z')))).values('name')"
             }
         ]
     },
@@ -8353,8 +8401,12 @@
                 "language": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").as(\"h\").out(\"serves\").values(\"loc\").as(\"z\").select(\"h\").in(\"orderedFrom\").not(__.where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\"))))).values(\"name\")",
                 "canonical": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").as(\"h\").out(\"serves\").values(\"loc\").as(\"z\").select(\"h\").in(\"orderedFrom\").not(__.where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\"))))).values(\"name\")",
                 "anonymized": "g.V().has(string0, string1, string2).as(string3).out(string4).values(string5).as(string6).select(string3).in(string7).not(__.where(__.values(string5).is(GeoP.geoWithin(__.select(string6))))).values(string1)",
+                "dotnet": "g.V().Has(\"hub\", \"name\", \"Hell's Kitchen\").As(\"h\").Out(\"serves\").Values<object>(\"loc\").As(\"z\").Select<object>(\"h\").In(\"orderedFrom\").Not(__.Where(__.Values<object>(\"loc\").Is(GeoP.GeoWithin(__.Select<object>(\"z\"))))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"hub\", \"name\", \"Hell's Kitchen\").As(\"h\").Out(\"serves\").Values(\"loc\").As(\"z\").Select(\"h\").In(\"orderedFrom\").Not(gremlingo.T__.Where(gremlingo.T__.Values(\"loc\").Is(gremlingo.GeoP.GeoWithin(gremlingo.T__.Select(\"z\"))))).Values(\"name\")",
                 "groovy": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").as(\"h\").out(\"serves\").values(\"loc\").as(\"z\").select(\"h\").in(\"orderedFrom\").not(__.where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\"))))).values(\"name\")",
-                "java": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").as(\"h\").out(\"serves\").values(\"loc\").as(\"z\").select(\"h\").in(\"orderedFrom\").not(__.where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\"))))).values(\"name\")"
+                "java": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").as(\"h\").out(\"serves\").values(\"loc\").as(\"z\").select(\"h\").in(\"orderedFrom\").not(__.where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\"))))).values(\"name\")",
+                "javascript": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").as(\"h\").out(\"serves\").values(\"loc\").as(\"z\").select(\"h\").in_(\"orderedFrom\").not(__.where(__.values(\"loc\").is(GeoP.geoWithin(__.select(\"z\"))))).values(\"name\")",
+                "python": "g.V().has('hub', 'name', \"Hell's Kitchen\").as_('h').out('serves').values('loc').as_('z').select('h').in_('orderedFrom').not_(__.where(__.values('loc').is_(GeoP.geo_within(__.select('z'))))).values('name')"
             }
         ]
     },
@@ -8366,8 +8418,12 @@
                 "language": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Geometry(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", GEOGRAPHIC))).values(\"name\")",
                 "canonical": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Geometry(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", GEOGRAPHIC))).values(\"name\")",
                 "anonymized": "g.V().hasLabel(string0).has(string1, GeoP.geoWithin(polygon0)).values(string2)",
+                "dotnet": "g.V().HasLabel(\"customer\").Has(\"loc\", GeoP.GeoWithin(new Polygon(new LineString(new Point(-74.02, 40.74, Model.Geographic), new Point(-73.93, 40.74, Model.Geographic), new Point(-73.93, 40.81, Model.Geographic), new Point(-74.02, 40.81, Model.Geographic), new Point(-74.02, 40.74, Model.Geographic)), new LineString(new Point(-73.9819, 40.7681, Model.Geographic), new Point(-73.973, 40.7644, Model.Geographic), new Point(-73.9498, 40.7968, Model.Geographic), new Point(-73.958, 40.8006, Model.Geographic), new Point(-73.9819, 40.7681, Model.Geographic))))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"customer\").Has(\"loc\", gremlingo.GeoP.GeoWithin(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-74.02, 40.74, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.93, 40.74, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.93, 40.81, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.02, 40.81, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.02, 40.74, gremlingo.Model.Geographic)), gremlingo.MustNewLineString(gremlingo.MustNewPoint(-73.9819, 40.7681, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.973, 40.7644, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.9498, 40.7968, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.958, 40.8006, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.9819, 40.7681, gremlingo.Model.Geographic))))).Values(\"name\")",
                 "groovy": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", Model.GEOGRAPHIC))).values(\"name\")",
-                "java": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", Model.GEOGRAPHIC))).values(\"name\")"
+                "java": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Polygon.of(LineString.of(Point.of(-74.02, 40.74, Model.GEOGRAPHIC), Point.of(-73.93, 40.74, Model.GEOGRAPHIC), Point.of(-73.93, 40.81, Model.GEOGRAPHIC), Point.of(-74.02, 40.81, Model.GEOGRAPHIC), Point.of(-74.02, 40.74, Model.GEOGRAPHIC)), LineString.of(Point.of(-73.9819, 40.7681, Model.GEOGRAPHIC), Point.of(-73.973, 40.7644, Model.GEOGRAPHIC), Point.of(-73.9498, 40.7968, Model.GEOGRAPHIC), Point.of(-73.958, 40.8006, Model.GEOGRAPHIC), Point.of(-73.9819, 40.7681, Model.GEOGRAPHIC))))).values(\"name\")",
+                "python": "g.V().has_label('customer').has('loc', GeoP.geo_within(Polygon(LineString([Point(-74.02, 40.74, model=Model.GEOGRAPHIC), Point(-73.93, 40.74, model=Model.GEOGRAPHIC), Point(-73.93, 40.81, model=Model.GEOGRAPHIC), Point(-74.02, 40.81, model=Model.GEOGRAPHIC), Point(-74.02, 40.74, model=Model.GEOGRAPHIC)]), [LineString([Point(-73.9819, 40.7681, model=Model.GEOGRAPHIC), Point(-73.973, 40.7644, model=Model.GEOGRAPHIC), Point(-73.9498, 40.7968, model=Model.GEOGRAPHIC), Point(-73.958, 40.8006, model=Model.GEOGRAPHIC), Point(-73.9819, 40.7681, model=Model.GEOGRAPHIC)])]))).values('name')"
             }
         ]
     },
@@ -8379,8 +8435,12 @@
                 "language": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry(\"POINT(-73.93 40.77)\", GEOGRAPHIC))).values(\"name\")",
                 "canonical": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry(\"POINT(-73.93 40.77)\", GEOGRAPHIC))).values(\"name\")",
                 "anonymized": "g.V().hasLabel(string0).has(string1, GeoP.geoContains(point0)).values(string2)",
+                "dotnet": "g.V().HasLabel(\"zone\").Has(\"loc\", GeoP.GeoContains(new Point(-73.93, 40.77, Model.Geographic))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"zone\").Has(\"loc\", gremlingo.GeoP.GeoContains(gremlingo.MustNewPoint(-73.93, 40.77, gremlingo.Model.Geographic))).Values(\"name\")",
                 "groovy": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.93 40.77)\", Model.GEOGRAPHIC))).values(\"name\")",
-                "java": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.93 40.77)\", Model.GEOGRAPHIC))).values(\"name\")"
+                "java": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.93 40.77)\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Point.of(-73.93, 40.77, Model.GEOGRAPHIC))).values(\"name\")",
+                "python": "g.V().has_label('zone').has('loc', GeoP.geo_contains(Point(-73.93, 40.77, model=Model.GEOGRAPHIC))).values('name')"
             }
         ]
     },
@@ -8392,8 +8452,12 @@
                 "language": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry(\"POINT(-73.9925 40.7614)\", GEOGRAPHIC))).values(\"name\")",
                 "canonical": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry(\"POINT(-73.9925 40.7614)\", GEOGRAPHIC))).values(\"name\")",
                 "anonymized": "g.V().hasLabel(string0).has(string1, GeoP.geoContains(point0)).values(string2)",
+                "dotnet": "g.V().HasLabel(\"zone\").Has(\"loc\", GeoP.GeoContains(new Point(-73.9925, 40.7614, Model.Geographic))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"zone\").Has(\"loc\", gremlingo.GeoP.GeoContains(gremlingo.MustNewPoint(-73.9925, 40.7614, gremlingo.Model.Geographic))).Values(\"name\")",
                 "groovy": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.9925 40.7614)\", Model.GEOGRAPHIC))).values(\"name\")",
-                "java": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.9925 40.7614)\", Model.GEOGRAPHIC))).values(\"name\")"
+                "java": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.9925 40.7614)\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Point.of(-73.9925, 40.7614, Model.GEOGRAPHIC))).values(\"name\")",
+                "python": "g.V().has_label('zone').has('loc', GeoP.geo_contains(Point(-73.9925, 40.7614, model=Model.GEOGRAPHIC))).values('name')"
             }
         ]
     },
@@ -8405,8 +8469,12 @@
                 "language": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry(\"GEOMETRYCOLLECTION(MULTIPOINT((-73.952 40.715), (-73.951 40.716)), POLYGON((-73.955 40.713, -73.949 40.713, -73.949 40.717, -73.955 40.717, -73.955 40.713)))\", GEOGRAPHIC))).values(\"name\")",
                 "canonical": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry(\"GEOMETRYCOLLECTION(MULTIPOINT((-73.952 40.715), (-73.951 40.716)), POLYGON((-73.955 40.713, -73.949 40.713, -73.949 40.717, -73.955 40.717, -73.955 40.713)))\", GEOGRAPHIC))).values(\"name\")",
                 "anonymized": "g.V().hasLabel(string0).has(string1, GeoP.geoContains(geometrycollection0)).values(string2)",
+                "dotnet": "g.V().HasLabel(\"zone\").Has(\"loc\", GeoP.GeoContains(new GeometryCollection(new MultiPoint(new Point(-73.952, 40.715, Model.Geographic), new Point(-73.951, 40.716, Model.Geographic)), new Polygon(new LineString(new Point(-73.955, 40.713, Model.Geographic), new Point(-73.949, 40.713, Model.Geographic), new Point(-73.949, 40.717, Model.Geographic), new Point(-73.955, 40.717, Model.Geographic), new Point(-73.955, 40.713, Model.Geographic)))))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"zone\").Has(\"loc\", gremlingo.GeoP.GeoContains(gremlingo.MustNewGeometryCollection(gremlingo.MustNewMultiPoint(gremlingo.MustNewPoint(-73.952, 40.715, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.951, 40.716, gremlingo.Model.Geographic)), gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-73.955, 40.713, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.949, 40.713, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.949, 40.717, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.955, 40.717, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.955, 40.713, gremlingo.Model.Geographic)))))).Values(\"name\")",
                 "groovy": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry.fromWkt(\"GEOMETRYCOLLECTION(MULTIPOINT((-73.952 40.715), (-73.951 40.716)), POLYGON((-73.955 40.713, -73.949 40.713, -73.949 40.717, -73.955 40.717, -73.955 40.713)))\", Model.GEOGRAPHIC))).values(\"name\")",
-                "java": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry.fromWkt(\"GEOMETRYCOLLECTION(MULTIPOINT((-73.952 40.715), (-73.951 40.716)), POLYGON((-73.955 40.713, -73.949 40.713, -73.949 40.717, -73.955 40.717, -73.955 40.713)))\", Model.GEOGRAPHIC))).values(\"name\")"
+                "java": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(Geometry.fromWkt(\"GEOMETRYCOLLECTION(MULTIPOINT((-73.952 40.715), (-73.951 40.716)), POLYGON((-73.955 40.713, -73.949 40.713, -73.949 40.717, -73.955 40.717, -73.955 40.713)))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoContains(GeometryCollection.of(MultiPoint.of(Point.of(-73.952, 40.715, Model.GEOGRAPHIC), Point.of(-73.951, 40.716, Model.GEOGRAPHIC)), Polygon.of(LineString.of(Point.of(-73.955, 40.713, Model.GEOGRAPHIC), Point.of(-73.949, 40.713, Model.GEOGRAPHIC), Point.of(-73.949, 40.717, Model.GEOGRAPHIC), Point.of(-73.955, 40.717, Model.GEOGRAPHIC), Point.of(-73.955, 40.713, Model.GEOGRAPHIC)))))).values(\"name\")",
+                "python": "g.V().has_label('zone').has('loc', GeoP.geo_contains(GeometryCollection([MultiPoint([Point(-73.952, 40.715, model=Model.GEOGRAPHIC), Point(-73.951, 40.716, model=Model.GEOGRAPHIC)]), Polygon(LineString([Point(-73.955, 40.713, model=Model.GEOGRAPHIC), Point(-73.949, 40.713, model=Model.GEOGRAPHIC), Point(-73.949, 40.717, model=Model.GEOGRAPHIC), Point(-73.955, 40.717, model=Model.GEOGRAPHIC), Point(-73.955, 40.713, model=Model.GEOGRAPHIC)]))]))).values('name')"
             }
         ]
     },
@@ -8418,8 +8486,12 @@
                 "language": "g.V().has(\"loc\", GeoP.geoWithin(Geometry(\"MULTIPOLYGON(((174.74 -36.87, 174.79 -36.87, 174.79 -36.84, 174.74 -36.84, 174.74 -36.87)), ((174.98 -36.82, 175.06 -36.82, 175.06 -36.77, 174.98 -36.77, 174.98 -36.82)))\", GEOGRAPHIC))).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", GeoP.geoWithin(Geometry(\"MULTIPOLYGON(((174.74 -36.87, 174.79 -36.87, 174.79 -36.84, 174.74 -36.84, 174.74 -36.87)), ((174.98 -36.82, 175.06 -36.82, 175.06 -36.77, 174.98 -36.77, 174.98 -36.82)))\", GEOGRAPHIC))).values(\"name\")",
                 "anonymized": "g.V().has(string0, GeoP.geoWithin(multipolygon0)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", GeoP.GeoWithin(new MultiPolygon(new Polygon(new LineString(new Point(174.74, -36.87, Model.Geographic), new Point(174.79, -36.87, Model.Geographic), new Point(174.79, -36.84, Model.Geographic), new Point(174.74, -36.84, Model.Geographic), new Point(174.74, -36.87, Model.Geographic))), new Polygon(new LineString(new Point(174.98, -36.82, Model.Geographic), new Point(175.06, -36.82, Model.Geographic), new Point(175.06, -36.77, Model.Geographic), new Point(174.98, -36.77, Model.Geographic), new Point(174.98, -36.82, Model.Geographic)))))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.GeoP.GeoWithin(gremlingo.MustNewMultiPolygon(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(174.74, -36.87, gremlingo.Model.Geographic), gremlingo.MustNewPoint(174.79, -36.87, gremlingo.Model.Geographic), gremlingo.MustNewPoint(174.79, -36.84, gremlingo.Model.Geographic), gremlingo.MustNewPoint(174.74, -36.84, gremlingo.Model.Geographic), gremlingo.MustNewPoint(174.74, -36.87, gremlingo.Model.Geographic))), gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(174.98, -36.82, gremlingo.Model.Geographic), gremlingo.MustNewPoint(175.06, -36.82, gremlingo.Model.Geographic), gremlingo.MustNewPoint(175.06, -36.77, gremlingo.Model.Geographic), gremlingo.MustNewPoint(174.98, -36.77, gremlingo.Model.Geographic), gremlingo.MustNewPoint(174.98, -36.82, gremlingo.Model.Geographic)))))).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"MULTIPOLYGON(((174.74 -36.87, 174.79 -36.87, 174.79 -36.84, 174.74 -36.84, 174.74 -36.87)), ((174.98 -36.82, 175.06 -36.82, 175.06 -36.77, 174.98 -36.77, 174.98 -36.82)))\", Model.GEOGRAPHIC))).values(\"name\")",
-                "java": "g.V().has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"MULTIPOLYGON(((174.74 -36.87, 174.79 -36.87, 174.79 -36.84, 174.74 -36.84, 174.74 -36.87)), ((174.98 -36.82, 175.06 -36.82, 175.06 -36.77, 174.98 -36.77, 174.98 -36.82)))\", Model.GEOGRAPHIC))).values(\"name\")"
+                "java": "g.V().has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"MULTIPOLYGON(((174.74 -36.87, 174.79 -36.87, 174.79 -36.84, 174.74 -36.84, 174.74 -36.87)), ((174.98 -36.82, 175.06 -36.82, 175.06 -36.77, 174.98 -36.77, 174.98 -36.82)))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", GeoP.geoWithin(MultiPolygon.of(Polygon.of(LineString.of(Point.of(174.74, -36.87, Model.GEOGRAPHIC), Point.of(174.79, -36.87, Model.GEOGRAPHIC), Point.of(174.79, -36.84, Model.GEOGRAPHIC), Point.of(174.74, -36.84, Model.GEOGRAPHIC), Point.of(174.74, -36.87, Model.GEOGRAPHIC))), Polygon.of(LineString.of(Point.of(174.98, -36.82, Model.GEOGRAPHIC), Point.of(175.06, -36.82, Model.GEOGRAPHIC), Point.of(175.06, -36.77, Model.GEOGRAPHIC), Point.of(174.98, -36.77, Model.GEOGRAPHIC), Point.of(174.98, -36.82, Model.GEOGRAPHIC)))))).values(\"name\")",
+                "python": "g.V().has('loc', GeoP.geo_within(MultiPolygon([Polygon(LineString([Point(174.74, -36.87, model=Model.GEOGRAPHIC), Point(174.79, -36.87, model=Model.GEOGRAPHIC), Point(174.79, -36.84, model=Model.GEOGRAPHIC), Point(174.74, -36.84, model=Model.GEOGRAPHIC), Point(174.74, -36.87, model=Model.GEOGRAPHIC)])), Polygon(LineString([Point(174.98, -36.82, model=Model.GEOGRAPHIC), Point(175.06, -36.82, model=Model.GEOGRAPHIC), Point(175.06, -36.77, model=Model.GEOGRAPHIC), Point(174.98, -36.77, model=Model.GEOGRAPHIC), Point(174.98, -36.82, model=Model.GEOGRAPHIC)]))]))).values('name')"
             }
         ]
     },
@@ -8431,8 +8503,12 @@
                 "language": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Geometry(\"POLYGON((-74.02 40.7, -73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7))\", GEOGRAPHIC))).values(\"name\")",
                 "canonical": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Geometry(\"POLYGON((-74.02 40.7, -73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7))\", GEOGRAPHIC))).values(\"name\")",
                 "anonymized": "g.V().hasLabel(string0).has(string1, GeoP.geoWithin(polygon0)).values(string2)",
+                "dotnet": "g.V().HasLabel(\"customer\").Has(\"loc\", GeoP.GeoWithin(new Polygon(new LineString(new Point(-74.02, 40.7, Model.Geographic), new Point(-73.975, 40.7, Model.Geographic), new Point(-73.975, 40.7644, Model.Geographic), new Point(-74.02, 40.7644, Model.Geographic), new Point(-74.02, 40.7, Model.Geographic))))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"customer\").Has(\"loc\", gremlingo.GeoP.GeoWithin(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-74.02, 40.7, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.975, 40.7, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.975, 40.7644, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.02, 40.7644, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.02, 40.7, gremlingo.Model.Geographic))))).Values(\"name\")",
                 "groovy": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.02 40.7, -73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7))\", Model.GEOGRAPHIC))).values(\"name\")",
-                "java": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.02 40.7, -73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7))\", Model.GEOGRAPHIC))).values(\"name\")"
+                "java": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.02 40.7, -73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoWithin(Polygon.of(LineString.of(Point.of(-74.02, 40.7, Model.GEOGRAPHIC), Point.of(-73.975, 40.7, Model.GEOGRAPHIC), Point.of(-73.975, 40.7644, Model.GEOGRAPHIC), Point.of(-74.02, 40.7644, Model.GEOGRAPHIC), Point.of(-74.02, 40.7, Model.GEOGRAPHIC))))).values(\"name\")",
+                "python": "g.V().has_label('customer').has('loc', GeoP.geo_within(Polygon(LineString([Point(-74.02, 40.7, model=Model.GEOGRAPHIC), Point(-73.975, 40.7, model=Model.GEOGRAPHIC), Point(-73.975, 40.7644, model=Model.GEOGRAPHIC), Point(-74.02, 40.7644, model=Model.GEOGRAPHIC), Point(-74.02, 40.7, model=Model.GEOGRAPHIC)])))).values('name')"
             }
         ]
     },
@@ -8444,8 +8520,12 @@
                 "language": "g.V().has(\"loc\", GeoP.geoWithin(Geometry(\"POLYGON((0 0, 8 0, 8 10, 0 10, 0 0))\"))).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", GeoP.geoWithin(Geometry(\"POLYGON((0 0, 8 0, 8 10, 0 10, 0 0))\"))).values(\"name\")",
                 "anonymized": "g.V().has(string0, GeoP.geoWithin(polygon0)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", GeoP.GeoWithin(new Polygon(new LineString(new Point(0.0, 0.0), new Point(8.0, 0.0), new Point(8.0, 10.0), new Point(0.0, 10.0), new Point(0.0, 0.0))))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.GeoP.GeoWithin(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(8.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(8.0, 10.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 10.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian))))).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((0 0, 8 0, 8 10, 0 10, 0 0))\"))).values(\"name\")",
-                "java": "g.V().has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((0 0, 8 0, 8 10, 0 10, 0 0))\"))).values(\"name\")"
+                "java": "g.V().has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((0 0, 8 0, 8 10, 0 10, 0 0))\"))).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", GeoP.geoWithin(Polygon.of(LineString.of(Point.of(0.0, 0.0), Point.of(8.0, 0.0), Point.of(8.0, 10.0), Point.of(0.0, 10.0), Point.of(0.0, 0.0))))).values(\"name\")",
+                "python": "g.V().has('loc', GeoP.geo_within(Polygon(LineString([Point(0.0, 0.0), Point(8.0, 0.0), Point(8.0, 10.0), Point(0.0, 10.0), Point(0.0, 0.0)])))).values('name')"
             }
         ]
     },
@@ -8457,8 +8537,12 @@
                 "language": "g.V().has(\"loc\", GeoP.geoWithin(Geometry(\"POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))\"))).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", GeoP.geoWithin(Geometry(\"POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))\"))).values(\"name\")",
                 "anonymized": "g.V().has(string0, GeoP.geoWithin(polygon0)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", GeoP.GeoWithin(new Polygon(new LineString(new Point(-1.0, 51.0), new Point(1.0, 51.0), new Point(1.0, 52.0), new Point(-1.0, 52.0), new Point(-1.0, 51.0))))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.GeoP.GeoWithin(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-1.0, 51.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 51.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 52.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(-1.0, 52.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(-1.0, 51.0, gremlingo.Model.Cartesian))))).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))\"))).values(\"name\")",
-                "java": "g.V().has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))\"))).values(\"name\")"
+                "java": "g.V().has(\"loc\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))\"))).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", GeoP.geoWithin(Polygon.of(LineString.of(Point.of(-1.0, 51.0), Point.of(1.0, 51.0), Point.of(1.0, 52.0), Point.of(-1.0, 52.0), Point.of(-1.0, 51.0))))).values(\"name\")",
+                "python": "g.V().has('loc', GeoP.geo_within(Polygon(LineString([Point(-1.0, 51.0), Point(1.0, 51.0), Point(1.0, 52.0), Point(-1.0, 52.0), Point(-1.0, 51.0)])))).values('name')"
             }
         ]
     },
@@ -8470,8 +8554,12 @@
                 "language": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Geometry(\"POLYGON((-74 40.7, -73.95 40.7, -73.95 40.76, -74 40.76, -74 40.7))\", GEOGRAPHIC))).inV().values(\"name\")",
                 "canonical": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Geometry(\"POLYGON((-74 40.7, -73.95 40.7, -73.95 40.76, -74 40.76, -74 40.7))\", GEOGRAPHIC))).inV().values(\"name\")",
                 "anonymized": "g.E().hasLabel(string0).has(string1, GeoP.geoWithin(polygon0)).inV().values(string2)",
+                "dotnet": "g.E().HasLabel(\"delivered\").Has(\"path\", GeoP.GeoWithin(new Polygon(new LineString(new Point(-74.0, 40.7, Model.Geographic), new Point(-73.95, 40.7, Model.Geographic), new Point(-73.95, 40.76, Model.Geographic), new Point(-74.0, 40.76, Model.Geographic), new Point(-74.0, 40.7, Model.Geographic))))).InV().Values<object>(\"name\")",
+                "go": "g.E().HasLabel(\"delivered\").Has(\"path\", gremlingo.GeoP.GeoWithin(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-74.0, 40.7, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.95, 40.7, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.95, 40.76, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.0, 40.76, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.0, 40.7, gremlingo.Model.Geographic))))).InV().Values(\"name\")",
                 "groovy": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74 40.7, -73.95 40.7, -73.95 40.76, -74 40.76, -74 40.7))\", Model.GEOGRAPHIC))).inV().values(\"name\")",
-                "java": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74 40.7, -73.95 40.7, -73.95 40.76, -74 40.76, -74 40.7))\", Model.GEOGRAPHIC))).inV().values(\"name\")"
+                "java": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74 40.7, -73.95 40.7, -73.95 40.76, -74 40.76, -74 40.7))\", Model.GEOGRAPHIC))).inV().values(\"name\")",
+                "javascript": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Polygon.of(LineString.of(Point.of(-74.0, 40.7, Model.GEOGRAPHIC), Point.of(-73.95, 40.7, Model.GEOGRAPHIC), Point.of(-73.95, 40.76, Model.GEOGRAPHIC), Point.of(-74.0, 40.76, Model.GEOGRAPHIC), Point.of(-74.0, 40.7, Model.GEOGRAPHIC))))).inV().values(\"name\")",
+                "python": "g.E().has_label('delivered').has('path', GeoP.geo_within(Polygon(LineString([Point(-74.0, 40.7, model=Model.GEOGRAPHIC), Point(-73.95, 40.7, model=Model.GEOGRAPHIC), Point(-73.95, 40.76, model=Model.GEOGRAPHIC), Point(-74.0, 40.76, model=Model.GEOGRAPHIC), Point(-74.0, 40.7, model=Model.GEOGRAPHIC)])))).in_v().values('name')"
             }
         ]
     },
@@ -8483,8 +8571,250 @@
                 "language": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Geometry(\"POLYGON((-74.1 40.7, -74.05 40.7, -74.05 40.76, -74.1 40.76, -74.1 40.7))\", GEOGRAPHIC))).inV().values(\"name\")",
                 "canonical": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Geometry(\"POLYGON((-74.1 40.7, -74.05 40.7, -74.05 40.76, -74.1 40.76, -74.1 40.7))\", GEOGRAPHIC))).inV().values(\"name\")",
                 "anonymized": "g.E().hasLabel(string0).has(string1, GeoP.geoWithin(polygon0)).inV().values(string2)",
+                "dotnet": "g.E().HasLabel(\"delivered\").Has(\"path\", GeoP.GeoWithin(new Polygon(new LineString(new Point(-74.1, 40.7, Model.Geographic), new Point(-74.05, 40.7, Model.Geographic), new Point(-74.05, 40.76, Model.Geographic), new Point(-74.1, 40.76, Model.Geographic), new Point(-74.1, 40.7, Model.Geographic))))).InV().Values<object>(\"name\")",
+                "go": "g.E().HasLabel(\"delivered\").Has(\"path\", gremlingo.GeoP.GeoWithin(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-74.1, 40.7, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.05, 40.7, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.05, 40.76, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.1, 40.76, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.1, 40.7, gremlingo.Model.Geographic))))).InV().Values(\"name\")",
                 "groovy": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.1 40.7, -74.05 40.7, -74.05 40.76, -74.1 40.76, -74.1 40.7))\", Model.GEOGRAPHIC))).inV().values(\"name\")",
-                "java": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.1 40.7, -74.05 40.7, -74.05 40.76, -74.1 40.76, -74.1 40.7))\", Model.GEOGRAPHIC))).inV().values(\"name\")"
+                "java": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Geometry.fromWkt(\"POLYGON((-74.1 40.7, -74.05 40.7, -74.05 40.76, -74.1 40.76, -74.1 40.7))\", Model.GEOGRAPHIC))).inV().values(\"name\")",
+                "javascript": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoWithin(Polygon.of(LineString.of(Point.of(-74.1, 40.7, Model.GEOGRAPHIC), Point.of(-74.05, 40.7, Model.GEOGRAPHIC), Point.of(-74.05, 40.76, Model.GEOGRAPHIC), Point.of(-74.1, 40.76, Model.GEOGRAPHIC), Point.of(-74.1, 40.7, Model.GEOGRAPHIC))))).inV().values(\"name\")",
+                "python": "g.E().has_label('delivered').has('path', GeoP.geo_within(Polygon(LineString([Point(-74.1, 40.7, model=Model.GEOGRAPHIC), Point(-74.05, 40.7, model=Model.GEOGRAPHIC), Point(-74.05, 40.76, model=Model.GEOGRAPHIC), Point(-74.1, 40.76, model=Model.GEOGRAPHIC), Point(-74.1, 40.7, model=Model.GEOGRAPHIC)])))).in_v().values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasLabelXzoneX_hasXloc_geoIntersectsXdeePointXX_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoIntersects(Geometry(\"POINT(-73.93 40.77)\", GEOGRAPHIC))).values(\"name\")",
+                "language": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoIntersects(Geometry(\"POINT(-73.93 40.77)\", GEOGRAPHIC))).values(\"name\")",
+                "canonical": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoIntersects(Geometry(\"POINT(-73.93 40.77)\", GEOGRAPHIC))).values(\"name\")",
+                "anonymized": "g.V().hasLabel(string0).has(string1, GeoP.geoIntersects(point0)).values(string2)",
+                "dotnet": "g.V().HasLabel(\"zone\").Has(\"loc\", GeoP.GeoIntersects(new Point(-73.93, 40.77, Model.Geographic))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"zone\").Has(\"loc\", gremlingo.GeoP.GeoIntersects(gremlingo.MustNewPoint(-73.93, 40.77, gremlingo.Model.Geographic))).Values(\"name\")",
+                "groovy": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoIntersects(Geometry.fromWkt(\"POINT(-73.93 40.77)\", Model.GEOGRAPHIC))).values(\"name\")",
+                "java": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoIntersects(Geometry.fromWkt(\"POINT(-73.93 40.77)\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoIntersects(Point.of(-73.93, 40.77, Model.GEOGRAPHIC))).values(\"name\")",
+                "python": "g.V().has_label('zone').has('loc', GeoP.geo_intersects(Point(-73.93, 40.77, model=Model.GEOGRAPHIC))).values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXloc_geoIntersectsXeastRiverBendBoxXX_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"loc\", GeoP.geoIntersects(Geometry(\"POLYGON((-73.96 40.74, -73.94 40.74, -73.94 40.78, -73.96 40.78, -73.96 40.74))\", GEOGRAPHIC))).values(\"name\")",
+                "language": "g.V().has(\"loc\", GeoP.geoIntersects(Geometry(\"POLYGON((-73.96 40.74, -73.94 40.74, -73.94 40.78, -73.96 40.78, -73.96 40.74))\", GEOGRAPHIC))).values(\"name\")",
+                "canonical": "g.V().has(\"loc\", GeoP.geoIntersects(Geometry(\"POLYGON((-73.96 40.74, -73.94 40.74, -73.94 40.78, -73.96 40.78, -73.96 40.74))\", GEOGRAPHIC))).values(\"name\")",
+                "anonymized": "g.V().has(string0, GeoP.geoIntersects(polygon0)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", GeoP.GeoIntersects(new Polygon(new LineString(new Point(-73.96, 40.74, Model.Geographic), new Point(-73.94, 40.74, Model.Geographic), new Point(-73.94, 40.78, Model.Geographic), new Point(-73.96, 40.78, Model.Geographic), new Point(-73.96, 40.74, Model.Geographic))))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.GeoP.GeoIntersects(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-73.96, 40.74, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.94, 40.74, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.94, 40.78, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.96, 40.78, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.96, 40.74, gremlingo.Model.Geographic))))).Values(\"name\")",
+                "groovy": "g.V().has(\"loc\", GeoP.geoIntersects(Geometry.fromWkt(\"POLYGON((-73.96 40.74, -73.94 40.74, -73.94 40.78, -73.96 40.78, -73.96 40.74))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "java": "g.V().has(\"loc\", GeoP.geoIntersects(Geometry.fromWkt(\"POLYGON((-73.96 40.74, -73.94 40.74, -73.94 40.78, -73.96 40.78, -73.96 40.74))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", GeoP.geoIntersects(Polygon.of(LineString.of(Point.of(-73.96, 40.74, Model.GEOGRAPHIC), Point.of(-73.94, 40.74, Model.GEOGRAPHIC), Point.of(-73.94, 40.78, Model.GEOGRAPHIC), Point.of(-73.96, 40.78, Model.GEOGRAPHIC), Point.of(-73.96, 40.74, Model.GEOGRAPHIC))))).values(\"name\")",
+                "python": "g.V().has('loc', GeoP.geo_intersects(Polygon(LineString([Point(-73.96, 40.74, model=Model.GEOGRAPHIC), Point(-73.94, 40.74, model=Model.GEOGRAPHIC), Point(-73.94, 40.78, model=Model.GEOGRAPHIC), Point(-73.96, 40.78, model=Model.GEOGRAPHIC), Point(-73.96, 40.74, model=Model.GEOGRAPHIC)])))).values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXloc_geoIntersectsXdockBoxXX_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"loc\", GeoP.geoIntersects(Geometry(\"POLYGON((-4 0, 0 0, 0 10, -4 10, -4 0))\"))).values(\"name\")",
+                "language": "g.V().has(\"loc\", GeoP.geoIntersects(Geometry(\"POLYGON((-4 0, 0 0, 0 10, -4 10, -4 0))\"))).values(\"name\")",
+                "canonical": "g.V().has(\"loc\", GeoP.geoIntersects(Geometry(\"POLYGON((-4 0, 0 0, 0 10, -4 10, -4 0))\"))).values(\"name\")",
+                "anonymized": "g.V().has(string0, GeoP.geoIntersects(polygon0)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", GeoP.GeoIntersects(new Polygon(new LineString(new Point(-4.0, 0.0), new Point(0.0, 0.0), new Point(0.0, 10.0), new Point(-4.0, 10.0), new Point(-4.0, 0.0))))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.GeoP.GeoIntersects(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-4.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 10.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(-4.0, 10.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(-4.0, 0.0, gremlingo.Model.Cartesian))))).Values(\"name\")",
+                "groovy": "g.V().has(\"loc\", GeoP.geoIntersects(Geometry.fromWkt(\"POLYGON((-4 0, 0 0, 0 10, -4 10, -4 0))\"))).values(\"name\")",
+                "java": "g.V().has(\"loc\", GeoP.geoIntersects(Geometry.fromWkt(\"POLYGON((-4 0, 0 0, 0 10, -4 10, -4 0))\"))).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", GeoP.geoIntersects(Polygon.of(LineString.of(Point.of(-4.0, 0.0), Point.of(0.0, 0.0), Point.of(0.0, 10.0), Point.of(-4.0, 10.0), Point.of(-4.0, 0.0))))).values(\"name\")",
+                "python": "g.V().has('loc', GeoP.geo_intersects(Polygon(LineString([Point(-4.0, 0.0), Point(0.0, 0.0), Point(0.0, 10.0), Point(-4.0, 10.0), Point(-4.0, 0.0)])))).values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXhub_name_HellsKitchenX_outXservesX_valuesXlocX_asXzX_V_hasLabelXcustomerX_whereXvaluesXlocX_isXgeoIntersectsXselectXzXXXX_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoIntersects(__.select(\"z\")))).values(\"name\")",
+                "language": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoIntersects(__.select(\"z\")))).values(\"name\")",
+                "canonical": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoIntersects(__.select(\"z\")))).values(\"name\")",
+                "anonymized": "g.V().has(string0, string1, string2).out(string3).values(string4).as(string5).V().hasLabel(string6).where(__.values(string4).is(GeoP.geoIntersects(__.select(string5)))).values(string1)",
+                "dotnet": "g.V().Has(\"hub\", \"name\", \"Hell's Kitchen\").Out(\"serves\").Values<object>(\"loc\").As(\"z\").V().HasLabel(\"customer\").Where(__.Values<object>(\"loc\").Is(GeoP.GeoIntersects(__.Select<object>(\"z\")))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"hub\", \"name\", \"Hell's Kitchen\").Out(\"serves\").Values(\"loc\").As(\"z\").V().HasLabel(\"customer\").Where(gremlingo.T__.Values(\"loc\").Is(gremlingo.GeoP.GeoIntersects(gremlingo.T__.Select(\"z\")))).Values(\"name\")",
+                "groovy": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoIntersects(__.select(\"z\")))).values(\"name\")",
+                "java": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoIntersects(__.select(\"z\")))).values(\"name\")",
+                "javascript": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").out(\"serves\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoIntersects(__.select(\"z\")))).values(\"name\")",
+                "python": "g.V().has('hub', 'name', \"Hell's Kitchen\").out('serves').values('loc').as_('z').V().has_label('customer').where(__.values('loc').is_(GeoP.geo_intersects(__.select('z')))).values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasLabelXhubX_hasXloc_geoDisjointXdeliveryBoxXX_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().hasLabel(\"hub\").has(\"loc\", GeoP.geoDisjoint(Geometry(\"POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))\", GEOGRAPHIC))).values(\"name\")",
+                "language": "g.V().hasLabel(\"hub\").has(\"loc\", GeoP.geoDisjoint(Geometry(\"POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))\", GEOGRAPHIC))).values(\"name\")",
+                "canonical": "g.V().hasLabel(\"hub\").has(\"loc\", GeoP.geoDisjoint(Geometry(\"POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))\", GEOGRAPHIC))).values(\"name\")",
+                "anonymized": "g.V().hasLabel(string0).has(string1, GeoP.geoDisjoint(polygon0)).values(string2)",
+                "dotnet": "g.V().HasLabel(\"hub\").Has(\"loc\", GeoP.GeoDisjoint(new Polygon(new LineString(new Point(-74.03, 40.69, Model.Geographic), new Point(-73.95, 40.69, Model.Geographic), new Point(-73.95, 40.766, Model.Geographic), new Point(-74.03, 40.766, Model.Geographic), new Point(-74.03, 40.69, Model.Geographic))))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"hub\").Has(\"loc\", gremlingo.GeoP.GeoDisjoint(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-74.03, 40.69, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.95, 40.69, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.95, 40.766, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.03, 40.766, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.03, 40.69, gremlingo.Model.Geographic))))).Values(\"name\")",
+                "groovy": "g.V().hasLabel(\"hub\").has(\"loc\", GeoP.geoDisjoint(Geometry.fromWkt(\"POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "java": "g.V().hasLabel(\"hub\").has(\"loc\", GeoP.geoDisjoint(Geometry.fromWkt(\"POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"hub\").has(\"loc\", GeoP.geoDisjoint(Polygon.of(LineString.of(Point.of(-74.03, 40.69, Model.GEOGRAPHIC), Point.of(-73.95, 40.69, Model.GEOGRAPHIC), Point.of(-73.95, 40.766, Model.GEOGRAPHIC), Point.of(-74.03, 40.766, Model.GEOGRAPHIC), Point.of(-74.03, 40.69, Model.GEOGRAPHIC))))).values(\"name\")",
+                "python": "g.V().has_label('hub').has('loc', GeoP.geo_disjoint(Polygon(LineString([Point(-74.03, 40.69, model=Model.GEOGRAPHIC), Point(-73.95, 40.69, model=Model.GEOGRAPHIC), Point(-73.95, 40.766, model=Model.GEOGRAPHIC), Point(-74.03, 40.766, model=Model.GEOGRAPHIC), Point(-74.03, 40.69, model=Model.GEOGRAPHIC)])))).values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXloc_geoDisjointXcartesianGreenwichBoxXX_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"loc\", GeoP.geoDisjoint(Geometry(\"POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))\"))).values(\"name\")",
+                "language": "g.V().has(\"loc\", GeoP.geoDisjoint(Geometry(\"POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))\"))).values(\"name\")",
+                "canonical": "g.V().has(\"loc\", GeoP.geoDisjoint(Geometry(\"POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))\"))).values(\"name\")",
+                "anonymized": "g.V().has(string0, GeoP.geoDisjoint(polygon0)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", GeoP.GeoDisjoint(new Polygon(new LineString(new Point(-1.0, 51.0), new Point(1.0, 51.0), new Point(1.0, 52.0), new Point(-1.0, 52.0), new Point(-1.0, 51.0))))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.GeoP.GeoDisjoint(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-1.0, 51.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 51.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 52.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(-1.0, 52.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(-1.0, 51.0, gremlingo.Model.Cartesian))))).Values(\"name\")",
+                "groovy": "g.V().has(\"loc\", GeoP.geoDisjoint(Geometry.fromWkt(\"POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))\"))).values(\"name\")",
+                "java": "g.V().has(\"loc\", GeoP.geoDisjoint(Geometry.fromWkt(\"POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))\"))).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", GeoP.geoDisjoint(Polygon.of(LineString.of(Point.of(-1.0, 51.0), Point.of(1.0, 51.0), Point.of(1.0, 52.0), Point.of(-1.0, 52.0), Point.of(-1.0, 51.0))))).values(\"name\")",
+                "python": "g.V().has('loc', GeoP.geo_disjoint(Polygon(LineString([Point(-1.0, 51.0), Point(1.0, 51.0), Point(1.0, 52.0), Point(-1.0, 52.0), Point(-1.0, 51.0)])))).values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasLabelXcustomerX_hasXrawX_notXhasXraw_geoDisjointXhanaPointXXX_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().hasLabel(\"customer\").has(\"raw\").not(__.has(\"raw\", GeoP.geoDisjoint(Geometry(\"POINT(0.012 51.481)\", GEOGRAPHIC)))).values(\"name\")",
+                "language": "g.V().hasLabel(\"customer\").has(\"raw\").not(__.has(\"raw\", GeoP.geoDisjoint(Geometry(\"POINT(0.012 51.481)\", GEOGRAPHIC)))).values(\"name\")",
+                "canonical": "g.V().hasLabel(\"customer\").has(\"raw\").not(__.has(\"raw\", GeoP.geoDisjoint(Geometry(\"POINT(0.012 51.481)\", GEOGRAPHIC)))).values(\"name\")",
+                "anonymized": "g.V().hasLabel(string0).has(string1).not(__.has(string1, GeoP.geoDisjoint(point0))).values(string2)",
+                "dotnet": "g.V().HasLabel(\"customer\").Has(\"raw\").Not(__.Has(\"raw\", GeoP.GeoDisjoint(new Point(0.012, 51.481, Model.Geographic)))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"customer\").Has(\"raw\").Not(gremlingo.T__.Has(\"raw\", gremlingo.GeoP.GeoDisjoint(gremlingo.MustNewPoint(0.012, 51.481, gremlingo.Model.Geographic)))).Values(\"name\")",
+                "groovy": "g.V().hasLabel(\"customer\").has(\"raw\").not(__.has(\"raw\", GeoP.geoDisjoint(Geometry.fromWkt(\"POINT(0.012 51.481)\", Model.GEOGRAPHIC)))).values(\"name\")",
+                "java": "g.V().hasLabel(\"customer\").has(\"raw\").not(__.has(\"raw\", GeoP.geoDisjoint(Geometry.fromWkt(\"POINT(0.012 51.481)\", Model.GEOGRAPHIC)))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"customer\").has(\"raw\").not(__.has(\"raw\", GeoP.geoDisjoint(Point.of(0.012, 51.481, Model.GEOGRAPHIC)))).values(\"name\")",
+                "python": "g.V().has_label('customer').has('raw').not_(__.has('raw', GeoP.geo_disjoint(Point(0.012, 51.481, model=Model.GEOGRAPHIC)))).values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXemptyAndTwoPointsX_isXgeoDisjointXpolygonXX",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT EMPTY\"), Geometry(\"POINT(2 2)\"), Geometry(\"POINT(9 9)\")).is(GeoP.geoDisjoint(Geometry(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\")))",
+                "language": "g.inject(Geometry(\"POINT EMPTY\"), Geometry(\"POINT(2 2)\"), Geometry(\"POINT(9 9)\")).is(GeoP.geoDisjoint(Geometry(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\")))",
+                "canonical": "g.inject(Geometry(\"POINT EMPTY\"), Geometry(\"POINT(2 2)\"), Geometry(\"POINT(9 9)\")).is(GeoP.geoDisjoint(Geometry(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\")))",
+                "anonymized": "g.inject(point0, point1, point2).is(GeoP.geoDisjoint(polygon0))",
+                "dotnet": "g.Inject<object>(Point.Empty(), new Point(2.0, 2.0), new Point(9.0, 9.0)).Is(GeoP.GeoDisjoint(new Polygon(new LineString(new Point(0.0, 0.0), new Point(4.0, 0.0), new Point(4.0, 4.0), new Point(0.0, 4.0), new Point(0.0, 0.0)))))",
+                "go": "g.Inject(gremlingo.MustNewEmptyPoint(gremlingo.Model.Cartesian), gremlingo.MustNewPoint(2.0, 2.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(9.0, 9.0, gremlingo.Model.Cartesian)).Is(gremlingo.GeoP.GeoDisjoint(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(4.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(4.0, 4.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 4.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian)))))",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POINT(2 2)\"), Geometry.fromWkt(\"POINT(9 9)\")).is(GeoP.geoDisjoint(Geometry.fromWkt(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\")))",
+                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POINT(2 2)\"), Geometry.fromWkt(\"POINT(9 9)\")).is(GeoP.geoDisjoint(Geometry.fromWkt(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\")))",
+                "javascript": "g.inject(Point.empty(), Point.of(2.0, 2.0), Point.of(9.0, 9.0)).is(GeoP.geoDisjoint(Polygon.of(LineString.of(Point.of(0.0, 0.0), Point.of(4.0, 0.0), Point.of(4.0, 4.0), Point.of(0.0, 4.0), Point.of(0.0, 0.0)))))",
+                "python": "g.inject(Point.empty(), Point(2.0, 2.0), Point(9.0, 9.0)).is_(GeoP.geo_disjoint(Polygon(LineString([Point(0.0, 0.0), Point(4.0, 0.0), Point(4.0, 4.0), Point(0.0, 4.0), Point(0.0, 0.0)]))))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasLabelXcustomerX_asXcX_outXorderedFromX_outXservesX_valuesXlocX_asXzX_selectXcX_valuesXlocX_isXgeoDisjointXselectXzXXX",
+        "traversals": [
+            {
+                "original": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoDisjoint(__.select(\"z\")))",
+                "language": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoDisjoint(__.select(\"z\")))",
+                "canonical": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoDisjoint(__.select(\"z\")))",
+                "anonymized": "g.V().hasLabel(string0).as(string1).out(string2).out(string3).values(string4).as(string5).select(string1).values(string4).is(GeoP.geoDisjoint(__.select(string5)))",
+                "dotnet": "g.V().HasLabel(\"customer\").As(\"c\").Out(\"orderedFrom\").Out(\"serves\").Values<object>(\"loc\").As(\"z\").Select<object>(\"c\").Values<object>(\"loc\").Is(GeoP.GeoDisjoint(__.Select<object>(\"z\")))",
+                "go": "g.V().HasLabel(\"customer\").As(\"c\").Out(\"orderedFrom\").Out(\"serves\").Values(\"loc\").As(\"z\").Select(\"c\").Values(\"loc\").Is(gremlingo.GeoP.GeoDisjoint(gremlingo.T__.Select(\"z\")))",
+                "groovy": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoDisjoint(__.select(\"z\")))",
+                "java": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoDisjoint(__.select(\"z\")))",
+                "javascript": "g.V().hasLabel(\"customer\").as(\"c\").out(\"orderedFrom\").out(\"serves\").values(\"loc\").as(\"z\").select(\"c\").values(\"loc\").is(GeoP.geoDisjoint(__.select(\"z\")))",
+                "python": "g.V().has_label('customer').as_('c').out('orderedFrom').out('serves').values('loc').as_('z').select('c').values('loc').is_(GeoP.geo_disjoint(__.select('z')))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasLabelXzoneX_hasXloc_geoEqualsXrotatedCongestionZoneXX_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoEquals(Geometry(\"POLYGON((-73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7, -73.9975 40.7, -73.975 40.7))\", GEOGRAPHIC))).values(\"name\")",
+                "language": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoEquals(Geometry(\"POLYGON((-73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7, -73.9975 40.7, -73.975 40.7))\", GEOGRAPHIC))).values(\"name\")",
+                "canonical": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoEquals(Geometry(\"POLYGON((-73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7, -73.9975 40.7, -73.975 40.7))\", GEOGRAPHIC))).values(\"name\")",
+                "anonymized": "g.V().hasLabel(string0).has(string1, GeoP.geoEquals(polygon0)).values(string2)",
+                "dotnet": "g.V().HasLabel(\"zone\").Has(\"loc\", GeoP.GeoEquals(new Polygon(new LineString(new Point(-73.975, 40.7, Model.Geographic), new Point(-73.975, 40.7644, Model.Geographic), new Point(-74.02, 40.7644, Model.Geographic), new Point(-74.02, 40.7, Model.Geographic), new Point(-73.9975, 40.7, Model.Geographic), new Point(-73.975, 40.7, Model.Geographic))))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"zone\").Has(\"loc\", gremlingo.GeoP.GeoEquals(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-73.975, 40.7, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.975, 40.7644, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.02, 40.7644, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-74.02, 40.7, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.9975, 40.7, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.975, 40.7, gremlingo.Model.Geographic))))).Values(\"name\")",
+                "groovy": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoEquals(Geometry.fromWkt(\"POLYGON((-73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7, -73.9975 40.7, -73.975 40.7))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "java": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoEquals(Geometry.fromWkt(\"POLYGON((-73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7, -73.9975 40.7, -73.975 40.7))\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"zone\").has(\"loc\", GeoP.geoEquals(Polygon.of(LineString.of(Point.of(-73.975, 40.7, Model.GEOGRAPHIC), Point.of(-73.975, 40.7644, Model.GEOGRAPHIC), Point.of(-74.02, 40.7644, Model.GEOGRAPHIC), Point.of(-74.02, 40.7, Model.GEOGRAPHIC), Point.of(-73.9975, 40.7, Model.GEOGRAPHIC), Point.of(-73.975, 40.7, Model.GEOGRAPHIC))))).values(\"name\")",
+                "python": "g.V().has_label('zone').has('loc', GeoP.geo_equals(Polygon(LineString([Point(-73.975, 40.7, model=Model.GEOGRAPHIC), Point(-73.975, 40.7644, model=Model.GEOGRAPHIC), Point(-74.02, 40.7644, model=Model.GEOGRAPHIC), Point(-74.02, 40.7, model=Model.GEOGRAPHIC), Point(-73.9975, 40.7, model=Model.GEOGRAPHIC), Point(-73.975, 40.7, model=Model.GEOGRAPHIC)])))).values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasLabelXcustomerX_hasXloc_geoEqualsXanaPointXX_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoEquals(Geometry(\"POINT(-73.9857 40.7484)\", GEOGRAPHIC))).values(\"name\")",
+                "language": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoEquals(Geometry(\"POINT(-73.9857 40.7484)\", GEOGRAPHIC))).values(\"name\")",
+                "canonical": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoEquals(Geometry(\"POINT(-73.9857 40.7484)\", GEOGRAPHIC))).values(\"name\")",
+                "anonymized": "g.V().hasLabel(string0).has(string1, GeoP.geoEquals(point0)).values(string2)",
+                "dotnet": "g.V().HasLabel(\"customer\").Has(\"loc\", GeoP.GeoEquals(new Point(-73.9857, 40.7484, Model.Geographic))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"customer\").Has(\"loc\", gremlingo.GeoP.GeoEquals(gremlingo.MustNewPoint(-73.9857, 40.7484, gremlingo.Model.Geographic))).Values(\"name\")",
+                "groovy": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoEquals(Geometry.fromWkt(\"POINT(-73.9857 40.7484)\", Model.GEOGRAPHIC))).values(\"name\")",
+                "java": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoEquals(Geometry.fromWkt(\"POINT(-73.9857 40.7484)\", Model.GEOGRAPHIC))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"customer\").has(\"loc\", GeoP.geoEquals(Point.of(-73.9857, 40.7484, Model.GEOGRAPHIC))).values(\"name\")",
+                "python": "g.V().has_label('customer').has('loc', GeoP.geo_equals(Point(-73.9857, 40.7484, model=Model.GEOGRAPHIC))).values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_E_hasLabelXdeliveredX_hasXpath_geoEqualsXreversedWilliamsburgPathXX_inV_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoEquals(Geometry(\"LINESTRING(-73.9857 40.7484, -73.9571 40.7146)\", GEOGRAPHIC))).inV().values(\"name\")",
+                "language": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoEquals(Geometry(\"LINESTRING(-73.9857 40.7484, -73.9571 40.7146)\", GEOGRAPHIC))).inV().values(\"name\")",
+                "canonical": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoEquals(Geometry(\"LINESTRING(-73.9857 40.7484, -73.9571 40.7146)\", GEOGRAPHIC))).inV().values(\"name\")",
+                "anonymized": "g.E().hasLabel(string0).has(string1, GeoP.geoEquals(linestring0)).inV().values(string2)",
+                "dotnet": "g.E().HasLabel(\"delivered\").Has(\"path\", GeoP.GeoEquals(new LineString(new Point(-73.9857, 40.7484, Model.Geographic), new Point(-73.9571, 40.7146, Model.Geographic)))).InV().Values<object>(\"name\")",
+                "go": "g.E().HasLabel(\"delivered\").Has(\"path\", gremlingo.GeoP.GeoEquals(gremlingo.MustNewLineString(gremlingo.MustNewPoint(-73.9857, 40.7484, gremlingo.Model.Geographic), gremlingo.MustNewPoint(-73.9571, 40.7146, gremlingo.Model.Geographic)))).InV().Values(\"name\")",
+                "groovy": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoEquals(Geometry.fromWkt(\"LINESTRING(-73.9857 40.7484, -73.9571 40.7146)\", Model.GEOGRAPHIC))).inV().values(\"name\")",
+                "java": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoEquals(Geometry.fromWkt(\"LINESTRING(-73.9857 40.7484, -73.9571 40.7146)\", Model.GEOGRAPHIC))).inV().values(\"name\")",
+                "javascript": "g.E().hasLabel(\"delivered\").has(\"path\", GeoP.geoEquals(LineString.of(Point.of(-73.9857, 40.7484, Model.GEOGRAPHIC), Point.of(-73.9571, 40.7146, Model.GEOGRAPHIC)))).inV().values(\"name\")",
+                "python": "g.E().has_label('delivered').has('path', GeoP.geo_equals(LineString([Point(-73.9857, 40.7484, model=Model.GEOGRAPHIC), Point(-73.9571, 40.7146, model=Model.GEOGRAPHIC)]))).in_v().values('name')"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXtwoEmptyGeometriesAndPointX_isXgeoEqualsXemptyPolygonXX",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT EMPTY\"), Geometry(\"POLYGON EMPTY\"), Geometry(\"POINT(2 2)\")).is(GeoP.geoEquals(Geometry(\"POLYGON EMPTY\")))",
+                "language": "g.inject(Geometry(\"POINT EMPTY\"), Geometry(\"POLYGON EMPTY\"), Geometry(\"POINT(2 2)\")).is(GeoP.geoEquals(Geometry(\"POLYGON EMPTY\")))",
+                "canonical": "g.inject(Geometry(\"POINT EMPTY\"), Geometry(\"POLYGON EMPTY\"), Geometry(\"POINT(2 2)\")).is(GeoP.geoEquals(Geometry(\"POLYGON EMPTY\")))",
+                "anonymized": "g.inject(point0, polygon0, point1).is(GeoP.geoEquals(polygon0))",
+                "dotnet": "g.Inject<object>(Point.Empty(), Polygon.Empty(), new Point(2.0, 2.0)).Is(GeoP.GeoEquals(Polygon.Empty()))",
+                "go": "g.Inject(gremlingo.MustNewEmptyPoint(gremlingo.Model.Cartesian), gremlingo.MustNewEmptyPolygon(gremlingo.Model.Cartesian), gremlingo.MustNewPoint(2.0, 2.0, gremlingo.Model.Cartesian)).Is(gremlingo.GeoP.GeoEquals(gremlingo.MustNewEmptyPolygon(gremlingo.Model.Cartesian)))",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POLYGON EMPTY\"), Geometry.fromWkt(\"POINT(2 2)\")).is(GeoP.geoEquals(Geometry.fromWkt(\"POLYGON EMPTY\")))",
+                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POLYGON EMPTY\"), Geometry.fromWkt(\"POINT(2 2)\")).is(GeoP.geoEquals(Geometry.fromWkt(\"POLYGON EMPTY\")))",
+                "javascript": "g.inject(Point.empty(), Polygon.empty(), Point.of(2.0, 2.0)).is(GeoP.geoEquals(Polygon.empty()))",
+                "python": "g.inject(Point.empty(), Polygon.empty(), Point(2.0, 2.0)).is_(GeoP.geo_equals(Polygon.empty()))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasLabelXcustomerX_valuesXlocX_asXzX_V_hasLabelXcustomerX_whereXvaluesXlocX_isXgeoEqualsXselectXzXXXX_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().hasLabel(\"customer\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoEquals(__.select(\"z\")))).values(\"name\")",
+                "language": "g.V().hasLabel(\"customer\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoEquals(__.select(\"z\")))).values(\"name\")",
+                "canonical": "g.V().hasLabel(\"customer\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoEquals(__.select(\"z\")))).values(\"name\")",
+                "anonymized": "g.V().hasLabel(string0).values(string1).as(string2).V().hasLabel(string0).where(__.values(string1).is(GeoP.geoEquals(__.select(string2)))).values(string3)",
+                "dotnet": "g.V().HasLabel(\"customer\").Values<object>(\"loc\").As(\"z\").V().HasLabel(\"customer\").Where(__.Values<object>(\"loc\").Is(GeoP.GeoEquals(__.Select<object>(\"z\")))).Values<object>(\"name\")",
+                "go": "g.V().HasLabel(\"customer\").Values(\"loc\").As(\"z\").V().HasLabel(\"customer\").Where(gremlingo.T__.Values(\"loc\").Is(gremlingo.GeoP.GeoEquals(gremlingo.T__.Select(\"z\")))).Values(\"name\")",
+                "groovy": "g.V().hasLabel(\"customer\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoEquals(__.select(\"z\")))).values(\"name\")",
+                "java": "g.V().hasLabel(\"customer\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoEquals(__.select(\"z\")))).values(\"name\")",
+                "javascript": "g.V().hasLabel(\"customer\").values(\"loc\").as(\"z\").V().hasLabel(\"customer\").where(__.values(\"loc\").is(GeoP.geoEquals(__.select(\"z\")))).values(\"name\")",
+                "python": "g.V().has_label('customer').values('loc').as_('z').V().has_label('customer').where(__.values('loc').is_(GeoP.geo_equals(__.select('z')))).values('name')"
             }
         ]
     },
@@ -13855,8 +14185,12 @@
                 "language": "g.V().hasLabel(\"customer\").values().is(P.typeOf(GType.GEOMETRY))",
                 "canonical": "g.V().hasLabel(\"customer\").values().is(P.typeOf(GType.GEOMETRY))",
                 "anonymized": "g.V().hasLabel(string0).values().is(P.typeOf(GType.GEOMETRY))",
+                "dotnet": "g.V().HasLabel(\"customer\").Values<object>().Is(P.TypeOf(GType.Geometry))",
+                "go": "g.V().HasLabel(\"customer\").Values().Is(gremlingo.P.TypeOf(gremlingo.GType.Geometry))",
                 "groovy": "g.V().hasLabel(\"customer\").values().is(P.typeOf(GType.GEOMETRY))",
-                "java": "g.V().hasLabel(\"customer\").values().is(P.typeOf(GType.GEOMETRY))"
+                "java": "g.V().hasLabel(\"customer\").values().is(P.typeOf(GType.GEOMETRY))",
+                "javascript": "g.V().hasLabel(\"customer\").values().is(P.typeOf(GType.geometry))",
+                "python": "g.V().has_label('customer').values().is_(P.type_of(GType.GEOMETRY))"
             }
         ]
     },
@@ -13868,8 +14202,12 @@
                 "language": "g.V().has(\"loc\", P.typeOf(GType.POINT)).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", P.typeOf(GType.POINT)).values(\"name\")",
                 "anonymized": "g.V().has(string0, P.typeOf(GType.POINT)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", P.TypeOf(GType.Point)).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.P.TypeOf(gremlingo.GType.Point)).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", P.typeOf(GType.POINT)).values(\"name\")",
-                "java": "g.V().has(\"loc\", P.typeOf(GType.POINT)).values(\"name\")"
+                "java": "g.V().has(\"loc\", P.typeOf(GType.POINT)).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", P.typeOf(GType.point)).values(\"name\")",
+                "python": "g.V().has('loc', P.type_of(GType.POINT)).values('name')"
             }
         ]
     },
@@ -13881,8 +14219,12 @@
                 "language": "g.E().values(\"path\").is(P.typeOf(GType.LINESTRING))",
                 "canonical": "g.E().values(\"path\").is(P.typeOf(GType.LINESTRING))",
                 "anonymized": "g.E().values(string0).is(P.typeOf(GType.LINESTRING))",
+                "dotnet": "g.E().Values<object>(\"path\").Is(P.TypeOf(GType.LineString))",
+                "go": "g.E().Values(\"path\").Is(gremlingo.P.TypeOf(gremlingo.GType.LineString))",
                 "groovy": "g.E().values(\"path\").is(P.typeOf(GType.LINESTRING))",
-                "java": "g.E().values(\"path\").is(P.typeOf(GType.LINESTRING))"
+                "java": "g.E().values(\"path\").is(P.typeOf(GType.LINESTRING))",
+                "javascript": "g.E().values(\"path\").is(P.typeOf(GType.lineString))",
+                "python": "g.E().values('path').is_(P.type_of(GType.LINESTRING))"
             }
         ]
     },
@@ -13894,8 +14236,12 @@
                 "language": "g.V().has(\"loc\", P.typeOf(GType.CARTESIAN)).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", P.typeOf(GType.CARTESIAN)).values(\"name\")",
                 "anonymized": "g.V().has(string0, P.typeOf(GType.CARTESIAN)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", P.TypeOf(GType.Cartesian)).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.P.TypeOf(gremlingo.GType.Cartesian)).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", P.typeOf(GType.CARTESIAN)).values(\"name\")",
-                "java": "g.V().has(\"loc\", P.typeOf(GType.CARTESIAN)).values(\"name\")"
+                "java": "g.V().has(\"loc\", P.typeOf(GType.CARTESIAN)).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", P.typeOf(GType.cartesian)).values(\"name\")",
+                "python": "g.V().has('loc', P.type_of(GType.CARTESIAN)).values('name')"
             }
         ]
     },
@@ -13907,8 +14253,12 @@
                 "language": "g.V().has(\"loc\", P.typeOf(GType.GEOGRAPHIC).and(P.typeOf(GType.POINT))).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", P.typeOf(GType.GEOGRAPHIC).and(P.typeOf(GType.POINT))).values(\"name\")",
                 "anonymized": "g.V().has(string0, P.typeOf(GType.GEOGRAPHIC).and(P.typeOf(GType.POINT))).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", P.TypeOf(GType.Geographic).And(P.TypeOf(GType.Point))).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.P.TypeOf(gremlingo.GType.Geographic).And(gremlingo.P.TypeOf(gremlingo.GType.Point))).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", P.typeOf(GType.GEOGRAPHIC).and(P.typeOf(GType.POINT))).values(\"name\")",
-                "java": "g.V().has(\"loc\", P.typeOf(GType.GEOGRAPHIC).and(P.typeOf(GType.POINT))).values(\"name\")"
+                "java": "g.V().has(\"loc\", P.typeOf(GType.GEOGRAPHIC).and(P.typeOf(GType.POINT))).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", P.typeOf(GType.geographic).and(P.typeOf(GType.point))).values(\"name\")",
+                "python": "g.V().has('loc', P.type_of(GType.GEOGRAPHIC).and_(P.type_of(GType.POINT))).values('name')"
             }
         ]
     },
@@ -13920,8 +14270,12 @@
                 "language": "g.inject(Geometry(\"MULTIPOINT((1 1), (2 2))\"), Geometry(\"MULTILINESTRING((0 0, 1 1), (2 2, 3 3))\"), Geometry(\"MULTIPOLYGON(((0 0, 1 0, 1 1, 0 0)))\"), Geometry(\"GEOMETRYCOLLECTION(POINT(1 1))\")).is(P.typeOf(GType.MULTIPOINT))",
                 "canonical": "g.inject(Geometry(\"MULTIPOINT((1 1), (2 2))\"), Geometry(\"MULTILINESTRING((0 0, 1 1), (2 2, 3 3))\"), Geometry(\"MULTIPOLYGON(((0 0, 1 0, 1 1, 0 0)))\"), Geometry(\"GEOMETRYCOLLECTION(POINT(1 1))\")).is(P.typeOf(GType.MULTIPOINT))",
                 "anonymized": "g.inject(multipoint0, multilinestring0, multipolygon0, geometrycollection0).is(P.typeOf(GType.MULTIPOINT))",
+                "dotnet": "g.Inject<object>(new MultiPoint(new Point(1.0, 1.0), new Point(2.0, 2.0)), new MultiLineString(new LineString(new Point(0.0, 0.0), new Point(1.0, 1.0)), new LineString(new Point(2.0, 2.0), new Point(3.0, 3.0))), new MultiPolygon(new Polygon(new LineString(new Point(0.0, 0.0), new Point(1.0, 0.0), new Point(1.0, 1.0), new Point(0.0, 0.0)))), new GeometryCollection(new Point(1.0, 1.0))).Is(P.TypeOf(GType.MultiPoint))",
+                "go": "g.Inject(gremlingo.MustNewMultiPoint(gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(2.0, 2.0, gremlingo.Model.Cartesian)), gremlingo.MustNewMultiLineString(gremlingo.MustNewLineString(gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian)), gremlingo.MustNewLineString(gremlingo.MustNewPoint(2.0, 2.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(3.0, 3.0, gremlingo.Model.Cartesian))), gremlingo.MustNewMultiPolygon(gremlingo.MustNewPolygon(gremlingo.MustNewLineString(gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 0.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian), gremlingo.MustNewPoint(0.0, 0.0, gremlingo.Model.Cartesian)))), gremlingo.MustNewGeometryCollection(gremlingo.MustNewPoint(1.0, 1.0, gremlingo.Model.Cartesian))).Is(gremlingo.P.TypeOf(gremlingo.GType.MultiPoint))",
                 "groovy": "g.inject(Geometry.fromWkt(\"MULTIPOINT((1 1), (2 2))\"), Geometry.fromWkt(\"MULTILINESTRING((0 0, 1 1), (2 2, 3 3))\"), Geometry.fromWkt(\"MULTIPOLYGON(((0 0, 1 0, 1 1, 0 0)))\"), Geometry.fromWkt(\"GEOMETRYCOLLECTION(POINT(1 1))\")).is(P.typeOf(GType.MULTIPOINT))",
-                "java": "g.inject(Geometry.fromWkt(\"MULTIPOINT((1 1), (2 2))\"), Geometry.fromWkt(\"MULTILINESTRING((0 0, 1 1), (2 2, 3 3))\"), Geometry.fromWkt(\"MULTIPOLYGON(((0 0, 1 0, 1 1, 0 0)))\"), Geometry.fromWkt(\"GEOMETRYCOLLECTION(POINT(1 1))\")).is(P.typeOf(GType.MULTIPOINT))"
+                "java": "g.inject(Geometry.fromWkt(\"MULTIPOINT((1 1), (2 2))\"), Geometry.fromWkt(\"MULTILINESTRING((0 0, 1 1), (2 2, 3 3))\"), Geometry.fromWkt(\"MULTIPOLYGON(((0 0, 1 0, 1 1, 0 0)))\"), Geometry.fromWkt(\"GEOMETRYCOLLECTION(POINT(1 1))\")).is(P.typeOf(GType.MULTIPOINT))",
+                "javascript": "g.inject(MultiPoint.of(Point.of(1.0, 1.0), Point.of(2.0, 2.0)), MultiLineString.of(LineString.of(Point.of(0.0, 0.0), Point.of(1.0, 1.0)), LineString.of(Point.of(2.0, 2.0), Point.of(3.0, 3.0))), MultiPolygon.of(Polygon.of(LineString.of(Point.of(0.0, 0.0), Point.of(1.0, 0.0), Point.of(1.0, 1.0), Point.of(0.0, 0.0)))), GeometryCollection.of(Point.of(1.0, 1.0))).is(P.typeOf(GType.multiPoint))",
+                "python": "g.inject(MultiPoint([Point(1.0, 1.0), Point(2.0, 2.0)]), MultiLineString([LineString([Point(0.0, 0.0), Point(1.0, 1.0)]), LineString([Point(2.0, 2.0), Point(3.0, 3.0)])]), MultiPolygon([Polygon(LineString([Point(0.0, 0.0), Point(1.0, 0.0), Point(1.0, 1.0), Point(0.0, 0.0)]))]), GeometryCollection([Point(1.0, 1.0)])).is_(P.type_of(GType.MULTIPOINT))"
             }
         ]
     },
@@ -13933,8 +14287,12 @@
                 "language": "g.V().has(\"loc\", P.typeOf(GType.MULTILINESTRING)).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", P.typeOf(GType.MULTILINESTRING)).values(\"name\")",
                 "anonymized": "g.V().has(string0, P.typeOf(GType.MULTILINESTRING)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", P.TypeOf(GType.MultiLineString)).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.P.TypeOf(gremlingo.GType.MultiLineString)).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", P.typeOf(GType.MULTILINESTRING)).values(\"name\")",
-                "java": "g.V().has(\"loc\", P.typeOf(GType.MULTILINESTRING)).values(\"name\")"
+                "java": "g.V().has(\"loc\", P.typeOf(GType.MULTILINESTRING)).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", P.typeOf(GType.multiLineString)).values(\"name\")",
+                "python": "g.V().has('loc', P.type_of(GType.MULTILINESTRING)).values('name')"
             }
         ]
     },
@@ -13946,8 +14304,12 @@
                 "language": "g.V().has(\"loc\", P.typeOf(GType.MULTIPOLYGON)).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", P.typeOf(GType.MULTIPOLYGON)).values(\"name\")",
                 "anonymized": "g.V().has(string0, P.typeOf(GType.MULTIPOLYGON)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", P.TypeOf(GType.MultiPolygon)).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.P.TypeOf(gremlingo.GType.MultiPolygon)).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", P.typeOf(GType.MULTIPOLYGON)).values(\"name\")",
-                "java": "g.V().has(\"loc\", P.typeOf(GType.MULTIPOLYGON)).values(\"name\")"
+                "java": "g.V().has(\"loc\", P.typeOf(GType.MULTIPOLYGON)).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", P.typeOf(GType.multiPolygon)).values(\"name\")",
+                "python": "g.V().has('loc', P.type_of(GType.MULTIPOLYGON)).values('name')"
             }
         ]
     },
@@ -13959,8 +14321,12 @@
                 "language": "g.V().has(\"loc\", P.typeOf(GType.GEOMETRYCOLLECTION)).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", P.typeOf(GType.GEOMETRYCOLLECTION)).values(\"name\")",
                 "anonymized": "g.V().has(string0, P.typeOf(GType.GEOMETRYCOLLECTION)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", P.TypeOf(GType.GeometryCollection)).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.P.TypeOf(gremlingo.GType.GeometryCollection)).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", P.typeOf(GType.GEOMETRYCOLLECTION)).values(\"name\")",
-                "java": "g.V().has(\"loc\", P.typeOf(GType.GEOMETRYCOLLECTION)).values(\"name\")"
+                "java": "g.V().has(\"loc\", P.typeOf(GType.GEOMETRYCOLLECTION)).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", P.typeOf(GType.geometryCollection)).values(\"name\")",
+                "python": "g.V().has('loc', P.type_of(GType.GEOMETRYCOLLECTION)).values('name')"
             }
         ]
     },
@@ -13972,8 +14338,12 @@
                 "language": "g.V().has(\"loc\", P.typeOf(GType.POLYGON)).values(\"name\")",
                 "canonical": "g.V().has(\"loc\", P.typeOf(GType.POLYGON)).values(\"name\")",
                 "anonymized": "g.V().has(string0, P.typeOf(GType.POLYGON)).values(string1)",
+                "dotnet": "g.V().Has(\"loc\", P.TypeOf(GType.Polygon)).Values<object>(\"name\")",
+                "go": "g.V().Has(\"loc\", gremlingo.P.TypeOf(gremlingo.GType.Polygon)).Values(\"name\")",
                 "groovy": "g.V().has(\"loc\", P.typeOf(GType.POLYGON)).values(\"name\")",
-                "java": "g.V().has(\"loc\", P.typeOf(GType.POLYGON)).values(\"name\")"
+                "java": "g.V().has(\"loc\", P.typeOf(GType.POLYGON)).values(\"name\")",
+                "javascript": "g.V().has(\"loc\", P.typeOf(GType.polygon)).values(\"name\")",
+                "python": "g.V().has('loc', P.type_of(GType.POLYGON)).values('name')"
             }
         ]
     },
@@ -45657,8 +46027,12 @@
                 "language": "g.inject(Geometry(\"POINT EMPTY\")).is(P.lt(Geometry(\"POINT(1 2)\")))",
                 "canonical": "g.inject(Geometry(\"POINT EMPTY\")).is(P.lt(Geometry(\"POINT(1 2)\")))",
                 "anonymized": "g.inject(point0).is(P.lt(point1))",
+                "dotnet": "g.Inject<object>(Point.Empty()).Is(P.Lt(new Point(1.0, 2.0)))",
+                "go": "g.Inject(gremlingo.MustNewEmptyPoint(gremlingo.Model.Cartesian)).Is(gremlingo.P.Lt(gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian)))",
                 "groovy": "g.inject(Geometry.fromWkt(\"POINT EMPTY\")).is(P.lt(Geometry.fromWkt(\"POINT(1 2)\")))",
-                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\")).is(P.lt(Geometry.fromWkt(\"POINT(1 2)\")))"
+                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\")).is(P.lt(Geometry.fromWkt(\"POINT(1 2)\")))",
+                "javascript": "g.inject(Point.empty()).is(P.lt(Point.of(1.0, 2.0)))",
+                "python": "g.inject(Point.empty()).is_(P.lt(Point(1.0, 2.0)))"
             }
         ]
     },
@@ -45670,8 +46044,12 @@
                 "language": "g.inject(Geometry(\"POINT(1 2)\")).is(P.gt(Geometry(\"POINT EMPTY\")))",
                 "canonical": "g.inject(Geometry(\"POINT(1 2)\")).is(P.gt(Geometry(\"POINT EMPTY\")))",
                 "anonymized": "g.inject(point0).is(P.gt(point1))",
+                "dotnet": "g.Inject<object>(new Point(1.0, 2.0)).Is(P.Gt(Point.Empty()))",
+                "go": "g.Inject(gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian)).Is(gremlingo.P.Gt(gremlingo.MustNewEmptyPoint(gremlingo.Model.Cartesian)))",
                 "groovy": "g.inject(Geometry.fromWkt(\"POINT(1 2)\")).is(P.gt(Geometry.fromWkt(\"POINT EMPTY\")))",
-                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\")).is(P.gt(Geometry.fromWkt(\"POINT EMPTY\")))"
+                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\")).is(P.gt(Geometry.fromWkt(\"POINT EMPTY\")))",
+                "javascript": "g.inject(Point.of(1.0, 2.0)).is(P.gt(Point.empty()))",
+                "python": "g.inject(Point(1.0, 2.0)).is_(P.gt(Point.empty()))"
             }
         ]
     },
@@ -45683,8 +46061,12 @@
                 "language": "g.V().has(\"name\", \"Pat\").values(\"loc\").is(P.lt(Geometry(\"POINT(3 4)\", GEOGRAPHIC)))",
                 "canonical": "g.V().has(\"name\", \"Pat\").values(\"loc\").is(P.lt(Geometry(\"POINT(3 4)\", GEOGRAPHIC)))",
                 "anonymized": "g.V().has(string0, string1).values(string2).is(P.lt(point0))",
+                "dotnet": "g.V().Has(\"name\", \"Pat\").Values<object>(\"loc\").Is(P.Lt(new Point(3.0, 4.0, Model.Geographic)))",
+                "go": "g.V().Has(\"name\", \"Pat\").Values(\"loc\").Is(gremlingo.P.Lt(gremlingo.MustNewPoint(3.0, 4.0, gremlingo.Model.Geographic)))",
                 "groovy": "g.V().has(\"name\", \"Pat\").values(\"loc\").is(P.lt(Geometry.fromWkt(\"POINT(3 4)\", Model.GEOGRAPHIC)))",
-                "java": "g.V().has(\"name\", \"Pat\").values(\"loc\").is(P.lt(Geometry.fromWkt(\"POINT(3 4)\", Model.GEOGRAPHIC)))"
+                "java": "g.V().has(\"name\", \"Pat\").values(\"loc\").is(P.lt(Geometry.fromWkt(\"POINT(3 4)\", Model.GEOGRAPHIC)))",
+                "javascript": "g.V().has(\"name\", \"Pat\").values(\"loc\").is(P.lt(Point.of(3.0, 4.0, Model.GEOGRAPHIC)))",
+                "python": "g.V().has('name', 'Pat').values('loc').is_(P.lt(Point(3.0, 4.0, model=Model.GEOGRAPHIC)))"
             }
         ]
     },
@@ -45849,8 +46231,12 @@
                 "language": "g.inject([Geometry(\"POINT(-0 0)\")]).unfold().where(__.is(xx1))",
                 "canonical": "g.inject([Geometry(\"POINT(-0 0)\")]).unfold().where(__.is(xx1))",
                 "anonymized": "g.inject(list0).unfold().where(__.is(xx1))",
+                "dotnet": "g.Inject<object>(new List<object> { new Point(-0.0, 0.0) }).Unfold<object>().Where(__.Is(xx1))",
+                "go": "g.Inject([]interface{}{gremlingo.MustNewPoint(math.Copysign(0, -1), 0.0, gremlingo.Model.Cartesian)}).Unfold().Where(gremlingo.T__.Is(xx1))",
                 "groovy": "g.inject([Geometry.fromWkt(\"POINT(-0 0)\")]).unfold().where(__.is(xx1))",
-                "java": "g.inject(new ArrayList<Object>() {{ add(Geometry.fromWkt(\"POINT(-0 0)\")); }}).unfold().where(__.is(xx1))"
+                "java": "g.inject(new ArrayList<Object>() {{ add(Geometry.fromWkt(\"POINT(-0 0)\")); }}).unfold().where(__.is(xx1))",
+                "javascript": "g.inject([Point.of(-0.0, 0.0)]).unfold().where(__.is(xx1))",
+                "python": "g.inject([Point(-0.0, 0.0)]).unfold().where(__.is_(xx1))"
             }
         ]
     },
@@ -45862,8 +46248,12 @@
                 "language": "g.inject([Geometry(\"POINT EMPTY\"), Geometry(\"POLYGON EMPTY\")]).unfold().where(__.is(xx1))",
                 "canonical": "g.inject([Geometry(\"POINT EMPTY\"), Geometry(\"POLYGON EMPTY\")]).unfold().where(__.is(xx1))",
                 "anonymized": "g.inject(list0).unfold().where(__.is(xx1))",
+                "dotnet": "g.Inject<object>(new List<object> { Point.Empty(), Polygon.Empty() }).Unfold<object>().Where(__.Is(xx1))",
+                "go": "g.Inject([]interface{}{gremlingo.MustNewEmptyPoint(gremlingo.Model.Cartesian), gremlingo.MustNewEmptyPolygon(gremlingo.Model.Cartesian)}).Unfold().Where(gremlingo.T__.Is(xx1))",
                 "groovy": "g.inject([Geometry.fromWkt(\"POINT EMPTY\"), Geometry.fromWkt(\"POLYGON EMPTY\")]).unfold().where(__.is(xx1))",
-                "java": "g.inject(new ArrayList<Object>() {{ add(Geometry.fromWkt(\"POINT EMPTY\")); add(Geometry.fromWkt(\"POLYGON EMPTY\")); }}).unfold().where(__.is(xx1))"
+                "java": "g.inject(new ArrayList<Object>() {{ add(Geometry.fromWkt(\"POINT EMPTY\")); add(Geometry.fromWkt(\"POLYGON EMPTY\")); }}).unfold().where(__.is(xx1))",
+                "javascript": "g.inject([Point.empty(), Polygon.empty()]).unfold().where(__.is(xx1))",
+                "python": "g.inject([Point.empty(), Polygon.empty()]).unfold().where(__.is_(xx1))"
             }
         ]
     },
@@ -46280,8 +46670,12 @@
                 "language": "g.inject(Geometry(\"POINT(1 2)\", GEOGRAPHIC), \"foo\", Geometry(\"POINT EMPTY\"), 1, Geometry(\"POINT(1 2)\"), null).order()",
                 "canonical": "g.inject(Geometry(\"POINT(1 2)\", GEOGRAPHIC), \"foo\", Geometry(\"POINT EMPTY\"), 1, Geometry(\"POINT(1 2)\"), null).order()",
                 "anonymized": "g.inject(point0, string0, point1, number0, point2, object0).order()",
+                "dotnet": "g.Inject<object>(new Point(1.0, 2.0, Model.Geographic), \"foo\", Point.Empty(), 1, new Point(1.0, 2.0), null).Order()",
+                "go": "g.Inject(gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Geographic), \"foo\", gremlingo.MustNewEmptyPoint(gremlingo.Model.Cartesian), 1, gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian), nil).Order()",
                 "groovy": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", Model.GEOGRAPHIC), \"foo\", Geometry.fromWkt(\"POINT EMPTY\"), 1, Geometry.fromWkt(\"POINT(1 2)\"), null).order()",
-                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", Model.GEOGRAPHIC), \"foo\", Geometry.fromWkt(\"POINT EMPTY\"), 1, Geometry.fromWkt(\"POINT(1 2)\"), null).order()"
+                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", Model.GEOGRAPHIC), \"foo\", Geometry.fromWkt(\"POINT EMPTY\"), 1, Geometry.fromWkt(\"POINT(1 2)\"), null).order()",
+                "javascript": "g.inject(Point.of(1.0, 2.0, Model.GEOGRAPHIC), \"foo\", Point.empty(), 1, Point.of(1.0, 2.0), null).order()",
+                "python": "g.inject(Point(1.0, 2.0, model=Model.GEOGRAPHIC), 'foo', Point.empty(), 1, Point(1.0, 2.0), None).order()"
             }
         ]
     },
@@ -46293,8 +46687,12 @@
                 "language": "g.inject(Geometry(\"POINT(1 2)\", GEOGRAPHIC), \"foo\", Geometry(\"POINT EMPTY\"), 1, Geometry(\"POINT(1 2)\"), null).order().by(Order.desc)",
                 "canonical": "g.inject(Geometry(\"POINT(1 2)\", GEOGRAPHIC), \"foo\", Geometry(\"POINT EMPTY\"), 1, Geometry(\"POINT(1 2)\"), null).order().by(Order.desc)",
                 "anonymized": "g.inject(point0, string0, point1, number0, point2, object0).order().by(Order.desc)",
+                "dotnet": "g.Inject<object>(new Point(1.0, 2.0, Model.Geographic), \"foo\", Point.Empty(), 1, new Point(1.0, 2.0), null).Order().By(Order.Desc)",
+                "go": "g.Inject(gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Geographic), \"foo\", gremlingo.MustNewEmptyPoint(gremlingo.Model.Cartesian), 1, gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian), nil).Order().By(gremlingo.Order.Desc)",
                 "groovy": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", Model.GEOGRAPHIC), \"foo\", Geometry.fromWkt(\"POINT EMPTY\"), 1, Geometry.fromWkt(\"POINT(1 2)\"), null).order().by(Order.desc)",
-                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", Model.GEOGRAPHIC), \"foo\", Geometry.fromWkt(\"POINT EMPTY\"), 1, Geometry.fromWkt(\"POINT(1 2)\"), null).order().by(Order.desc)"
+                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", Model.GEOGRAPHIC), \"foo\", Geometry.fromWkt(\"POINT EMPTY\"), 1, Geometry.fromWkt(\"POINT(1 2)\"), null).order().by(Order.desc)",
+                "javascript": "g.inject(Point.of(1.0, 2.0, Model.GEOGRAPHIC), \"foo\", Point.empty(), 1, Point.of(1.0, 2.0), null).order().by(Order.desc)",
+                "python": "g.inject(Point(1.0, 2.0, model=Model.GEOGRAPHIC), 'foo', Point.empty(), 1, Point(1.0, 2.0), None).order().by(Order.desc)"
             }
         ]
     },

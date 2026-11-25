@@ -6665,6 +6665,9 @@ supports text predicates (`TextP`), which are specialized predicates that only w
 | `TextP.notRegex(string)` | Does the incoming `String` fail to match the regular expression in the provided `String`?
 | `GeoP.geoWithin(geometry)` | Does the incoming `Geometry` lie entirely inside the provided `Geometry`?
 | `GeoP.geoContains(geometry)` | Does the incoming `Geometry` entirely contain the provided `Geometry`?
+| `GeoP.geoIntersects(geometry)` | Does the incoming `Geometry` share at least one point with the provided `Geometry`?
+| `GeoP.geoDisjoint(geometry)` | Does the incoming `Geometry` share no point with the provided `Geometry`?
+| `GeoP.geoEquals(geometry)` | Does the incoming `Geometry` cover the same points as the provided `Geometry`?
 |=========================================================
 
 NOTE: The TinkerPop reference implementation uses the Java `Pattern` and `Matcher` classes for it regular expression
@@ -6729,9 +6732,14 @@ g.V().has('person', 'name', regex('r$')).values('name')
 
 The geometry predicates match a value only against a `Geometry` in the same spatial reference system, and a value they
 cannot compare does not match rather than raising an error. `geoWithin` and `geoContains` exclude the boundary, so a
-point lying only on a polygon's edge is not within that polygon. All geometry math is two dimensional, so z is ignored.
+point lying only on a polygon's edge is not within that polygon, while `geoIntersects` counts a point of either
+boundary as a shared point. `geoEquals` compares point sets rather than coordinate lists, so `LINESTRING(0 0, 2 2)`
+equals `LINESTRING(0 0, 1 1, 2 2)`. All geometry math is two dimensional, so z is ignored.
 The link:https://tinkerpop.apache.org/docs/x.y.z/dev/provider/#gremlin-semantics-geometry[Geometry Section] of the
 Gremlin Semantics specification defines these rules in full.
+
+`geoDisjoint` is the opposite of `geoIntersects` for every value the two can compare, and neither matches a value they
+cannot. `P.not(geoIntersects(square))` is therefore a different predicate, since it does match such a value.
 
 The predicates may be written with or without the `GeoP` prefix, so `GeoP.geoWithin(g)` and `geoWithin(g)` are the
 same predicate. A geometry is written with the `Geometry()` literal, which takes Well-Known Text and an optional
@@ -6748,6 +6756,9 @@ uptown = Geometry.fromWkt("POINT(9 9)")
 square = Geometry.fromWkt("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))")
 g.addV('store').property('name','midtown').property('loc',midtown).addV('store').property('name','uptown').property('loc',uptown).iterate()
 g.V().has('loc',geoWithin(square)).values('name')
+g.V().has('loc',geoIntersects(square)).values('name')
+g.V().has('loc',geoDisjoint(square)).values('name')
+g.V().has('loc',geoEquals(midtown)).values('name')
 ----
 
 NOTE: The reference implementation computes a `GEOGRAPHIC` relationship in longitude and latitude, treating an edge as

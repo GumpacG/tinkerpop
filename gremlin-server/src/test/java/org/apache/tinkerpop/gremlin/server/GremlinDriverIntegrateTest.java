@@ -32,9 +32,12 @@ import org.apache.tinkerpop.gremlin.driver.exception.NoHostAvailableException;
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException;
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection;
 import org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin;
+import org.apache.tinkerpop.gremlin.process.traversal.GeoP;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.server.channel.HttpChannelizer;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.geo.Geometry;
+import org.apache.tinkerpop.gremlin.structure.geo.Model;
 import org.apache.tinkerpop.gremlin.structure.io.Storage;
 import org.apache.tinkerpop.gremlin.structure.io.binary.TypeSerializerRegistry;
 import org.apache.tinkerpop.gremlin.structure.io.pdt.ProviderDefined;
@@ -1315,6 +1318,74 @@ public class GremlinDriverIntegrateTest extends AbstractGremlinServerIntegration
             Object value = returnedList.get(0).getObject();
             assertTrue(value instanceof UUID);
         } finally {
+            cluster.close();
+        }
+    }
+
+    @Test
+    public void shouldReturnGeometry() throws Exception {
+        final Cluster cluster = TestClientFactory.build().create();
+        try {
+            final Client client = cluster.connect().alias("g");
+            final List<Result> returnedList = client.submit("g.inject(Geometry(\"POINT(1 2)\", GEOGRAPHIC))",
+                    RequestOptions.build().language("gremlin-lang").create()).all().get();
+            assertEquals(1, returnedList.size());
+            final Object value = returnedList.get(0).getObject();
+            assertTrue("Expected Geometry but got: " + value.getClass().getName(), value instanceof Geometry);
+            assertEquals(Geometry.fromWkt("POINT(1 2)", Model.GEOGRAPHIC), value);
+        } finally {
+            cluster.close();
+        }
+    }
+
+    @Test
+    public void shouldFilterGeometryPropertyWithGeoPViaTraversal() throws Exception {
+        final Cluster cluster = TestClientFactory.build().create();
+        final GraphTraversalSource g = traversal().with(DriverRemoteConnection.using(cluster));
+        try {
+            // "near" sits inside the query zone and "far" about 20 km north of it, outside
+            final Geometry near = Geometry.fromWkt("POINT(13.4 52.5)", Model.GEOGRAPHIC);
+            final Geometry far = Geometry.fromWkt("POINT(13.4 52.68)", Model.GEOGRAPHIC);
+            g.addV("zonePlace").property("name", "near").property("loc", near).iterate();
+            g.addV("zonePlace").property("name", "far").property("loc", far).iterate();
+
+            final Geometry zone = Geometry.fromWkt(
+                    "POLYGON((13.3 52.4, 13.5 52.4, 13.5 52.6, 13.3 52.6, 13.3 52.4))", Model.GEOGRAPHIC);
+            assertEquals(Collections.singletonList("near"),
+                    g.V().hasLabel("zonePlace").has("loc", GeoP.geoWithin(zone)).values("name").toList());
+        } finally {
+            // cleanup
+            g.V().hasLabel("zonePlace").drop().iterate();
+            cluster.close();
+        }
+    }
+
+    @Test
+    public void shouldEvalInGremlinLangWithGeometryParameter() throws Exception {
+        final Cluster cluster = TestClientFactory.open();
+        final Client client = cluster.connect();
+
+        try {
+            final Geometry point = Geometry.fromWkt("POINT(13.4 52.5)", Model.GEOGRAPHIC);
+            final Geometry elsewhere = Geometry.fromWkt("POINT(9.99 53.55)", Model.GEOGRAPHIC);
+            final RequestOptions ro = RequestOptions.build().language("gremlin-lang").
+                    addParameter("loc", point).addParameter("elsewhere", elsewhere).create();
+
+            final Vertex added = client.submit(
+                    "g.addV('paramPlace').property('name', 'berlin').property('loc', loc)", ro).one().getVertex();
+            assertEquals(point, added.property("loc").value());
+            client.submit("g.addV('paramPlace').property('name', 'hamburg').property('loc', elsewhere)", ro)
+                    .all().get();
+
+            // the parameter also stands in for a geometry literal in a predicate argument, which
+            // leaves out the vertex that lies away from it
+            final List<Result> matched = client.submit(
+                    "g.V().hasLabel('paramPlace').has('loc', geoWithin(loc)).values('name')", ro).all().get();
+            assertEquals(1, matched.size());
+            assertEquals("berlin", matched.get(0).getString());
+        } finally {
+            // cleanup
+            client.submit("g.V().hasLabel('paramPlace').drop().iterate()", groovyRequestOptions).all().get();
             cluster.close();
         }
     }

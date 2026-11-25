@@ -66,7 +66,8 @@ radishGremlinFile.withWriter('UTF-8') { Writer writer ->
                     'from gremlin_python.process.traversal import TraversalStrategy\n' +
                     'from gremlin_python.process.graph_traversal import __\n' +
                     'from gremlin_python.structure.graph import Graph\n' +
-                    'from gremlin_python.process.traversal import Barrier, Cardinality, CardinalityValue, P, TextP, Pop, Scope, Column, Order, Direction, DT, GType, Merge, T, Pick, Operator, IO, WithOptions\n')
+                    'from gremlin_python.structure.geo import GeometryCollection, LineString, Model, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon\n' +
+                    'from gremlin_python.process.traversal import Barrier, Cardinality, CardinalityValue, GeoP, P, TextP, Pop, Scope, Column, Order, Direction, DT, GType, Merge, T, Pick, Operator, IO, WithOptions\n')
 
     // some traversals may require a static translation if the translator can't handle them for some reason
     def staticTranslate = [

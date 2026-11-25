@@ -25,6 +25,7 @@ import org.apache.tinkerpop.gremlin.language.antlr.GremlinBaseVisitor;
 import org.apache.tinkerpop.gremlin.language.antlr.GremlinParser;
 import org.apache.tinkerpop.gremlin.language.grammar.GenericLiteralVisitor;
 import org.apache.tinkerpop.gremlin.language.grammar.GremlinAntlrToJava;
+import org.apache.tinkerpop.gremlin.language.grammar.GremlinParserException;
 import org.apache.tinkerpop.gremlin.process.traversal.DT;
 import org.apache.tinkerpop.gremlin.process.traversal.GeoP;
 import org.apache.tinkerpop.gremlin.process.traversal.GType;
@@ -42,15 +43,20 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality;
 import org.apache.tinkerpop.gremlin.structure.geo.Geometry;
+import org.apache.tinkerpop.gremlin.structure.geo.GeometryCollection;
+import org.apache.tinkerpop.gremlin.structure.geo.LineString;
 import org.apache.tinkerpop.gremlin.structure.geo.Model;
+import org.apache.tinkerpop.gremlin.structure.geo.MultiLineString;
+import org.apache.tinkerpop.gremlin.structure.geo.MultiPoint;
+import org.apache.tinkerpop.gremlin.structure.geo.MultiPolygon;
+import org.apache.tinkerpop.gremlin.structure.geo.Point;
+import org.apache.tinkerpop.gremlin.structure.geo.Polygon;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * A Gremlin to Gremlin translator. Makes no changes to input except:
@@ -62,16 +68,6 @@ import java.util.stream.Stream;
  * </ul>
  */
 public class TranslateVisitor extends GremlinBaseVisitor<Void> {
-
-    /**
-     * The names of the {@link GType} entries that identify a geometry, which includes the model based
-     * {@code CARTESIAN} and {@code GEOGRAPHIC} entries.
-     */
-    protected static final Set<String> GEOMETRY_GTYPE_NAMES = Collections.unmodifiableSet(
-            Stream.of(GType.values()).
-                    filter(t -> t.getType() != null && Geometry.class.isAssignableFrom(t.getType())).
-                    map(Enum::name).
-                    collect(Collectors.toSet()));
 
     protected final String graphTraversalSourceName;
 
@@ -254,11 +250,24 @@ public class TranslateVisitor extends GremlinBaseVisitor<Void> {
     }
 
     /**
-     * Determines if a {@code GType} names a geometry type, which the translators that have no geometry support use
-     * to reject the type.
+     * Extracts the name of the model from a {@code Model} value, which is always written with its prefix, as in
+     * {@code Model.GEOGRAPHIC}.
      */
-    protected static boolean isGeometryGType(final GremlinParser.TraversalGTypeContext ctx) {
-        return GEOMETRY_GTYPE_NAMES.contains(extractGTypeName(ctx).toUpperCase(Locale.ROOT));
+    protected static String extractGeoModelName(final GremlinParser.GeoModelContext ctx) {
+        final String[] split = ctx.getText().split("\\.");
+        return split[split.length - 1];
+    }
+
+    /**
+     * Returns the geometry a literal describes, as a {@link TranslatorException} where the literal is not one the
+     * WKT reader accepts, so that a caller sees the same failure as any other translation error.
+     */
+    protected Geometry parseGeometryLiteral(final GremlinParser.GeometryLiteralContext ctx) {
+        try {
+            return (Geometry) literalVisitor.visitGeometryLiteral(ctx);
+        } catch (final GremlinParserException gpe) {
+            throw new TranslatorException(gpe.getMessage());
+        }
     }
 
     /**
@@ -273,6 +282,138 @@ public class TranslateVisitor extends GremlinBaseVisitor<Void> {
         else if (geometry.model() == Model.OTHER)
             sb.append(", ").append(geometry.srid());
         sb.append(")");
+    }
+
+    /**
+     * Appends the construction of a geometry, recursing into the parts it is built from. A geometry's kind is named
+     * by the class that builds it, which is spelled the same in every language the translators target:
+     * {@code Point}, {@code LineString}, {@code Polygon}, {@code MultiPoint}, {@code MultiLineString},
+     * {@code MultiPolygon} and {@code GeometryCollection}. The walk is shared and each language supplies its own
+     * naming and argument syntax through the hooks it overrides.
+     */
+    protected void appendGeometry(final Geometry geometry) {
+        if (geometry instanceof Point) {
+            final Point point = (Point) geometry;
+            if (point.isEmpty())
+                appendEmptyGeometry("Point", point);
+            else
+                appendGeometryPoint(point);
+        } else if (geometry instanceof LineString) {
+            appendGeometryParts("LineString", ((LineString) geometry).points(), geometry);
+        } else if (geometry instanceof Polygon) {
+            appendGeometryPolygon((Polygon) geometry);
+        } else if (geometry instanceof MultiPoint) {
+            appendGeometryParts("MultiPoint", ((MultiPoint) geometry).geometries(), geometry);
+        } else if (geometry instanceof MultiLineString) {
+            appendGeometryParts("MultiLineString", ((MultiLineString) geometry).geometries(), geometry);
+        } else if (geometry instanceof MultiPolygon) {
+            appendGeometryParts("MultiPolygon", ((MultiPolygon) geometry).geometries(), geometry);
+        } else if (geometry instanceof GeometryCollection) {
+            appendGeometryParts("GeometryCollection", ((GeometryCollection) geometry).geometries(), geometry);
+        } else {
+            throw new TranslatorException("Translator does not support a geometry of kind "
+                    + geometry.getClass().getSimpleName());
+        }
+    }
+
+    /**
+     * Appends a kind built from a list of parts, or its empty form when it holds no parts.
+     */
+    private void appendGeometryParts(final String kind, final List<? extends Geometry> parts, final Geometry geometry) {
+        if (parts.isEmpty()) {
+            appendEmptyGeometry(kind, geometry);
+            return;
+        }
+
+        appendGeometryPartsOpen(kind);
+        for (int ix = 0; ix < parts.size(); ix++) {
+            if (ix > 0) sb.append(", ");
+            appendGeometry(parts.get(ix));
+        }
+        appendGeometryPartsClose(kind);
+    }
+
+    /**
+     * Appends a polygon, whose shell ring is one argument and whose hole rings follow it.
+     */
+    private void appendGeometryPolygon(final Polygon polygon) {
+        final LineString shell = polygon.exteriorRing();
+        if (shell.points().isEmpty()) {
+            appendEmptyGeometry("Polygon", polygon);
+            return;
+        }
+
+        sb.append(geometryConstructorOf("Polygon"));
+        appendGeometry(shell);
+
+        final List<LineString> holes = polygon.interiorRings();
+        appendGeometryHolesOpen(holes.size());
+        for (int ix = 0; ix < holes.size(); ix++) {
+            if (ix > 0) sb.append(", ");
+            appendGeometry(holes.get(ix));
+        }
+        appendGeometryHolesClose(holes.size());
+
+        sb.append(")");
+    }
+
+    /**
+     * Appends a coordinate as a double literal.
+     */
+    protected void appendGeometryCoordinate(final double value) {
+        sb.append(Double.toString(value));
+    }
+
+    /**
+     * Opens the argument list of a kind built from a list of parts.
+     */
+    protected void appendGeometryPartsOpen(final String kind) {
+        sb.append(geometryConstructorOf(kind));
+    }
+
+    /**
+     * Closes the argument list of a kind built from a list of parts.
+     */
+    protected void appendGeometryPartsClose(final String kind) {
+        sb.append(")");
+    }
+
+    /**
+     * Opens the hole rings of a polygon that has at least one.
+     */
+    protected void appendGeometryHolesOpen(final int holeCount) {
+        if (holeCount > 0) sb.append(", ");
+    }
+
+    /**
+     * Closes the hole rings of a polygon that has at least one.
+     */
+    protected void appendGeometryHolesClose(final int holeCount) {
+        // the holes are plain arguments unless a language says otherwise
+    }
+
+    /**
+     * Returns the text that opens a constructor call for a kind, up to and including its open parenthesis, which is
+     * the name of the kind unless a language says otherwise.
+     */
+    protected String geometryConstructorOf(final String kind) {
+        return kind + "(";
+    }
+
+    /**
+     * Appends a point with its coordinates and, where the language needs it, its model or SRID. A language that
+     * builds a geometry from constructors rather than from its WKT overrides this.
+     */
+    protected void appendGeometryPoint(final Point point) {
+        throw new TranslatorException("Translator does not support a point geometry literal");
+    }
+
+    /**
+     * Appends the empty form of a kind with its model or SRID. A language that builds a geometry from constructors
+     * rather than from its WKT overrides this, and rejects there the empty forms it has no constructor for.
+     */
+    protected void appendEmptyGeometry(final String kind, final Geometry geometry) {
+        throw new TranslatorException("Translator does not support an empty geometry literal");
     }
 
     @Override
@@ -460,6 +601,24 @@ public class TranslateVisitor extends GremlinBaseVisitor<Void> {
     @Override
     public Void visitTraversalPredicate_geoContains(final GremlinParser.TraversalPredicate_geoContainsContext ctx) {
         visitP(ctx, GeoP.class, "geoContains");
+        return null;
+    }
+
+    @Override
+    public Void visitTraversalPredicate_geoIntersects(final GremlinParser.TraversalPredicate_geoIntersectsContext ctx) {
+        visitP(ctx, GeoP.class, "geoIntersects");
+        return null;
+    }
+
+    @Override
+    public Void visitTraversalPredicate_geoDisjoint(final GremlinParser.TraversalPredicate_geoDisjointContext ctx) {
+        visitP(ctx, GeoP.class, "geoDisjoint");
+        return null;
+    }
+
+    @Override
+    public Void visitTraversalPredicate_geoEquals(final GremlinParser.TraversalPredicate_geoEqualsContext ctx) {
+        visitP(ctx, GeoP.class, "geoEquals");
         return null;
     }
 

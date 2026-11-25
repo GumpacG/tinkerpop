@@ -21,6 +21,7 @@
 // require accepting arbitrary context types at runtime.
 
 import TranslateVisitor from './TranslateVisitor.js';
+import { Geometry, Model, Point } from '../../structure/geo.js';
 import { TranslatorException } from './TranslatorException.js';
 import { Buffer } from 'buffer';
 
@@ -70,15 +71,15 @@ export default class GoTranslateVisitor extends TranslateVisitor {
     }
 
     visitTraversalGType(ctx: any): void {
-        if (TranslateVisitor.isGeometryGType(ctx)) {
-            throw new TranslatorException('Go does not support geometry types');
-        }
-
-        const parts: string[] = ctx.getText().split('.');
         this.sb.push(GO_PACKAGE_NAME);
-        this.sb.push(this.processGremlinSymbol(parts[0]));
+        this.sb.push('GType');
         this.sb.push('.');
-        this.sb.push(this.processGremlinSymbol(parts[1].toLowerCase()));
+        this.sb.push(this.processGremlinSymbol(TranslateVisitor.extractGTypeName(ctx).toLowerCase()));
+    }
+
+    visitGeoModel(ctx: any): void {
+        // the model is written in upper case in Gremlin, while the Go field is Pascal case
+        this.appendExplicitNaming(TranslateVisitor.extractGeoModelName(ctx).toLowerCase(), 'Model');
     }
 
     visitNanLiteral(_ctx: any): void {
@@ -202,22 +203,6 @@ export default class GoTranslateVisitor extends TranslateVisitor {
 
     visitGenericRangeLiteral(_ctx: any): void {
         throw new TranslatorException('Go does not support range literals');
-    }
-
-    visitGeometryLiteral(_ctx: any): void {
-        throw new TranslatorException('Go does not support geometry literals');
-    }
-
-    visitGeoModel(_ctx: any): void {
-        throw new TranslatorException('Go does not support geometry models');
-    }
-
-    visitTraversalPredicate_geoWithin(_ctx: any): void {
-        throw new TranslatorException('Go does not support geo predicates');
-    }
-
-    visitTraversalPredicate_geoContains(_ctx: any): void {
-        throw new TranslatorException('Go does not support geo predicates');
     }
 
     visitGenericSetLiteral(ctx: any): void {
@@ -465,6 +450,71 @@ export default class GoTranslateVisitor extends TranslateVisitor {
 
         this.sb.push(')');
     }
+
+    /**
+     * Builds a geometry with the panicking constructors of the driver, which take the parts of a
+     * kind as arguments and always take a model, or an SRID through a `WithSrid` form.
+     */
+    visitGeometryLiteral(ctx: any): void {
+        this.appendGeometry(this.parseGeometryLiteral(ctx));
+    }
+
+    protected override geometryConstructorOf(kind: string): string {
+        return GO_PACKAGE_NAME + 'MustNew' + kind + '(';
+    }
+
+    protected override appendGeometryCoordinate(value: number): void {
+        // a Go constant expression has no negative zero, so the sign is set at run time
+        if (Object.is(value, -0)) {
+            this.sb.push('math.Copysign(0, -1)');
+            return;
+        }
+        super.appendGeometryCoordinate(value);
+    }
+
+    protected override appendGeometryPoint(point: Point): void {
+        const withSrid = point.model === Model.OTHER;
+        this.sb.push(GO_PACKAGE_NAME + 'MustNewPoint');
+        if (point.hasZ) this.sb.push('Z');
+        if (withSrid) this.sb.push('WithSrid');
+        this.sb.push('(');
+        this.appendGeometryCoordinate(point.x);
+        this.sb.push(', ');
+        this.appendGeometryCoordinate(point.y);
+        if (point.hasZ) {
+            this.sb.push(', ');
+            this.appendGeometryCoordinate(point.z as number);
+        }
+        this.sb.push(', ');
+        if (withSrid) {
+            this.sb.push(String(point.srid));
+        } else {
+            this.#appendGeometryModel(point);
+        }
+        this.sb.push(')');
+    }
+
+    /**
+     * Appends the empty form of a kind, which in another spatial reference system is built with
+     * `NewEmptyXWithSrid`. That form returns no error because an empty geometry holds no coordinate
+     * to validate, so there is no panicking `MustNew` form to call.
+     */
+    protected override appendEmptyGeometry(kind: string, geometry: Geometry): void {
+        if (geometry.hasZ) {
+            throw new TranslatorException(`Go has no constructor for an empty 3D geometry: ${geometry.toWKT()}`);
+        }
+        if (geometry.model === Model.OTHER) {
+            this.sb.push(`${GO_PACKAGE_NAME}NewEmpty${kind}WithSrid(${geometry.srid})`);
+            return;
+        }
+        this.sb.push(`${GO_PACKAGE_NAME}MustNewEmpty${kind}(`);
+        this.#appendGeometryModel(geometry);
+        this.sb.push(')');
+    }
+
+    #appendGeometryModel(geometry: Geometry): void {
+        this.sb.push(GO_PACKAGE_NAME + 'Model.' + (geometry.model === Model.GEOGRAPHIC ? 'Geographic' : 'Cartesian'));
+    }
 }
 
 /**
@@ -490,6 +540,11 @@ class SymbolHelper {
         'datetime': 'DateTime',
         'uuid': 'UUID',
         'vproperty': 'VProperty',
+        'linestring': 'LineString',
+        'multipoint': 'MultiPoint',
+        'multilinestring': 'MultiLineString',
+        'multipolygon': 'MultiPolygon',
+        'geometrycollection': 'GeometryCollection',
         'WithOptions': GO_PACKAGE_NAME + 'WithOptions',
         'IO': GO_PACKAGE_NAME + 'IO',
         '__': GO_PACKAGE_NAME + 'T__',

@@ -233,3 +233,185 @@ Feature: Predicate - GeoP
       """
     When iterated to list
     Then the result should be empty
+
+  @AllowGeometryPropertyValues
+  Scenario: g_V_hasLabelXzoneX_hasXloc_geoIntersectsXdeePointXX_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().hasLabel("zone").has("loc", GeoP.geoIntersects(Geometry("POINT(-73.93 40.77)", GEOGRAPHIC))).values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Midtown |
+      | North Brooklyn and Queens |
+
+  @AllowGeometryPropertyValues
+  Scenario: g_V_hasXloc_geoIntersectsXeastRiverBendBoxXX_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().has("loc", GeoP.geoIntersects(Geometry("POLYGON((-73.96 40.74, -73.94 40.74, -73.94 40.78, -73.96 40.78, -73.96 40.74))", GEOGRAPHIC))).values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Midtown |
+      | East River |
+
+  @AllowGeometryPropertyValues @AllowMixedGeometryModels
+  Scenario: g_V_hasXloc_geoIntersectsXdockBoxXX_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().has("loc", GeoP.geoIntersects(Geometry("POLYGON((-4 0, 0 0, 0 10, -4 10, -4 0))"))).values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Chilled |
+
+  @AllowGeometryPropertyValues @GraphComputerVerificationMidVNotSupported
+  Scenario: g_V_hasXhub_name_HellsKitchenX_outXservesX_valuesXlocX_asXzX_V_hasLabelXcustomerX_whereXvaluesXlocX_isXgeoIntersectsXselectXzXXXX_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().has("hub", "name", "Hell's Kitchen").out("serves").values("loc").as("z").V().hasLabel("customer").where(__.values("loc").is(GeoP.geoIntersects(__.select("z")))).values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Ana |
+      | Dee |
+
+  @AllowGeometryPropertyValues
+  Scenario: g_V_hasLabelXhubX_hasXloc_geoDisjointXdeliveryBoxXX_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().hasLabel("hub").has("loc", GeoP.geoDisjoint(Geometry("POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))", GEOGRAPHIC))).values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Los Angeles |
+      | Greenwich |
+      | Auckland |
+
+  @AllowGeometryPropertyValues @AllowMixedGeometryModels
+  Scenario: g_V_hasXloc_geoDisjointXcartesianGreenwichBoxXX_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().has("loc", GeoP.geoDisjoint(Geometry("POLYGON((-1 51, 1 51, 1 52, -1 52, -1 51))"))).values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Chilled |
+      | Ambient |
+      | Pat |
+
+  @AllowGeometryPropertyValues
+  Scenario: g_V_hasLabelXcustomerX_hasXrawX_notXhasXraw_geoDisjointXhanaPointXXX_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().hasLabel("customer").has("raw").not(__.has("raw", GeoP.geoDisjoint(Geometry("POINT(0.012 51.481)", GEOGRAPHIC)))).values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Hana |
+
+  @GraphComputerVerificationInjectionNotSupported
+  Scenario: g_injectXemptyAndTwoPointsX_isXgeoDisjointXpolygonXX
+    Given the empty graph
+    And the traversal of
+      """
+      g.inject(Geometry("POINT EMPTY"), Geometry("POINT(2 2)"), Geometry("POINT(9 9)")).is(GeoP.geoDisjoint(Geometry("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))")))
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | geo[POINT EMPTY] |
+      | geo[POINT(9 9)] |
+
+  @AllowGeometryPropertyValues
+  Scenario: g_V_hasLabelXcustomerX_asXcX_outXorderedFromX_outXservesX_valuesXlocX_asXzX_selectXcX_valuesXlocX_isXgeoDisjointXselectXzXXX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().hasLabel("customer").as("c").out("orderedFrom").out("serves").values("loc").as("z").select("c").values("loc").is(GeoP.geoDisjoint(__.select("z")))
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | geo[SRID=4326;POINT(-73.9654 40.7829)] |
+      | geo[SRID=4326;POINT Z (-74.05 40.72 12)] |
+
+  @AllowGeometryPropertyValues
+  Scenario: g_V_hasLabelXzoneX_hasXloc_geoEqualsXrotatedCongestionZoneXX_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().hasLabel("zone").has("loc", GeoP.geoEquals(Geometry("POLYGON((-73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7, -73.9975 40.7, -73.975 40.7))", GEOGRAPHIC))).values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Congestion Zone |
+
+  @AllowGeometryPropertyValues
+  Scenario: g_V_hasLabelXcustomerX_hasXloc_geoEqualsXanaPointXX_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().hasLabel("customer").has("loc", GeoP.geoEquals(Geometry("POINT(-73.9857 40.7484)", GEOGRAPHIC))).values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Ana |
+
+  @AllowGeometryPropertyValues
+  Scenario: g_E_hasLabelXdeliveredX_hasXpath_geoEqualsXreversedWilliamsburgPathXX_inV_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.E().hasLabel("delivered").has("path", GeoP.geoEquals(Geometry("LINESTRING(-73.9857 40.7484, -73.9571 40.7146)", GEOGRAPHIC))).inV().values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Ana |
+
+  @GraphComputerVerificationInjectionNotSupported
+  Scenario: g_injectXtwoEmptyGeometriesAndPointX_isXgeoEqualsXemptyPolygonXX
+    Given the empty graph
+    And the traversal of
+      """
+      g.inject(Geometry("POINT EMPTY"), Geometry("POLYGON EMPTY"), Geometry("POINT(2 2)")).is(GeoP.geoEquals(Geometry("POLYGON EMPTY")))
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | geo[POINT EMPTY] |
+      | geo[POLYGON EMPTY] |
+
+  @AllowGeometryPropertyValues @GraphComputerVerificationMidVNotSupported
+  Scenario: g_V_hasLabelXcustomerX_valuesXlocX_asXzX_V_hasLabelXcustomerX_whereXvaluesXlocX_isXgeoEqualsXselectXzXXXX_valuesXnameX
+    Given the delivery graph
+    And the traversal of
+      """
+      g.V().hasLabel("customer").values("loc").as("z").V().hasLabel("customer").where(__.values("loc").is(GeoP.geoEquals(__.select("z")))).values("name")
+      """
+    When iterated to list
+    Then the result should be unordered
+      | result |
+      | Ana |
+      | Ben |
+      | Dee |
+      | Eli |
+      | Hana |

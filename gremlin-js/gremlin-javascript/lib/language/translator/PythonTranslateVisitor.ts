@@ -21,6 +21,7 @@
 // require accepting arbitrary context types at runtime.
 
 import TranslateVisitor from './TranslateVisitor.js';
+import { Geometry, Model, Point } from '../../structure/geo.js';
 import { TranslatorException } from './TranslatorException.js';
 
 /**
@@ -159,30 +160,6 @@ export default class PythonTranslateVisitor extends TranslateVisitor {
         throw new TranslatorException('Python does not support range literals');
     }
 
-    visitTraversalGType(ctx: any): void {
-        if (TranslateVisitor.isGeometryGType(ctx)) {
-            throw new TranslatorException('Python does not support geometry types');
-        }
-
-        super.visitTraversalGType(ctx);
-    }
-
-    visitGeometryLiteral(_ctx: any): void {
-        throw new TranslatorException('Python does not support geometry literals');
-    }
-
-    visitGeoModel(_ctx: any): void {
-        throw new TranslatorException('Python does not support geometry models');
-    }
-
-    visitTraversalPredicate_geoWithin(_ctx: any): void {
-        throw new TranslatorException('Python does not support geo predicates');
-    }
-
-    visitTraversalPredicate_geoContains(_ctx: any): void {
-        throw new TranslatorException('Python does not support geo predicates');
-    }
-
     visitGenericSetLiteral(ctx: any): void {
         const literals: any[] = ctx.genericLiteral();
         if (literals.length === 0) {
@@ -302,6 +279,69 @@ export default class PythonTranslateVisitor extends TranslateVisitor {
         this.sb.push(SymbolHelper.toPython(keyText));
         this.sb.push('=');
         this.visit(ctx.genericArgument());
+    }
+
+    /**
+     * Builds a geometry with the constructors of `gremlin_python.structure.geo`, which take the
+     * parts of a kind as a list and take a model or an SRID as a keyword argument.
+     */
+    visitGeometryLiteral(ctx: any): void {
+        this.appendGeometry(this.parseGeometryLiteral(ctx));
+    }
+
+    protected override appendGeometryPartsOpen(kind: string): void {
+        this.sb.push(this.geometryConstructorOf(kind) + '[');
+    }
+
+    protected override appendGeometryPartsClose(_kind: string): void {
+        this.sb.push('])');
+    }
+
+    protected override appendGeometryHolesOpen(holeCount: number): void {
+        if (holeCount > 0) {
+            this.sb.push(', [');
+        }
+    }
+
+    protected override appendGeometryHolesClose(holeCount: number): void {
+        if (holeCount > 0) {
+            this.sb.push(']');
+        }
+    }
+
+    protected override appendGeometryPoint(point: Point): void {
+        this.sb.push('Point(');
+        this.appendGeometryCoordinate(point.x);
+        this.sb.push(', ');
+        this.appendGeometryCoordinate(point.y);
+        if (point.hasZ) {
+            this.sb.push(', ');
+            this.appendGeometryCoordinate(point.z as number);
+        }
+        if (point.model !== Model.CARTESIAN) {
+            this.sb.push(', ');
+            this.#appendGeometryModelOrSrid(point);
+        }
+        this.sb.push(')');
+    }
+
+    protected override appendEmptyGeometry(kind: string, geometry: Geometry): void {
+        if (geometry.hasZ) {
+            throw new TranslatorException(`Python has no constructor for an empty 3D geometry: ${geometry.toWKT()}`);
+        }
+        this.sb.push(kind + '.empty(');
+        if (geometry.model !== Model.CARTESIAN) {
+            this.#appendGeometryModelOrSrid(geometry);
+        }
+        this.sb.push(')');
+    }
+
+    #appendGeometryModelOrSrid(geometry: Geometry): void {
+        if (geometry.model === Model.GEOGRAPHIC) {
+            this.sb.push('model=Model.GEOGRAPHIC');
+        } else {
+            this.sb.push(`srid=${geometry.srid}`);
+        }
     }
 }
 

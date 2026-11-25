@@ -19,6 +19,17 @@
 
 import { ErrorNode, TerminalNode } from 'antlr4ng';
 import { GremlinLexer } from '../grammar/GremlinLexer.js';
+import {
+  Geometry,
+  GeometryCollection,
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Point,
+  Polygon,
+} from '../../structure/geo.js';
+import { parseWkt } from '../../structure/geo-wkt.js';
 import { TranslatorException } from './TranslatorException.js';
 
 /**
@@ -30,16 +41,6 @@ import { TranslatorException } from './TranslatorException.js';
  * - Makes enums explicit with their proper name
  */
 export default class TranslateVisitor {
-
-    /**
-     * The names of the `GType` entries that identify a geometry, which includes the model based
-     * `CARTESIAN` and `GEOGRAPHIC` entries. Kept in step with the geometry entries of
-     * org.apache.tinkerpop.gremlin.process.traversal.GType.
-     */
-    protected static readonly GEOMETRY_GTYPE_NAMES: ReadonlySet<string> = new Set([
-        'CARTESIAN', 'GEOGRAPHIC', 'GEOMETRY', 'GEOMETRYCOLLECTION', 'LINESTRING',
-        'MULTILINESTRING', 'MULTIPOINT', 'MULTIPOLYGON', 'POINT', 'POLYGON',
-    ]);
 
     protected readonly graphTraversalSourceName: string;
     protected readonly sb: string[] = [];
@@ -293,53 +294,22 @@ export default class TranslateVisitor {
     }
 
     /**
-     * Determines if a `GType` names a geometry type, which the translators that have no geometry support use
-     * to reject the type.
+     * Extracts the name of the model from a `Model` value, which is always written with its prefix, as in
+     * `Model.GEOGRAPHIC`.
      */
-    protected static isGeometryGType(ctx: any): boolean {
-        return TranslateVisitor.GEOMETRY_GTYPE_NAMES.has(TranslateVisitor.extractGTypeName(ctx).toUpperCase());
+    protected static extractGeoModelName(ctx: any): string {
+        const split: string[] = ctx.getText().split('.');
+        return split[split.length - 1];
     }
 
     /**
      * Appends `Geometry.fromWkt("...")`, the form the JVM languages use since they have a WKT reader, with
-     * `Model.GEOGRAPHIC` or the SRID as a second argument where the geometry carries one. The WKT is decoded
-     * from the Gremlin string literal and written back escaped for a JVM string literal, since this translator
-     * has no WKT reader of its own to normalize the text through. The whitespace the JVM WKT reader skips at
-     * either end is dropped, while the whitespace within the text is kept as written.
+     * `Model.GEOGRAPHIC` or the SRID as a second argument where the geometry carries one. The WKT is written
+     * back escaped for a JVM string literal, since this translator has no WKT reader of its own to normalize
+     * the text through.
      */
     protected appendGeometryFromWkt(ctx: any): void {
-        const decoded = decodeStringLiteral(ctx.stringLiteral().getText());
-        const text = decoded.trim();
-        // an EWKT SRID= prefix moves into the second argument, and must agree with an explicit model or SRID
-        const prefix = /^srid=\s*([+-]?\d+)\s*;/i.exec(text);
-        const ewktSrid = prefix !== null ? readEwktSrid(prefix[1]) : null;
-        const wkt = prefix !== null ? text.slice(prefix[0].length).trim() : text;
-        // WktReader reads one prefix, so it rejects a second as an unknown geometry type at the position it starts
-        if (prefix !== null && /^srid=/i.test(wkt)) {
-            const afterPrefix = text.slice(prefix[0].length);
-            const position = decoded.length - decoded.trimStart().length + prefix[0].length +
-                afterPrefix.length - afterPrefix.trimStart().length;
-            throw new TranslatorException(`Invalid Geometry literal: Unknown geometry type at position ${position}`);
-        }
-
-        let srid = ewktSrid ?? CARTESIAN_SRID;
-        const modelCtx = ctx.geometryModel();
-        if (modelCtx != null) {
-            const modelName: string = modelCtx.getText().split('.').pop().toUpperCase();
-            const modelSrid = modelName === 'GEOGRAPHIC' ? GEOGRAPHIC_SRID : CARTESIAN_SRID;
-            if (ewktSrid !== null && ewktSrid !== modelSrid) {
-                throw new TranslatorException(
-                    `Invalid Geometry literal: EWKT SRID ${ewktSrid} conflicts with model ${modelName}`);
-            }
-            srid = modelSrid;
-        } else if (ctx.integerLiteral() != null) {
-            const argumentSrid = readSridLiteral(ctx.integerLiteral().getText());
-            if (ewktSrid !== null && ewktSrid !== argumentSrid) {
-                throw new TranslatorException(
-                    `Invalid Geometry literal: EWKT SRID ${ewktSrid} conflicts with argument SRID ${argumentSrid}`);
-            }
-            srid = argumentSrid;
-        }
+        const { wkt, srid } = resolveGeometryLiteral(ctx);
 
         this.sb.push('Geometry.fromWkt(');
         this.sb.push(JSON.stringify(wkt));
@@ -351,6 +321,158 @@ export default class TranslateVisitor {
             this.sb.push(String(srid));
         }
         this.sb.push(')');
+    }
+
+    /**
+     * Builds the geometry a `Geometry(...)` or `geometry(...)` literal describes, from its WKT and the model or
+     * SRID that follows it, which resolves to a single SRID.
+     *
+     * @throws {TranslatorException} if the text is not a geometry the reader accepts
+     */
+    protected parseGeometryLiteral(ctx: any): Geometry {
+        const { wkt, srid } = resolveGeometryLiteral(ctx);
+        try {
+            return parseWkt(wkt, Number(srid));
+        } catch (err) {
+            throw new TranslatorException((err as Error).message);
+        }
+    }
+
+    /**
+     * Appends the construction of a geometry, recursing into the parts it is built from. A geometry's kind is named
+     * by the class that builds it, which is spelled the same in every language the translators target: `Point`,
+     * `LineString`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon` and `GeometryCollection`. The walk
+     * is shared and each language supplies its own naming and argument syntax through the hooks it overrides.
+     */
+    protected appendGeometry(geometry: Geometry): void {
+        if (geometry instanceof Point) {
+            if (geometry.isEmpty) {
+                this.appendEmptyGeometry('Point', geometry);
+            } else {
+                this.appendGeometryPoint(geometry);
+            }
+        } else if (geometry instanceof LineString) {
+            this.#appendGeometryParts('LineString', geometry.points, geometry);
+        } else if (geometry instanceof Polygon) {
+            this.#appendGeometryPolygon(geometry);
+        } else if (geometry instanceof MultiPoint) {
+            this.#appendGeometryParts('MultiPoint', geometry.geometries, geometry);
+        } else if (geometry instanceof MultiLineString) {
+            this.#appendGeometryParts('MultiLineString', geometry.geometries, geometry);
+        } else if (geometry instanceof MultiPolygon) {
+            this.#appendGeometryParts('MultiPolygon', geometry.geometries, geometry);
+        } else if (geometry instanceof GeometryCollection) {
+            this.#appendGeometryParts('GeometryCollection', geometry.geometries, geometry);
+        } else {
+            throw new TranslatorException(
+                `Translator does not support a geometry of kind ${geometry.constructor?.name}`);
+        }
+    }
+
+    /**
+     * Appends a kind built from a list of parts, or its empty form when it holds no parts.
+     */
+    #appendGeometryParts(kind: string, parts: readonly Geometry[], geometry: Geometry): void {
+        if (parts.length === 0) {
+            this.appendEmptyGeometry(kind, geometry);
+            return;
+        }
+
+        this.appendGeometryPartsOpen(kind);
+        for (let ix = 0; ix < parts.length; ix++) {
+            if (ix > 0) {
+                this.sb.push(', ');
+            }
+            this.appendGeometry(parts[ix]);
+        }
+        this.appendGeometryPartsClose(kind);
+    }
+
+    /**
+     * Appends a polygon, whose shell ring is one argument and whose hole rings follow it.
+     */
+    #appendGeometryPolygon(polygon: Polygon): void {
+        const shell = polygon.exteriorRing;
+        if (shell.points.length === 0) {
+            this.appendEmptyGeometry('Polygon', polygon);
+            return;
+        }
+
+        this.sb.push(this.geometryConstructorOf('Polygon'));
+        this.appendGeometry(shell);
+
+        const holes = polygon.interiorRings;
+        this.appendGeometryHolesOpen(holes.length);
+        for (let ix = 0; ix < holes.length; ix++) {
+            if (ix > 0) {
+                this.sb.push(', ');
+            }
+            this.appendGeometry(holes[ix]);
+        }
+        this.appendGeometryHolesClose(holes.length);
+
+        this.sb.push(')');
+    }
+
+    /**
+     * Appends a coordinate as a double literal.
+     */
+    protected appendGeometryCoordinate(value: number): void {
+        this.sb.push(formatCoordinateLiteral(value));
+    }
+
+    /**
+     * Opens the argument list of a kind built from a list of parts.
+     */
+    protected appendGeometryPartsOpen(kind: string): void {
+        this.sb.push(this.geometryConstructorOf(kind));
+    }
+
+    /**
+     * Closes the argument list of a kind built from a list of parts.
+     */
+    protected appendGeometryPartsClose(_kind: string): void {
+        this.sb.push(')');
+    }
+
+    /**
+     * Opens the hole rings of a polygon that has at least one.
+     */
+    protected appendGeometryHolesOpen(holeCount: number): void {
+        if (holeCount > 0) {
+            this.sb.push(', ');
+        }
+    }
+
+    /**
+     * Closes the hole rings of a polygon that has at least one.
+     */
+    protected appendGeometryHolesClose(_holeCount: number): void {
+        // the holes are plain arguments unless a language says otherwise
+    }
+
+    /**
+     * Returns the text that opens a constructor call for a kind, up to and including its open parenthesis, which is
+     * the name of the kind unless a language says otherwise.
+     */
+    protected geometryConstructorOf(kind: string): string {
+        return kind + '(';
+    }
+
+    /**
+     * Appends a point with its coordinates and, where the language needs it, its model or SRID. A language that
+     * builds a geometry from constructors rather than from its WKT overrides this.
+     */
+    protected appendGeometryPoint(_point: Point): void {
+        throw new TranslatorException('Translator does not support a point geometry literal');
+    }
+
+    /**
+     * Appends the empty form of a kind with its model or SRID. A language that builds a geometry from constructors
+     * rather than from its WKT overrides this, and rejects there the empty forms it has no constructor for.
+     */
+    protected appendEmptyGeometry(_kind: string, _geometry: Geometry): void {
+        throw new TranslatorException('Translator does not support an empty geometry literal');
     }
 
     visitTraversalPredicate(ctx: any): void {
@@ -432,6 +554,9 @@ export default class TranslateVisitor {
     visitTraversalPredicate_notRegex(ctx: any): void { this.visitP(ctx, 'TextP', 'notRegex'); }
     visitTraversalPredicate_geoWithin(ctx: any): void { this.visitP(ctx, 'GeoP', 'geoWithin'); }
     visitTraversalPredicate_geoContains(ctx: any): void { this.visitP(ctx, 'GeoP', 'geoContains'); }
+    visitTraversalPredicate_geoIntersects(ctx: any): void { this.visitP(ctx, 'GeoP', 'geoIntersects'); }
+    visitTraversalPredicate_geoDisjoint(ctx: any): void { this.visitP(ctx, 'GeoP', 'geoDisjoint'); }
+    visitTraversalPredicate_geoEquals(ctx: any): void { this.visitP(ctx, 'GeoP', 'geoEquals'); }
 
     visitBooleanArgument(ctx: any): void {
         if (ctx.booleanLiteral() != null) {
@@ -568,6 +693,90 @@ const CARTESIAN_SRID = 0n;
 
 /** The SRID of the GEOGRAPHIC model, which is WGS84. */
 const GEOGRAPHIC_SRID = 4326n;
+
+/**
+ * Reads a geometry literal into the WKT it holds and the SRID that WKT is in. The text is decoded from the
+ * Gremlin string literal and an EWKT `SRID=` prefix is taken off it, which must agree with an explicit model
+ * or SRID argument. The whitespace the JVM WKT reader skips at either end is dropped, while the whitespace
+ * within the text is kept as written.
+ *
+ * @throws {TranslatorException} if the SRID is out of range or the prefix conflicts with the argument
+ */
+export function resolveGeometryLiteral(ctx: any): { wkt: string; srid: bigint } {
+    const decoded = decodeStringLiteral(ctx.stringLiteral().getText());
+    const text = decoded.trim();
+    // an EWKT SRID= prefix moves into the second argument, and must agree with an explicit model or SRID
+    const prefix = /^srid=\s*([+-]?\d+)\s*;/i.exec(text);
+    const ewktSrid = prefix !== null ? readEwktSrid(prefix[1]) : null;
+    const wkt = prefix !== null ? text.slice(prefix[0].length).trim() : text;
+    // WktReader reads one prefix, so it rejects a second as an unknown geometry type at the position it starts
+    if (prefix !== null && /^srid=/i.test(wkt)) {
+        const afterPrefix = text.slice(prefix[0].length);
+        const position = decoded.length - decoded.trimStart().length + prefix[0].length +
+            afterPrefix.length - afterPrefix.trimStart().length;
+        throw new TranslatorException(`Invalid Geometry literal: Unknown geometry type at position ${position}`);
+    }
+
+    let srid = ewktSrid ?? CARTESIAN_SRID;
+    const modelCtx = ctx.geometryModel();
+    if (modelCtx != null) {
+        const modelName: string = modelCtx.getText().split('.').pop().toUpperCase();
+        const modelSrid = modelName === 'GEOGRAPHIC' ? GEOGRAPHIC_SRID : CARTESIAN_SRID;
+        if (ewktSrid !== null && ewktSrid !== modelSrid) {
+            throw new TranslatorException(
+                `Invalid Geometry literal: EWKT SRID ${ewktSrid} conflicts with model ${modelName}`);
+        }
+        srid = modelSrid;
+    } else if (ctx.integerLiteral() != null) {
+        const argumentSrid = readSridLiteral(ctx.integerLiteral().getText());
+        if (ewktSrid !== null && ewktSrid !== argumentSrid) {
+            throw new TranslatorException(
+                `Invalid Geometry literal: EWKT SRID ${ewktSrid} conflicts with argument SRID ${argumentSrid}`);
+        }
+        srid = argumentSrid;
+    }
+
+    return { wkt, srid };
+}
+
+/**
+ * Formats a coordinate the way the reference translators do: the shortest decimal that reads back as the same
+ * number, with at least one digit on each side of the point, in exponent form outside the range 1e-3 to 1e7.
+ */
+function formatCoordinateLiteral(value: number): string {
+    if (Number.isNaN(value)) {
+        return 'NaN';
+    }
+    if (value === Number.POSITIVE_INFINITY) {
+        return 'Infinity';
+    }
+    if (value === Number.NEGATIVE_INFINITY) {
+        return '-Infinity';
+    }
+
+    const sign = value < 0 || Object.is(value, -0) ? '-' : '';
+    const magnitude = Math.abs(value);
+    if (magnitude === 0) {
+        return sign + '0.0';
+    }
+
+    const [mantissa, exponentText] = magnitude.toExponential().split('e');
+    const digits = mantissa.replace('.', '');
+    const exponent = Number(exponentText);
+
+    if (exponent >= -3 && exponent < 7) {
+        if (exponent < 0) {
+            return sign + '0.' + '0'.repeat(-exponent - 1) + digits;
+        }
+        const pointAt = exponent + 1;
+        const whole = digits.length > pointAt ? digits.substring(0, pointAt) : digits.padEnd(pointAt, '0');
+        const fraction = digits.length > pointAt ? digits.substring(pointAt) : '0';
+        return sign + whole + '.' + fraction;
+    }
+
+    const fraction = digits.length > 1 ? digits.substring(1) : '0';
+    return sign + digits.charAt(0) + '.' + fraction + 'E' + exponent;
+}
 
 /** The range each integer type suffix holds: byte, short, int and long. */
 const SUFFIX_BOUNDS: Record<string, [bigint, bigint]> = {

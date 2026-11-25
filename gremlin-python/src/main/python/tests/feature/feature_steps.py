@@ -73,6 +73,12 @@ ignores = [
     'g.withSideEffect("a", xx1).V().both().values("name").store("a").cap("a")',
 ]
 
+# scenarios that gremlin-python cannot express, named as the other GLVs name them
+ignored_scenarios = {
+    # gremlin-python has no constructor for an empty 3D geometry, so the traversal cannot be written
+    'g_injectXGeometryXPOINT_Z_EMPTYXX',
+}
+
 
 @given("the {graph_name:w} graph")
 def choose_graph(step, graph_name):
@@ -90,10 +96,6 @@ def choose_graph(step, graph_name):
 
     if not step.context.ignore:
         step.context.ignore = "MultiLabelDefault" in tagset
-
-    # gremlin-python has no geo predicates and the translator rejects geometries, so these scenarios are placeholders
-    if not step.context.ignore:
-        step.context.ignore = "DataGeometry" in tagset
 
     if (step.context.ignore):
         return
@@ -158,7 +160,7 @@ def the_intent(step):
 @given("the traversal of")
 def translate_traversal(step):
     if step.context.ignore == False:
-        step.context.ignore = step.text in ignores
+        step.context.ignore = step.text in ignores or step.parent.sentence in ignored_scenarios
     if step.context.ignore:
         return
 
@@ -466,6 +468,8 @@ def _convert(val, ctx):
         return _parse_duration(val[4:-1])
     elif isinstance(val, str) and re.match(r"^bin\[.*\]$", val):  # parse binary
         return base64.b64decode(val[4:-1])
+    elif isinstance(val, str) and re.match(r"^geo\[.*\]$", val):  # parse geometry
+        return world.parse_geometry(val[4:-1])
     elif isinstance(val, str) and re.match(r"^d\[NaN\]$", val):  # parse nan
         return float("nan")
     elif isinstance(val, str) and re.match(r"^d\[Infinity\]$", val):  # parse +inf

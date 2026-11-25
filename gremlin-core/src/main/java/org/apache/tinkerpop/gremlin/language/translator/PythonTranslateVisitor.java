@@ -23,6 +23,9 @@ import org.apache.tinkerpop.gremlin.language.antlr.GremlinParser;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategy;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.geo.Geometry;
+import org.apache.tinkerpop.gremlin.structure.geo.Model;
+import org.apache.tinkerpop.gremlin.structure.geo.Point;
 import org.apache.tinkerpop.gremlin.util.DatetimeHelper;
 
 import java.math.BigInteger;
@@ -246,32 +249,68 @@ public class PythonTranslateVisitor extends AbstractTranslateVisitor {
         throw new TranslatorException("Python does not support range literals");
     }
 
-    @Override
-    public Void visitTraversalGType(final GremlinParser.TraversalGTypeContext ctx) {
-        if (isGeometryGType(ctx))
-            throw new TranslatorException("Python does not support geometry types");
-
-        return super.visitTraversalGType(ctx);
-    }
-
+    /**
+     * Builds a geometry with the constructors of {@code gremlin_python.structure.geo}, which take the parts of a
+     * kind as a list and take a model or an SRID as a keyword argument.
+     */
     @Override
     public Void visitGeometryLiteral(final GremlinParser.GeometryLiteralContext ctx) {
-        throw new TranslatorException("Python does not support geometry literals");
+        appendGeometry(parseGeometryLiteral(ctx));
+        return null;
     }
 
     @Override
-    public Void visitGeoModel(final GremlinParser.GeoModelContext ctx) {
-        throw new TranslatorException("Python does not support geometry models");
+    protected void appendGeometryPartsOpen(final String kind) {
+        sb.append(geometryConstructorOf(kind)).append("[");
     }
 
     @Override
-    public Void visitTraversalPredicate_geoWithin(final GremlinParser.TraversalPredicate_geoWithinContext ctx) {
-        throw new TranslatorException("Python does not support geo predicates");
+    protected void appendGeometryPartsClose(final String kind) {
+        sb.append("])");
     }
 
     @Override
-    public Void visitTraversalPredicate_geoContains(final GremlinParser.TraversalPredicate_geoContainsContext ctx) {
-        throw new TranslatorException("Python does not support geo predicates");
+    protected void appendGeometryHolesOpen(final int holeCount) {
+        if (holeCount > 0) sb.append(", [");
+    }
+
+    @Override
+    protected void appendGeometryHolesClose(final int holeCount) {
+        if (holeCount > 0) sb.append("]");
+    }
+
+    @Override
+    protected void appendGeometryPoint(final Point point) {
+        sb.append("Point(");
+        appendGeometryCoordinate(point.x());
+        sb.append(", ");
+        appendGeometryCoordinate(point.y());
+        if (point.hasZ()) {
+            sb.append(", ");
+            appendGeometryCoordinate(point.z());
+        }
+        if (point.model() != Model.CARTESIAN) {
+            sb.append(", ");
+            appendGeometryModelOrSrid(point);
+        }
+        sb.append(")");
+    }
+
+    @Override
+    protected void appendEmptyGeometry(final String kind, final Geometry geometry) {
+        if (geometry.hasZ())
+            throw new TranslatorException("Python has no constructor for an empty 3D geometry: " + geometry.toWKT());
+        sb.append(kind).append(".empty(");
+        if (geometry.model() != Model.CARTESIAN)
+            appendGeometryModelOrSrid(geometry);
+        sb.append(")");
+    }
+
+    private void appendGeometryModelOrSrid(final Geometry geometry) {
+        if (geometry.model() == Model.GEOGRAPHIC)
+            sb.append("model=Model.GEOGRAPHIC");
+        else
+            sb.append("srid=").append(geometry.srid());
     }
 
     @Override

@@ -49,7 +49,8 @@ namespace Gremlin.Net.IntegrationTest.Gherkin
                 // Add here the name of scenarios to ignore and the reason, e.g.:
                 {"g_withStrategiesXProductiveByStrategyX_V_group_byXageX", IgnoreReason.NullKeysInMapNotSupported},
                 {"g_withStrategiesXProductiveByStrategyX_V_groupCount_byXageX", IgnoreReason.NullKeysInMapNotSupported},
-                {"g_withStrategiesXProductiveByStrategyX_V_group_byXageX_byXnameX", IgnoreReason.NullKeysInMapNotSupported}
+                {"g_withStrategiesXProductiveByStrategyX_V_group_byXageX_byXnameX", IgnoreReason.NullKeysInMapNotSupported},
+                {"g_injectXGeometryXPOINT_Z_EMPTYXX", IgnoreReason.EmptyGeometryWithZ}
             };
 
         private static class Keywords
@@ -125,11 +126,6 @@ namespace Gremlin.Net.IntegrationTest.Gherkin
                     if (scenario.Tags.Concat(feature.Tags).Any(t => t.Name == "@StepWrite"))
                     {
                         failedSteps.Add(scenario.Steps.First(), new IgnoreException(IgnoreReason.WriteStepTestingNotSupported));
-                        continue;
-                    }
-                    if (scenario.Tags.Concat(feature.Tags).Any(t => t.Name == "@DataGeometry"))
-                    {
-                        failedSteps.Add(scenario.Steps.First(), new IgnoreException(IgnoreReason.GeometryNotSupported));
                         continue;
                     }
 

@@ -23,8 +23,10 @@ from decimal import Decimal
 
 from gremlin_python import statics
 from gremlin_python.process.traversal import Cardinality
+from gremlin_python.process.traversal import GeoP
 from gremlin_python.process.traversal import P
 from gremlin_python.process.traversal import Pop
+from gremlin_python.structure.geo import Point
 
 
 class TestStatics(object):
@@ -38,6 +40,17 @@ class TestStatics(object):
         #
         assert isinstance(first, Pop)
         assert first == Pop.first
+        statics.unload_statics(globals())
+
+    def test_geo_predicates(self):
+        statics.load_statics(globals())
+        point = Point(1, 2)
+        assert isinstance(geo_within(point), GeoP)
+        assert geo_within(point) == GeoP.geo_within(point)
+        assert geo_contains(point) == GeoP.geo_contains(point)
+        assert geo_intersects(point) == GeoP.geo_intersects(point)
+        assert geo_disjoint(point) == GeoP.geo_disjoint(point)
+        assert geo_equals(point) == GeoP.geo_equals(point)
         statics.unload_statics(globals())
 
     def test_singlebyte(self):

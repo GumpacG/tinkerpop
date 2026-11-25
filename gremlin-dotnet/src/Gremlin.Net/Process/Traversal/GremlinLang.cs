@@ -33,6 +33,7 @@ using System.Text;
 using Gremlin.Net.Process.Traversal.Strategy;
 using Gremlin.Net.Process.Traversal.Strategy.Decoration;
 using Gremlin.Net.Structure;
+using Gremlin.Net.Structure.Geo;
 
 namespace Gremlin.Net.Process.Traversal
 {
@@ -277,6 +278,13 @@ namespace Gremlin.Net.Process.Traversal
             }
             if (arg is byte[] byteArray)
                 return $"Binary(\"{Convert.ToBase64String(byteArray)}\")";
+
+            if (arg is Geometry geometry)
+            {
+                // WKT holds no quotes or backslashes, so the text needs no escaping. The SRID is always
+                // written as an int so that every model round trips.
+                return $"Geometry(\"{geometry.ToWkt()}\",{geometry.Srid})";
+            }
 
             if (arg is EnumWrapper enumWrapper)
                 return $"{enumWrapper.EnumName}.{enumWrapper.EnumValue}";

@@ -318,6 +318,30 @@ public class TraversalPredicateVisitor extends DefaultGremlinBaseVisitor<P> {
         return build(() -> GeoP.geoContains(parseGeometry(ctx.geometryArgument())));
     }
 
+    @Override
+    public P visitTraversalPredicate_geoIntersects(final GremlinParser.TraversalPredicate_geoIntersectsContext ctx) {
+        if (ctx.nestedTraversal() != null) {
+            return GeoP.geoIntersects(parseTraversal(ctx.nestedTraversal()));
+        }
+        return build(() -> GeoP.geoIntersects(parseGeometry(ctx.geometryArgument())));
+    }
+
+    @Override
+    public P visitTraversalPredicate_geoDisjoint(final GremlinParser.TraversalPredicate_geoDisjointContext ctx) {
+        if (ctx.nestedTraversal() != null) {
+            return GeoP.geoDisjoint(parseTraversal(ctx.nestedTraversal()));
+        }
+        return build(() -> GeoP.geoDisjoint(parseGeometry(ctx.geometryArgument())));
+    }
+
+    @Override
+    public P visitTraversalPredicate_geoEquals(final GremlinParser.TraversalPredicate_geoEqualsContext ctx) {
+        if (ctx.nestedTraversal() != null) {
+            return GeoP.geoEquals(parseTraversal(ctx.nestedTraversal()));
+        }
+        return build(() -> GeoP.geoEquals(parseGeometry(ctx.geometryArgument())));
+    }
+
     /**
      * Builds a geo predicate, reporting an argument it rejects as a parse failure in the same way a
      * rejected literal is reported.

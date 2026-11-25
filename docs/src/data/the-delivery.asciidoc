@@ -17,7 +17,7 @@ specific language governing permissions and limitations
 under the License.
 ////
 [[the-delivery]]
-[llms-summary="The delivery graph: a TinkerPop 4.x showcase for geometry property values and the geospatial predicates. Includes its GQL Graph Types schema and Gremlin examples that filter vertices and edges by location with geoWithin and geoContains. Only the loading blocks run at build time. The examples are static listings with their results in callouts."]
+[llms-summary="The delivery graph: a TinkerPop 4.x showcase for geometry property values and the geospatial predicates. Includes its GQL Graph Types schema and Gremlin examples that filter vertices and edges by location with geoWithin, geoContains, geoIntersects, geoDisjoint and geoEquals. Only the loading blocks run at build time. The examples are static listings with their results in callouts."]
 == The Delivery Graph
 
 The delivery graph models a grocery delivery company. It runs five hubs: `Hell's Kitchen`,
@@ -29,16 +29,17 @@ Earth. Inside the Hell's Kitchen hub is a small warehouse mapped in meters, wher
 works.
 
 The graph was created for TinkerPop 4.x to demonstrate `Geometry` property values and the geospatial
-predicates `geoWithin` and `geoContains`. Every vertex carries its location in a `loc` property, and
-the `delivered` and `shipsTo` edges carry their route in a `path` property. Locations on the Earth
-use the `GEOGRAPHIC` model with longitude and latitude in degrees, while the
-warehouse uses the `CARTESIAN` model with coordinates in meters. It is the reference example for
-filtering by location, because each geometry exercises a case that spatial filters commonly get
-wrong: a zone with a hole, a customer on a border, a zone across the prime meridian, a zone in two
-parts, a shipping lane across the antimeridian, z values including z = 0, overlapping zones, and an
-invalid polygon. It is created with `TinkerFactory.createTheDelivery()` and ships as
-`data/tinkerpop-delivery.json` in GraphSON 4.0 and `data/tinkerpop-delivery.kryo` in Gryo. It is not
-provided in GraphML or in earlier versions of GraphSON, which cannot represent geometry values.
+predicates `geoWithin`, `geoContains`, `geoIntersects`, `geoDisjoint` and `geoEquals`. Every vertex
+carries its location in a `loc` property, and the `delivered` and `shipsTo` edges carry their route
+in a `path` property. Locations on the Earth use the `GEOGRAPHIC` model with longitude and latitude
+in degrees, while the warehouse uses the `CARTESIAN` model with coordinates in meters. It is the
+reference example for filtering by location, because each geometry exercises a case that spatial
+filters commonly get wrong: a zone with a hole, a customer on a border, a zone across the prime
+meridian, a zone in two parts, a shipping lane across the antimeridian, z values including z = 0,
+overlapping zones, and an invalid polygon. It is created with `TinkerFactory.createTheDelivery()`
+and ships as `data/tinkerpop-delivery.json` in GraphSON 4.0 and `data/tinkerpop-delivery.kryo` in
+Gryo. It is not provided in GraphML or in earlier versions of GraphSON, which cannot represent
+geometry values.
 
 .The Delivery Graph
 image::the-delivery-graph.png[width=685]
@@ -130,6 +131,41 @@ g.V().hasLabel("zone").has("loc", geoContains(dee)).values("name") <1>
 ----
 
 <1> Empty: Dee sits exactly on the border that Midtown and North Brooklyn and Queens share.
+
+`geoIntersects` counts a point of either boundary, so both of those zones intersect Dee.
+
+[source,groovy]
+----
+g.V().hasLabel("zone").has("loc", geoIntersects(dee)).values("name") <1>
+----
+
+<1> Midtown and North Brooklyn and Queens, the two zones whose shared border runs through Dee.
+
+`geoDisjoint` is the opposite of `geoIntersects` for a value it can compare, which finds the hubs that lie away from a
+delivery box.
+
+[source,groovy]
+----
+deliveryBox = Geometry.fromWkt("POLYGON((-74.03 40.69, -73.95 40.69, -73.95 40.766, -74.03 40.766, -74.03 40.69))", Model.GEOGRAPHIC)
+g.V().hasLabel("hub").has("loc", geoDisjoint(deliveryBox)).values("name") <1>
+g.V().hasLabel("customer").has("raw", geoDisjoint(deliveryBox)).values("name") <2>
+----
+
+<1> Los Angeles, Greenwich and Auckland, since Hell's Kitchen and Williamsburg lie inside the box.
+<2> Empty: Hana's `raw` holds Well-Known Text as a string, and a value that cannot be compared does not match
+`geoDisjoint` either.
+
+`geoEquals` compares point sets rather than coordinate lists, so the Congestion Zone matches its own ring written
+from another corner.
+
+[source,groovy]
+----
+rotated = Geometry.fromWkt("POLYGON((-73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7, -73.9975 40.7, -73.975 40.7))", Model.GEOGRAPHIC)
+g.V().hasLabel("zone").has("loc", geoEquals(rotated)).values("name") <1>
+----
+
+<1> Congestion Zone. The argument starts at a different corner and carries a redundant vertex on its southern edge,
+which covers no extra point, so `geoEquals` matches where `eq` would not.
 
 An edge's `path` is filtered like any other geometry, here the route of the only `delivered` edge.
 

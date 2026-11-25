@@ -24,8 +24,9 @@ import org.locationtech.jts.operation.relateng.RelatePredicate;
 /**
  * Evaluates the geometry predicates with JTS.
  * <p>
- * A value that cannot be compared gives {@code false}: a non-geometry, null, an empty geometry, a
- * different SRID, or a model other than {@link Model#CARTESIAN} or {@link Model#GEOGRAPHIC}.
+ * A value that cannot be compared gives {@code false}: a non-geometry, null, a different SRID, or a
+ * model other than {@link Model#CARTESIAN} or {@link Model#GEOGRAPHIC}. An empty geometry can be
+ * compared, and each predicate documents how it answers one.
  * <p>
  * All math is 2D. {@link Model#GEOGRAPHIC} relates shapes in longitude and latitude, with edges
  * straight in both, so the predicates hold for edges under about 100 km that cross neither the
@@ -67,18 +68,66 @@ public final class GeoPredicates {
     }
 
     /**
-     * Returns true if a stored value and an argument can be compared at all: both are non-empty
-     * geometries in the same spatial reference system, which is one TinkerPop defines the math for.
-     * <p>
-     * An empty geometry is neither within another nor contains one, so it is excluded here.
+     * Returns true if {@code value} shares at least one point with {@code argument}, where a point
+     * of either boundary counts. An empty geometry holds no point, so it intersects nothing.
+     *
+     * @since 4.0.0
+     */
+    public static boolean intersects(final Object value, final Object argument) {
+        if (!comparable(value, argument)) return false;
+        return RelateNG.relate(JtsAdapter.toJts((Geometry) value), JtsAdapter.toJts((Geometry) argument),
+                RelatePredicate.intersects());
+    }
+
+    /**
+     * Returns true if {@code value} shares no point with {@code argument}. An empty geometry holds
+     * no point, so it is disjoint from every geometry it can be compared with.
+     *
+     * @since 4.0.0
+     */
+    public static boolean disjoint(final Object value, final Object argument) {
+        if (!inTheSameSpace(value, argument)) return false;
+        if (((Geometry) value).isEmpty() || ((Geometry) argument).isEmpty()) return true;
+        return RelateNG.relate(JtsAdapter.toJts((Geometry) value), JtsAdapter.toJts((Geometry) argument),
+                RelatePredicate.disjoint());
+    }
+
+    /**
+     * Returns true if {@code value} covers the same points as {@code argument}, however each one is
+     * written, so a line with a redundant vertex equals the line without it. Two empty geometries
+     * are equal whatever their kinds, and an empty geometry equals nothing else.
+     *
+     * @since 4.0.0
+     */
+    public static boolean equalTo(final Object value, final Object argument) {
+        if (!inTheSameSpace(value, argument)) return false;
+        final boolean valueIsEmpty = ((Geometry) value).isEmpty();
+        final boolean argumentIsEmpty = ((Geometry) argument).isEmpty();
+        if (valueIsEmpty || argumentIsEmpty) return valueIsEmpty && argumentIsEmpty;
+        return RelateNG.relate(JtsAdapter.toJts((Geometry) value), JtsAdapter.toJts((Geometry) argument),
+                RelatePredicate.equalsTopo());
+    }
+
+    /**
+     * Returns true if a stored value and an argument can be compared and neither of them is empty, which is what
+     * {@link #within}, {@link #contains} and {@link #intersects} need: an empty geometry holds no point, so it lies
+     * in nothing, holds nothing and meets nothing.
      */
     private static boolean comparable(final Object value, final Object argument) {
+        if (!inTheSameSpace(value, argument)) return false;
+        return !((Geometry) value).isEmpty() && !((Geometry) argument).isEmpty();
+    }
+
+    /**
+     * Returns true if a stored value and an argument can be compared at all: both are geometries in
+     * the same spatial reference system, which is one TinkerPop defines the math for.
+     */
+    private static boolean inTheSameSpace(final Object value, final Object argument) {
         if (!(value instanceof Geometry) || !(argument instanceof Geometry)) return false;
 
         final Geometry first = (Geometry) value;
         final Geometry second = (Geometry) argument;
         if (first.srid() != second.srid()) return false;
-        if (first.model() == Model.OTHER) return false;
-        return !first.isEmpty() && !second.isEmpty();
+        return first.model() != Model.OTHER;
     }
 }

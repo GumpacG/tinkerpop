@@ -573,6 +573,9 @@ The following table maps the notions proposed above to the various `P` operators
 |P.typeOf |Comparability
 |GeoP.geoWithin |Spatial relationship
 |GeoP.geoContains |Spatial relationship
+|GeoP.geoIntersects |Spatial relationship
+|GeoP.geoDisjoint |Spatial relationship
+|GeoP.geoEquals |Spatial relationship
 |================
 
 The geometry predicates relate two geometries spatially rather than by Equality or Comparability, and are defined in
@@ -584,7 +587,7 @@ link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-test/src/main/resour
 link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-test/src/main/resources/org/apache/tinkerpop/gremlin/test/features/semantics/Comparability.feature[Comparability Tests]
 
 [[gremlin-semantics-geometry]]
-[llms-summary="Geometry semantics: the Geometry() literal and the geoWithin and geoContains predicates with the rules that govern their evaluation."]
+[llms-summary="Geometry semantics: the Geometry() literal and the geoWithin, geoContains, geoIntersects, geoDisjoint and geoEquals predicates with the rules that govern their evaluation."]
 == Geometry
 
 The `GEOMETRY` type and the kinds it is a supertype of are listed in the Types section, and their equality,
@@ -616,7 +619,7 @@ map key or map value.
 
 === Geometry Predicates
 
-Two predicates filter a geometry by its spatial relationship to another geometry. Each has a `GeoP` form and a bare
+Five predicates filter a geometry by its spatial relationship to another geometry. Each has a `GeoP` form and a bare
 form, so `GeoP.geoWithin(g)` and `geoWithin(g)` are the same predicate.
 
 [width="100%",cols="4,11",options="header"]
@@ -624,11 +627,19 @@ form, so `GeoP.geoWithin(g)` and `geoWithin(g)` are the same predicate.
 |Predicate |True when
 |`geoWithin(g)` |The value lies entirely inside `g`. A value lying only on `g`'s boundary is not within it.
 |`geoContains(g)` |The value entirely contains `g`. A geometry does not contain a value lying only on its boundary.
+|`geoIntersects(g)` |The value shares at least one point with `g`, where a point of either boundary counts.
+|`geoDisjoint(g)` |The value shares no point with `g`. An empty geometry is disjoint from every geometry in the same spatial reference system.
+|`geoEquals(g)` |The value covers the same points as `g`, whichever way each is written. Two empty geometries are equal whatever their kinds, and an empty geometry equals nothing else.
 |=========================================================
 
-`geoWithin` and `geoContains` are converses, so `a geoWithin b` holds exactly when `b geoContains a`. Each argument may
-be a constant value, a parameter, or a child traversal whose first result is used, following the same first-result
-semantics as the other predicates that accept a traversal.
+`geoWithin` and `geoContains` are converses, so `a geoWithin b` holds exactly when `b geoContains a`. `geoIntersects`
+and `geoDisjoint` are opposites for a value they can compare, and both are false for a value they cannot, as `lt` and
+`gte` are both false for a value that cannot be compared. `P.not(geoIntersects(g))` is therefore a different
+predicate, since it is true for a value that cannot be compared. `geoEquals` is topological rather than exact, so
+`LINESTRING(0 0, 2 2)` equals `LINESTRING(0 0, 1 1, 2 2)` while `P.eq` holds only for identical coordinates.
+
+Each argument may be a constant value, a parameter, or a child traversal whose first result is used, following the same
+first-result semantics as the other predicates that accept a traversal.
 
 ==== Evaluation
 
@@ -641,17 +652,23 @@ not match, so a `CARTESIAN` value never matches a `GEOGRAPHIC` argument.
 math for it.
 * *Null and other types.* A `null` value, and a value of any type other than `GEOMETRY`, does not match. The `STRING`
 holding a geometry's Well-Known Text is a `STRING` and does not match.
-* *Empty geometries.* An empty value never matches, and no value matches an empty argument.
+* *Empty geometries.* An empty value does not match `geoWithin`, `geoContains` or `geoIntersects`, and no value matches
+an empty argument to one of them. `geoDisjoint` and `geoEquals` are the exception. An empty geometry shares no point
+with anything, so an empty value is disjoint from any argument it can be compared with, and any value it can be
+compared with is disjoint from an empty argument. Two empty geometries hold the same points, so they are equal whatever
+their kinds, while an empty geometry equals nothing else.
 * *z.* All spatial math is two dimensional, so z is ignored. `POINT Z (2 2 9)` is within the square
 `POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))`.
 * *Collections.* A `GEOMETRYCOLLECTION` is a valid operand on either side.
 * *Invalid constants.* A constant or parameter argument is checked when the predicate is built, and an
 `Argument Error` is raised for an argument that is `null` or not a `GEOMETRY`, and for an argument whose SRID is
-neither `0` nor `4326`. An empty geometry is accepted and matches nothing, as described above. The same values arriving
+neither `0` nor `4326`. An empty geometry is accepted and matches as described above. The same values arriving
 from a child traversal do not raise an error. They do not match, per traverser, because they are data.
-* *Negation.* `negate()` yields the complement of the predicate, so every value that does not match, including a
-`null`, an empty geometry and a value of another type, matches the negated predicate.
+* *Negation.* `negate()` yields the complement of the predicate, so a value the predicate does not match, including a
+`null` and a value of another type, matches the negated predicate. The negation of `geoIntersects` is therefore not
+`geoDisjoint`, which does not match such a value either.
 
+[[gremlin-semantics-coordinate-models]]
 ==== Coordinate Models
 
 In the `CARTESIAN` model the relationships are planar and exactly defined. In the `GEOGRAPHIC` model the relationships
@@ -673,9 +690,17 @@ The square below is `POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))` and every value is `CAR
 |`POINT(2 2)`|`geoWithin(square)`|`true`|the point lies in the interior
 |`POINT(0 2)`|`geoWithin(square)`|`false`|the boundary is excluded
 |`square`|`geoContains(POINT(2 2))`|`true`|the converse of the first row
+|`POINT(0 2)`|`geoIntersects(square)`|`true`|a boundary point is a shared point
+|`POINT(9 9)`|`geoDisjoint(square)`|`true`|the two share no point
+|`POINT(0 2)`|`geoDisjoint(square)`|`false`|the boundary point is shared
+|`POINT EMPTY`|`geoDisjoint(square)`|`true`|an empty value shares no point
+|`POLYGON((4 0, 4 4, 0 4, 0 0, 4 0))`|`geoEquals(square)`|`true`|the same ring written from another corner
+|`LINESTRING(0 0, 1 1, 2 2)`|`geoEquals(LINESTRING(0 0, 2 2))`|`true`|the extra vertex covers no extra point
+|`POINT EMPTY`|`geoEquals(POLYGON EMPTY)`|`true`|two empty geometries are equal whatever their kinds
 |`POINT Z (2 2 9)`|`geoWithin(square)`|`true`|z is ignored
-|`POINT EMPTY`|`geoWithin(square)`|`false`|an empty value never matches
+|`POINT EMPTY`|`geoWithin(square)`|`false`|an empty value lies inside nothing
 |`SRID=4326;POINT(2 2)`|`geoWithin(square)`|`false`|the SRIDs differ
+|`SRID=4326;POINT(9 9)`|`geoDisjoint(square)`|`false`|the SRIDs differ, so the value cannot be compared
 |===
 
 ==== See Also

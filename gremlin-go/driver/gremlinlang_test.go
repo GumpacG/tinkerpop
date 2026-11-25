@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_GremlinLang(t *testing.T) {
@@ -787,6 +788,162 @@ func Test_GremlinLang(t *testing.T) {
 			},
 			equals: "g.V().match(\"MATCH (p:person)\",[\"name\":\"marko\"])",
 		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.Inject(MustNewPoint(1, 2, Model.Cartesian))
+			},
+			equals: "g.inject(Geometry(\"POINT(1 2)\",0))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.Inject(MustNewPoint(1, 2, Model.Geographic))
+			},
+			equals: "g.inject(Geometry(\"POINT(1 2)\",4326))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.Inject(MustNewPointWithSrid(1, 2, 32618))
+			},
+			equals: "g.inject(Geometry(\"POINT(1 2)\",32618))",
+		},
+		{
+			name: "geometry in a list and as a map value",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.Inject([]interface{}{MustNewPoint(1, 2, Model.Cartesian)},
+					map[string]interface{}{"loc": MustNewPoint(3, 4, Model.Cartesian)})
+			},
+			equals: "g.inject([Geometry(\"POINT(1 2)\",0)],[\"loc\":Geometry(\"POINT(3 4)\",0)])",
+		},
+		{
+			name: "geometry as a map key",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.Inject(map[interface{}]interface{}{MustNewPoint(1, 2, Model.Cartesian): "home"})
+			},
+			equals: "g.inject([Geometry(\"POINT(1 2)\",0):\"home\"])",
+		},
+		{
+			name: "geometry with a z ordinate",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.Inject(MustNewPointZ(1, 2, 3, Model.Cartesian))
+			},
+			equals: "g.inject(Geometry(\"POINT Z (1 2 3)\",0))",
+		},
+		{
+			name: "an empty geometry",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.Inject(MustNewEmptyPoint(Model.Cartesian))
+			},
+			equals: "g.inject(Geometry(\"POINT EMPTY\",0))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", MustNewPoint(1, 2, Model.Cartesian))
+			},
+			equals: "g.V().has(\"loc\",Geometry(\"POINT(1 2)\",0))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoWithin(MustNewPolygon(MustNewLineString(
+					MustNewPoint(0, 0, Model.Cartesian), MustNewPoint(4, 0, Model.Cartesian),
+					MustNewPoint(4, 4, Model.Cartesian), MustNewPoint(0, 4, Model.Cartesian),
+					MustNewPoint(0, 0, Model.Cartesian)))))
+			},
+			equals: "g.V().has(\"loc\",geoWithin(Geometry(\"POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))\",0)))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoContains(MustNewPoint(1, 2, Model.Geographic)))
+			},
+			equals: "g.V().has(\"loc\",geoContains(Geometry(\"POINT(1 2)\",4326)))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoIntersects(MustNewPoint(1, 2, Model.Cartesian)))
+			},
+			equals: "g.V().has(\"loc\",geoIntersects(Geometry(\"POINT(1 2)\",0)))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoDisjoint(MustNewPoint(1, 2, Model.Cartesian)))
+			},
+			equals: "g.V().has(\"loc\",geoDisjoint(Geometry(\"POINT(1 2)\",0)))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoEquals(MustNewPoint(1, 2, Model.Geographic)))
+			},
+			equals: "g.V().has(\"loc\",geoEquals(Geometry(\"POINT(1 2)\",4326)))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoWithin(MustNewPoint(1, 2, Model.Cartesian)).
+					Or(GeoP.GeoWithin(MustNewPoint(3, 4, Model.Cartesian))))
+			},
+			equals: "g.V().has(\"loc\",geoWithin(Geometry(\"POINT(1 2)\",0)).or(geoWithin(Geometry(\"POINT(3 4)\",0))))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoWithin(MustNewPoint(1, 2, Model.Cartesian)).
+					And(GeoP.GeoContains(MustNewPoint(3, 4, Model.Cartesian))))
+			},
+			equals: "g.V().has(\"loc\",geoWithin(Geometry(\"POINT(1 2)\",0)).and(geoContains(Geometry(\"POINT(3 4)\",0))))",
+		},
+		{
+			name: "geoWithin of a child traversal",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoWithin(T__.Select("zone")))
+			},
+			equals: "g.V().has(\"loc\",geoWithin(__.select(\"zone\")))",
+		},
+		{
+			name: "geoContains of a child traversal",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoContains(T__.Select("zone")))
+			},
+			equals: "g.V().has(\"loc\",geoContains(__.select(\"zone\")))",
+		},
+		{
+			name: "geoIntersects of a child traversal",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoIntersects(T__.Select("zone")))
+			},
+			equals: "g.V().has(\"loc\",geoIntersects(__.select(\"zone\")))",
+		},
+		{
+			name: "geoDisjoint of a child traversal",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoDisjoint(T__.Select("zone")))
+			},
+			equals: "g.V().has(\"loc\",geoDisjoint(__.select(\"zone\")))",
+		},
+		{
+			name: "geoEquals of a child traversal",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", GeoP.GeoEquals(T__.Select("zone")))
+			},
+			equals: "g.V().has(\"loc\",geoEquals(__.select(\"zone\")))",
+		},
+		{
+			name: "a geo predicate of a negated geo predicate",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", P.Not(GeoP.GeoWithin(MustNewPoint(1, 2, Model.Cartesian))))
+			},
+			equals: "g.V().has(\"loc\",not(geoWithin(Geometry(\"POINT(1 2)\",0))))",
+		},
+		{
+			name: "every geometry GType",
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Has("loc", P.TypeOf(GType.Geometry).Or(P.TypeOf(GType.Point)).
+					Or(P.TypeOf(GType.LineString)).Or(P.TypeOf(GType.Polygon)).
+					Or(P.TypeOf(GType.MultiPoint)).Or(P.TypeOf(GType.MultiLineString)).
+					Or(P.TypeOf(GType.MultiPolygon)).Or(P.TypeOf(GType.GeometryCollection)).
+					Or(P.TypeOf(GType.Cartesian)).Or(P.TypeOf(GType.Geographic)))
+			},
+			equals: "g.V().has(\"loc\",typeOf(GType.GEOMETRY).or(typeOf(GType.POINT)).or(typeOf(GType.LINESTRING))" +
+				".or(typeOf(GType.POLYGON)).or(typeOf(GType.MULTIPOINT)).or(typeOf(GType.MULTILINESTRING))" +
+				".or(typeOf(GType.MULTIPOLYGON)).or(typeOf(GType.GEOMETRYCOLLECTION)).or(typeOf(GType.CARTESIAN))" +
+				".or(typeOf(GType.GEOGRAPHIC)))",
+		},
 	}
 
 	var testsToRun []test
@@ -921,6 +1078,14 @@ func Test_ConvertParametersToString(t *testing.T) {
 		}
 	})
 
+	t.Run("should convert geometry parameter", func(t *testing.T) {
+		params := map[string]interface{}{"x": MustNewPoint(1, 2, Model.Geographic)}
+		result := ConvertParametersToString(params)
+		if !strings.Contains(result, "\"x\":Geometry(\"POINT(1 2)\",4326)") {
+			t.Errorf("expected geometry literal in result, got %v", result)
+		}
+	})
+
 	t.Run("should panic on unsupported type in map value", func(t *testing.T) {
 		defer func() {
 			if r := recover(); r == nil {
@@ -939,6 +1104,35 @@ func Test_ConvertParametersToString(t *testing.T) {
 			}
 		}()
 		new(RequestOptionsBuilder).SetParameters(map[string]interface{}{"x": struct{}{}}).Create()
+	})
+}
+
+// Test_Geometry_GValue_GremlinLang covers a geometry bound as a parameter, both on its own and
+// inside a geo predicate.
+func Test_Geometry_GValue_GremlinLang(t *testing.T) {
+	t.Run("a geometry parameter is written as its name", func(t *testing.T) {
+		g := NewGraphTraversalSource(nil, nil)
+		gl := g.V().Has("loc", GValue{Name: "xx1", Value: MustNewPoint(1, 2, Model.Cartesian)}).GremlinLang
+		assert.Equal(t, "g.V().has(\"loc\",xx1)", gl.GetGremlin())
+		assert.Equal(t, "[\"xx1\":Geometry(\"POINT(1 2)\",0)]", ConvertParametersToString(gl.parameters))
+	})
+
+	t.Run("a geometry parameter inside a geo predicate is written as its name", func(t *testing.T) {
+		for _, tt := range []struct {
+			predicate GeoPredicate
+			equals    string
+		}{
+			{GeoP.GeoWithin(GValue{Name: "zone", Value: MustNewPoint(1, 2, Model.Cartesian)}), "geoWithin(zone)"},
+			{GeoP.GeoContains(GValue{Name: "zone", Value: MustNewPoint(1, 2, Model.Cartesian)}), "geoContains(zone)"},
+			{GeoP.GeoIntersects(GValue{Name: "zone", Value: MustNewPoint(1, 2, Model.Cartesian)}), "geoIntersects(zone)"},
+			{GeoP.GeoDisjoint(GValue{Name: "zone", Value: MustNewPoint(1, 2, Model.Cartesian)}), "geoDisjoint(zone)"},
+			{GeoP.GeoEquals(GValue{Name: "zone", Value: MustNewPoint(1, 2, Model.Cartesian)}), "geoEquals(zone)"},
+		} {
+			g := NewGraphTraversalSource(nil, nil)
+			gl := g.V().Has("loc", tt.predicate).GremlinLang
+			assert.Equal(t, "g.V().has(\"loc\","+tt.equals+")", gl.GetGremlin())
+			assert.Equal(t, "[\"zone\":Geometry(\"POINT(1 2)\",0)]", ConvertParametersToString(gl.parameters))
+		}
 	})
 }
 

@@ -32,6 +32,7 @@ describe('API', function () {
     assert.strictEqual(typeof glvModule.process.GValue, 'function');
     assert.strictEqual(typeof glvModule.process.EnumValue, 'function');
     assert.strictEqual(typeof glvModule.process.P, 'function');
+    assert.strictEqual(typeof glvModule.process.GeoP, 'function');
     assert.strictEqual(typeof glvModule.process.Traversal, 'function');
     assert.strictEqual(typeof glvModule.process.TraversalSideEffects, 'function');
     assert.strictEqual(typeof glvModule.process.TraversalStrategies, 'function');
@@ -50,6 +51,8 @@ describe('API', function () {
     assert.strictEqual(glvModule.process.Direction.from_, glvModule.process.Direction.OUT);
     assert.strictEqual(glvModule.process.Direction.to, glvModule.process.Direction.IN);
     assert.strictEqual(glvModule.process.GType.string.elementName, 'STRING');
+    assert.strictEqual(glvModule.process.GType.lineString.elementName, 'LINESTRING');
+    assert.strictEqual(glvModule.process.GType.geographic.elementName, 'GEOGRAPHIC');
     assert.strictEqual(typeof glvModule.process.__.out, 'function');
     validateConstructor(glvModule.process, 'IO');
     validateConstructor(glvModule.process, 'AnonymousTraversalSource');

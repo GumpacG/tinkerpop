@@ -24,8 +24,9 @@ import uuid
 from gremlin_python.process.strategies import ReadOnlyStrategy, SubgraphStrategy, OptionsStrategy, PartitionStrategy
 from gremlin_python.process.traversal import within, eq, T, Order, Scope, Column, Operator, P, Pop, Cardinality, \
     between, inside, WithOptions, ShortestPath, starting_with, ending_with, containing, gt, lte, GValue, Merge, \
-    CardinalityValue
+    CardinalityValue, GeoP, GType
 from gremlin_python.statics import SingleByte, short, long, bigint, BigDecimal, SingleChar
+from gremlin_python.structure.geo import LineString, Model, Point, Polygon
 from gremlin_python.structure.graph import Graph, Vertex
 from gremlin_python.process.anonymous_traversal import traversal
 from gremlin_python.process.graph_traversal import __
@@ -904,3 +905,114 @@ class TestGremlinLang(object):
         assert gl != 'g.V().count()'
         assert gl != 42
         assert gl != None
+
+    def test_geometry(self):
+        g = traversal().with_(None)
+
+        tests = list()
+        tests.append([g.inject(Point(1, 2)),
+                      'g.inject(Geometry("POINT(1 2)",0))'])
+        tests.append([g.inject(Point(1, 2, model=Model.GEOGRAPHIC)),
+                      'g.inject(Geometry("POINT(1 2)",4326))'])
+        tests.append([g.inject(Point(1, 2, srid=32618)),
+                      'g.inject(Geometry("POINT(1 2)",32618))'])
+        tests.append([g.inject(Point(1, 2, 3)),
+                      'g.inject(Geometry("POINT Z (1 2 3)",0))'])
+        tests.append([g.inject(Point.empty()),
+                      'g.inject(Geometry("POINT EMPTY",0))'])
+        tests.append([g.inject([Point(1, 2), Point(3, 4)]),
+                      'g.inject([Geometry("POINT(1 2)",0),Geometry("POINT(3 4)",0)])'])
+        tests.append([g.inject({'loc': Point(1, 2)}),
+                      'g.inject([\'loc\':Geometry("POINT(1 2)",0)])'])
+        # a map key is parenthesized, which the mapKey rule of the grammar allows
+        tests.append([g.inject({Point(1, 2): 'home'}),
+                      'g.inject([(Geometry("POINT(1 2)",0)):\'home\'])'])
+
+        for t in range(0, len(tests)):
+            assert tests[t][0].gremlin_lang.get_gremlin() == tests[t][1]
+
+    def test_geometry_as_parameter(self):
+        g = traversal().with_(None)
+        gremlin_lang = g.V().has('loc', GValue('xx1', Point(1, 2))).gremlin_lang
+        assert "g.V().has('loc',xx1)" == gremlin_lang.get_gremlin()
+        assert '[\'xx1\':Geometry("POINT(1 2)",0)]' == gremlin_lang.get_parameters_as_string()
+
+    def test_geometry_as_parameter_of_a_geo_predicate(self):
+        g = traversal().with_(None)
+        gremlin_lang = g.V().values('loc').is_(GeoP.geo_within(GValue('zone', Point(1, 2)))).gremlin_lang
+        assert "g.V().values('loc').is(geoWithin(zone))" == gremlin_lang.get_gremlin()
+        assert '[\'zone\':Geometry("POINT(1 2)",0)]' == gremlin_lang.get_parameters_as_string()
+
+    def test_geo_predicates(self):
+        g = traversal().with_(None)
+        square = Polygon(LineString([Point(0, 0), Point(4, 0), Point(4, 4), Point(0, 4), Point(0, 0)]))
+        square_text = 'Geometry("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))",0)'
+
+        tests = list()
+        tests.append([g.inject(Point(2, 2)).is_(GeoP.geo_within(square)),
+                      'g.inject(Geometry("POINT(2 2)",0)).is(geoWithin(' + square_text + '))'])
+        tests.append([g.inject(square).is_(GeoP.geo_contains(Point(2, 2))),
+                      'g.inject(' + square_text + ').is(geoContains(Geometry("POINT(2 2)",0)))'])
+        tests.append([g.V().values('loc').is_(GeoP.geo_within(__.select('v').values('zone'))),
+                      "g.V().values('loc').is(geoWithin(__.select('v').values('zone')))"])
+        tests.append([g.V().values('loc').is_(GeoP.geo_contains(__.select('v').values('zone'))),
+                      "g.V().values('loc').is(geoContains(__.select('v').values('zone')))"])
+        tests.append([g.inject(Point(2, 2)).is_(GeoP.geo_intersects(square)),
+                      'g.inject(Geometry("POINT(2 2)",0)).is(geoIntersects(' + square_text + '))'])
+        tests.append([g.inject(Point(2, 2)).is_(GeoP.geo_disjoint(square)),
+                      'g.inject(Geometry("POINT(2 2)",0)).is(geoDisjoint(' + square_text + '))'])
+        tests.append([g.inject(square).is_(GeoP.geo_equals(square)),
+                      'g.inject(' + square_text + ').is(geoEquals(' + square_text + '))'])
+        tests.append([g.V().values('loc').is_(GeoP.geo_intersects(__.select('v').values('zone'))),
+                      "g.V().values('loc').is(geoIntersects(__.select('v').values('zone')))"])
+        tests.append([g.V().values('loc').is_(GeoP.geo_disjoint(__.select('v').values('zone'))),
+                      "g.V().values('loc').is(geoDisjoint(__.select('v').values('zone')))"])
+        tests.append([g.V().values('loc').is_(GeoP.geo_equals(__.select('v').values('zone'))),
+                      "g.V().values('loc').is(geoEquals(__.select('v').values('zone')))"])
+
+        for t in range(0, len(tests)):
+            assert tests[t][0].gremlin_lang.get_gremlin() == tests[t][1]
+
+    def test_geo_predicate_holds_its_argument(self):
+        square = Polygon(LineString([Point(0, 0), Point(4, 0), Point(4, 4), Point(0, 4), Point(0, 0)]))
+        operators = {'geoWithin': GeoP.geo_within, 'geoContains': GeoP.geo_contains,
+                     'geoIntersects': GeoP.geo_intersects, 'geoDisjoint': GeoP.geo_disjoint,
+                     'geoEquals': GeoP.geo_equals}
+
+        for operator, factory in operators.items():
+            predicate = factory(square)
+            assert predicate.operator == operator
+            assert predicate.value is square
+            assert predicate.other is None
+            # the string form holds the WKT of the geometry, without its SRID
+            assert str(predicate) == operator + '(POLYGON((0 0, 4 0, 4 4, 0 4, 0 0)))'
+            assert repr(predicate) == str(predicate)
+
+    def test_geo_predicates_connected_by_and_or_and_not(self):
+        g = traversal().with_(None)
+        inside = GeoP.geo_within(Point(1, 2))
+        inside_text = 'geoWithin(Geometry("POINT(1 2)",0))'
+        around = GeoP.geo_contains(Point(3, 4))
+        around_text = 'geoContains(Geometry("POINT(3 4)",0))'
+
+        tests = list()
+        tests.append([g.V().values('loc').is_(inside.and_(around)),
+                      "g.V().values('loc').is(" + inside_text + '.and(' + around_text + '))'])
+        tests.append([g.V().values('loc').is_(inside.or_(around)),
+                      "g.V().values('loc').is(" + inside_text + '.or(' + around_text + '))'])
+        tests.append([g.V().values('loc').is_(P.not_(inside)),
+                      "g.V().values('loc').is(not(" + inside_text + '))'])
+
+        for t in range(0, len(tests)):
+            assert tests[t][0].gremlin_lang.get_gremlin() == tests[t][1]
+
+        assert str(inside.and_(around)) == 'and(geoWithin(POINT(1 2)),geoContains(POINT(3 4)))'
+
+    def test_geometry_gtypes(self):
+        g = traversal().with_(None)
+        names = ['GEOMETRY', 'POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING',
+                 'MULTIPOLYGON', 'GEOMETRYCOLLECTION', 'CARTESIAN', 'GEOGRAPHIC']
+
+        for name in names:
+            gremlin = g.V().values('loc').is_(P.type_of(GType[name])).gremlin_lang.get_gremlin()
+            assert ("g.V().values('loc').is(typeOf(GType." + name + "))") == gremlin

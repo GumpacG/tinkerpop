@@ -724,3 +724,63 @@ func TestPrimitivePDTTraversalAPIIntegration(t *testing.T) {
 		assert.Equal(t, "two", p2.Value)
 	})
 }
+
+func TestGeoPredicate(t *testing.T) {
+	zone := MustNewPolygon(MustNewLineString(
+		MustNewPoint(0, 0, Model.Cartesian),
+		MustNewPoint(4, 0, Model.Cartesian),
+		MustNewPoint(4, 4, Model.Cartesian),
+		MustNewPoint(0, 4, Model.Cartesian),
+		MustNewPoint(0, 0, Model.Cartesian)))
+
+	t.Run("each predicate holds its name and arguments", func(t *testing.T) {
+		within := GeoP.GeoWithin(zone).(*geoP)
+		assert.Equal(t, "geoWithin", within.operator)
+		require.Len(t, within.values, 1)
+		assert.Equal(t, zone.EWKT(), within.values[0].(Geometry).EWKT())
+
+		contains := GeoP.GeoContains(zone).(*geoP)
+		assert.Equal(t, "geoContains", contains.operator)
+		require.Len(t, contains.values, 1)
+		assert.Equal(t, zone.EWKT(), contains.values[0].(Geometry).EWKT())
+
+		intersects := GeoP.GeoIntersects(zone).(*geoP)
+		assert.Equal(t, "geoIntersects", intersects.operator)
+		require.Len(t, intersects.values, 1)
+		assert.Equal(t, zone.EWKT(), intersects.values[0].(Geometry).EWKT())
+
+		disjoint := GeoP.GeoDisjoint(zone).(*geoP)
+		assert.Equal(t, "geoDisjoint", disjoint.operator)
+		require.Len(t, disjoint.values, 1)
+		assert.Equal(t, zone.EWKT(), disjoint.values[0].(Geometry).EWKT())
+
+		geoEquals := GeoP.GeoEquals(zone).(*geoP)
+		assert.Equal(t, "geoEquals", geoEquals.operator)
+		require.Len(t, geoEquals.values, 1)
+		assert.Equal(t, zone.EWKT(), geoEquals.values[0].(Geometry).EWKT())
+	})
+
+	t.Run("a predicate holds the child traversal it is given", func(t *testing.T) {
+		traversal := T__.Select("zone")
+		assert.Equal(t, []interface{}{traversal}, GeoP.GeoWithin(traversal).(*geoP).values)
+		assert.Equal(t, []interface{}{traversal}, GeoP.GeoContains(traversal).(*geoP).values)
+		assert.Equal(t, []interface{}{traversal}, GeoP.GeoIntersects(traversal).(*geoP).values)
+		assert.Equal(t, []interface{}{traversal}, GeoP.GeoDisjoint(traversal).(*geoP).values)
+		assert.Equal(t, []interface{}{traversal}, GeoP.GeoEquals(traversal).(*geoP).values)
+	})
+
+	t.Run("a connective predicate holds both predicates", func(t *testing.T) {
+		or := GeoP.GeoWithin(zone).Or(GeoP.GeoContains(zone)).(*geoP)
+		assert.Equal(t, "or", or.operator)
+		require.Len(t, or.values, 2)
+		// the left predicate is stored as a value and the right one as the pointer it was given
+		assert.Equal(t, "geoWithin", or.values[0].(geoP).operator)
+		assert.Equal(t, "geoContains", or.values[1].(*geoP).operator)
+
+		and := GeoP.GeoWithin(zone).And(GeoP.GeoContains(zone)).(*geoP)
+		assert.Equal(t, "and", and.operator)
+		require.Len(t, and.values, 2)
+		assert.Equal(t, "geoWithin", and.values[0].(geoP).operator)
+		assert.Equal(t, "geoContains", and.values[1].(*geoP).operator)
+	})
+}

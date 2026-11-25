@@ -24,8 +24,9 @@
 import assert from 'assert';
 import { expect } from 'chai';
 import { Graph, Vertex } from '../../lib/structure/graph.js';
+import { LineString, Point, Polygon } from '../../lib/structure/geo.js';
 import anon from '../../lib/process/anonymous-traversal.js';
-import { P, Order, Direction, Traverser, Traversal } from '../../lib/process/traversal.js';
+import { GeoP, P, Order, Direction, Traverser, Traversal } from '../../lib/process/traversal.js';
 import { __ } from '../../lib/process/graph-traversal.js';
 const V = __.V;
 
@@ -264,6 +265,54 @@ describe('Traversal', function () {
 
     it('convert to string representation with P.within array', function () {
       assert.strictEqual(P.within(['a', 'b']).toString(), "within(['a', 'b'])");
+    });
+  });
+
+  describe('GeoP', function () {
+    const square = Polygon.of(
+      LineString.of(Point.of(0, 0), Point.of(4, 0), Point.of(4, 4), Point.of(0, 4), Point.of(0, 0)),
+    );
+
+    it('should hold the operator and its argument', function () {
+      const predicate = GeoP.geoWithin(square);
+      assert.strictEqual(predicate.operator, 'geoWithin');
+      assert.strictEqual(predicate.value, square);
+      assert.strictEqual(predicate.other, undefined);
+
+      const point = Point.of(2, 2);
+      const factories = {
+        geoWithin: GeoP.geoWithin,
+        geoContains: GeoP.geoContains,
+        geoIntersects: GeoP.geoIntersects,
+        geoDisjoint: GeoP.geoDisjoint,
+        geoEquals: GeoP.geoEquals,
+      };
+      Object.entries(factories).forEach(([operator, factory]) => {
+        assert.strictEqual(factory(point).operator, operator);
+        assert.strictEqual(factory(point).value, point);
+        assert.strictEqual(factory(point).other, undefined);
+      });
+    });
+
+    it('convert to string representation', function () {
+      assert.strictEqual(GeoP.geoWithin(Point.of(2, 2)).toString(), 'geoWithin(POINT(2 2))');
+      assert.strictEqual(GeoP.geoContains(Point.of(2, 2)).toString(), 'geoContains(POINT(2 2))');
+      assert.strictEqual(GeoP.geoIntersects(Point.of(2, 2)).toString(), 'geoIntersects(POINT(2 2))');
+      assert.strictEqual(GeoP.geoDisjoint(Point.of(2, 2)).toString(), 'geoDisjoint(POINT(2 2))');
+      assert.strictEqual(GeoP.geoEquals(Point.of(2, 2)).toString(), 'geoEquals(POINT(2 2))');
+    });
+
+    it('should connect with and and or', function () {
+      assert.strictEqual(GeoP.geoWithin(square).and(GeoP.geoContains(Point.of(2, 2))).operator, 'and');
+      assert.strictEqual(GeoP.geoWithin(square).or(GeoP.geoContains(Point.of(2, 2))).operator, 'or');
+      assert.strictEqual(GeoP.geoWithin(Point.of(1, 2)).and(GeoP.geoContains(Point.of(3, 4))).toString(),
+        'and(geoWithin(POINT(1 2)), geoContains(POINT(3 4)))');
+      assert.strictEqual(GeoP.geoWithin(Point.of(1, 2)).or(GeoP.geoContains(Point.of(3, 4))).toString(),
+        'or(geoWithin(POINT(1 2)), geoContains(POINT(3 4)))');
+    });
+
+    it('should nest inside P.not', function () {
+      assert.strictEqual(P.not(GeoP.geoWithin(Point.of(1, 2))).toString(), 'not(geoWithin(POINT(1 2)))');
     });
   });
 

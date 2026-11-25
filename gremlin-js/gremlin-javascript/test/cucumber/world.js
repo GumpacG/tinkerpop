@@ -83,7 +83,7 @@ setWorldConstructor(TinkerPopWorld);
 
 BeforeAll(function () {
   // load all traversals
-  const promises = ['modern', 'classic', 'crew', 'grateful', 'sink', 'zoo', 'airroutes', 'empty', 'multilabel'].map(graphName => {
+  const promises = ['modern', 'classic', 'crew', 'grateful', 'sink', 'zoo', 'airroutes', 'delivery', 'empty', 'multilabel'].map(graphName => {
     let connection = null;
     if (graphName === 'empty') {
       connection = getConnection('ggraph');
@@ -97,6 +97,12 @@ BeforeAll(function () {
       // air-routes scenarios only return values so the graph needs no element lookups
       connection = getConnection('gairroutes');
       return connection.open().then(() => cache['airroutes'] = {
+        connection: connection, vertices: new Map(), edges: {}, vertexProperties: {} });
+    }
+    if (graphName === 'delivery') {
+      // delivery scenarios only return values so the graph needs no element lookups
+      connection = getConnection('gdelivery');
+      return connection.open().then(() => cache['delivery'] = {
         connection: connection, vertices: new Map(), edges: {}, vertexProperties: {} });
     }
     connection = getConnection('g' + graphName);
@@ -145,11 +151,6 @@ Before({tags: "@DataChar"}, function() {
 })
 
 Before({tags: "@DataDuration"}, function() {
-  return 'skipped'
-})
-
-// gremlin-javascript has no geo predicates and the translator rejects geometries, so these scenarios are placeholders
-Before({tags: "@DataGeometry"}, function() {
   return 'skipped'
 })
 

@@ -55,6 +55,7 @@ func init() {
 		regexp.MustCompile(`^uuid\[(.*)]$`):       toUuid,
 		regexp.MustCompile(`^dur\[(.*)]$`):        toDuration,
 		regexp.MustCompile(`^bin\[(.*)]$`):        toBinary,
+		regexp.MustCompile(`^geo\[(.*)]$`):        toGeometry,
 		regexp.MustCompile(`^char\[(.*)]$`):       toChar,
 		regexp.MustCompile(`^d\[(.*)]\.[bslfd]$`): toNumeric,
 		regexp.MustCompile(`^d\[(.*)]\.[m]$`):     toBigDecimal,
@@ -168,6 +169,15 @@ func toBinary(stringVal, graphName string) interface{} {
 		return nil
 	}
 	return &gremlingo.ByteBuffer{Data: data}
+}
+
+// Parse geometry from WKT or EWKT.
+func toGeometry(stringVal, graphName string) interface{} {
+	geometry, err := geometryFromWkt(stringVal)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to parse the geometry 'geo[%v]': %v", stringVal, err))
+	}
+	return geometry
 }
 
 // Parse a Character value.
@@ -979,6 +989,16 @@ func compareSingleEqual(actual interface{}, expected interface{}) bool {
 		return actualP.Key == expectedP.Key && compareSingleEqual(actualP.Value, expectedP.Value)
 	}
 
+	// Geometries compare by kind, SRID, z dimension and coordinates. Their string form is WKT
+	// without an SRID, so a geographic geometry would otherwise match a cartesian one.
+	actualGeometry, ok1 := actual.(gremlingo.Geometry)
+	expectedGeometry, ok2 := expected.(gremlingo.Geometry)
+	if ok1 && ok2 {
+		return actualGeometry.Equal(expectedGeometry)
+	} else if ok1 || ok2 {
+		return false
+	}
+
 	switch a := actual.(type) {
 	case map[interface{}]interface{}:
 		e, ok := expected.(map[interface{}]interface{})
@@ -1225,6 +1245,12 @@ var tg = &tinkerPopGraph{
 	sync.Mutex{},
 }
 
+// ignoredScenarios holds the scenario names the suite cannot run, each with the reason it is
+// skipped.
+var ignoredScenarios = map[string]string{
+	"g_injectXGeometryXPOINT_Z_EMPTYXX": "gremlin-go has no factory for an empty 3D geometry, so the traversal cannot be written",
+}
+
 func InitializeTestSuite(ctx *godog.TestSuiteContext) {
 	ctx.BeforeSuite(func() {
 		tg.loadAllDataGraph()
@@ -1240,6 +1266,10 @@ func InitializeTestSuite(ctx *godog.TestSuiteContext) {
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		tg.scenario = sc
+		if reason, ignored := ignoredScenarios[sc.Name]; ignored {
+			godog.Logf(ctx, "Skipping scenario %s: %s", sc.Name, reason)
+			return ctx, fmt.Errorf("%w: %s", godog.ErrSkip, reason)
+		}
 		// Add tg.recreateAllDataGraphConnection() here and tg.closeAllDataGraphConnection() in an After scenario
 		// hook if necessary to isolate failing tests that closes the shared connection.
 		tg.Lock()
@@ -1247,6 +1277,10 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	})
 
 	ctx.After(func(ctx context.Context, sc *godog.Scenario, err error) (context.Context, error) {
+		if _, ignored := ignoredScenarios[sc.Name]; ignored {
+			// the Before hook skipped this scenario without taking the lock
+			return ctx, nil
+		}
 		tg.Unlock()
 		return ctx, nil
 	})
@@ -1297,8 +1331,7 @@ func TestCucumberFeatures(t *testing.T) {
 		TestSuiteInitializer: InitializeTestSuite,
 		ScenarioInitializer:  InitializeScenario,
 		Options: &godog.Options{
-			// @DataGeometry is excluded since gremlin-go has no geo predicates and the translator rejects geometries
-			Tags:     "~@GraphComputerOnly && ~@AllowNullPropertyValues && ~@StepWrite && ~@MultiLabelDefault && ~@DataGeometry",
+			Tags:     "~@GraphComputerOnly && ~@AllowNullPropertyValues && ~@StepWrite && ~@MultiLabelDefault",
 			Format:   "pretty",
 			Paths:    []string{getEnvOrDefaultString("CUCUMBER_FEATURE_FOLDER", "../../../gremlin-test/src/main/resources/org/apache/tinkerpop/gremlin/test/features")},
 			TestingT: t, // Testing instance that will run subtests.

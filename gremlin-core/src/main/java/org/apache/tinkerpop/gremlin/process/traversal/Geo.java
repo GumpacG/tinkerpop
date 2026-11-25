@@ -26,9 +26,9 @@ import org.apache.tinkerpop.gremlin.structure.geo.GeoPredicates;
  * values on a {@code HasContainer} can answer the filter from a spatial index instead.
  * <p>
  * A value that cannot be compared is {@code false} rather than an error: a value that is not a
- * geometry, a null, an empty geometry, a value whose SRID differs from the argument's, and a value
- * in a coordinate system other than {@code CARTESIAN} or {@code GEOGRAPHIC}. All math is 2D, so z
- * is ignored.
+ * geometry, a null, a value whose SRID differs from the argument's, and a value in a coordinate
+ * system other than {@code CARTESIAN} or {@code GEOGRAPHIC}. An empty geometry can be compared, and
+ * each predicate documents how it answers one. All math is 2D, so z is ignored.
  * <p>
  * Accuracy in the geographic model is described on {@link GeoP}.
  *
@@ -57,6 +57,47 @@ public enum Geo implements PBiPredicate<Object, Object> {
         @Override
         public boolean test(final Object value, final Object argument) {
             return GeoPredicates.contains(value, argument);
+        }
+    },
+
+    /**
+     * Evaluates if the value shares at least one point with the argument, where a point of either
+     * boundary counts. An empty geometry holds no point, so it intersects nothing.
+     *
+     * @since 4.0.0
+     */
+    geoIntersects {
+        @Override
+        public boolean test(final Object value, final Object argument) {
+            return GeoPredicates.intersects(value, argument);
+        }
+    },
+
+    /**
+     * Evaluates if the value shares no point with the argument, which an empty geometry does with
+     * every geometry. It is the opposite of {@link #geoIntersects} for a value that can be
+     * compared and, like it, {@code false} for one that cannot.
+     *
+     * @since 4.0.0
+     */
+    geoDisjoint {
+        @Override
+        public boolean test(final Object value, final Object argument) {
+            return GeoPredicates.disjoint(value, argument);
+        }
+    },
+
+    /**
+     * Evaluates if the value covers the same points as the argument, however each one is written,
+     * so a line with a redundant vertex equals the line without it. Two empty geometries are equal
+     * whatever their kinds, and an empty geometry equals nothing else.
+     *
+     * @since 4.0.0
+     */
+    geoEquals {
+        @Override
+        public boolean test(final Object value, final Object argument) {
+            return GeoPredicates.equalTo(value, argument);
         }
     };
 

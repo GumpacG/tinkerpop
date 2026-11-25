@@ -17,10 +17,11 @@
  *  under the License.
  */
 
-import { P, TextP, EnumValue } from './traversal.js';
+import { P, TextP, GeoP, EnumValue } from './traversal.js';
 import { OptionsStrategy, TraversalStrategy } from './traversal-strategy.js';
 import { Long, Int, Float, Double, Short, Byte, INT32_MIN, INT32_MAX } from '../utils.js';
 import { Vertex, CompositePDT, PrimitivePDT } from '../structure/graph.js';
+import { Geometry } from '../structure/geo.js';
 import { PDTRegistry } from '../structure/PDTRegistry.js';
 import { GValue } from './gvalue.js';
 import { Buffer } from 'buffer';
@@ -55,7 +56,7 @@ export default class GremlinLang {
     return this.parameters;
   }
   
-  private _predicateAsString(p: P | TextP): string {
+  private _predicateAsString(p: P | TextP | GeoP): string {
     if (p.operator === 'and' || p.operator === 'or') {
       return `${this._predicateAsString(p.value)}.${p.operator}(${this._predicateAsString(p.other)})`;
     }
@@ -118,6 +119,11 @@ export default class GremlinLang {
       const iso = arg.toISOString();
       return `datetime("${iso}")`;
     }
+    if (arg instanceof Geometry) {
+      // WKT contains no quotes or backslashes, so the text needs no escaping. The SRID is
+      // always written as an int so that every model round trips, including OTHER.
+      return `Geometry("${arg.toWKT()}",${arg.srid})`;
+    }
     if (typeof arg === 'string') {
       // JSON.stringify handles all special character escaping in one call.
       // Strip the outer double quotes and re-wrap in single quotes for Gremlin.
@@ -138,7 +144,7 @@ export default class GremlinLang {
       }
       return key;
     }
-    if (arg instanceof P || arg instanceof TextP) {
+    if (arg instanceof P || arg instanceof TextP || arg instanceof GeoP) {
       return this._predicateAsString(arg);
     }
     if (arg instanceof EnumValue) {

@@ -55,8 +55,9 @@ radishGremlinFile.withWriter('UTF-8') { Writer writer ->
 
     writer.writeLine(
                     'import { Buffer } from \'buffer\';\n' +
-                    'import { __, Barrier, Cardinality, CardinalityValue, Column, Direction, DT, GType, IO, Merge, \n' +
+                    'import { __, Barrier, Cardinality, CardinalityValue, Column, Direction, DT, GeoP, GType, IO, Merge, \n' +
                     '        Operator, Order, P, Pick, Pop, Scope, T, TextP, WithOptions, \n' +
+                    '        GeometryCollection, LineString, Model, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon, \n' +
                     '        TraversalStrategies, VertexProgramStrategy, OptionsStrategy, PartitionStrategy, \n' +
                     '        ReadOnlyStrategy, GraphFilterStrategy, SeedStrategy, SubgraphStrategy, ProductiveByStrategy, \n' +
                     '        LambdaRestrictionStrategy, StandardVerificationStrategy, VertexProgramRestrictionStrategy, \n' +

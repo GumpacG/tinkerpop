@@ -838,6 +838,45 @@ text and binary forms through `String()`, `EWKT()` and `WKB()`. A geometry holds
 `==` or used as a map key. Geometries define no ordering and perform no spatial computation, which remains the
 responsibility of the server.
 
+Each kind also has a `Must` constructor, such as `MustNewPoint()` or `MustNewEmptyPoint()`, which panics instead of
+returning an error, for fixed values written in source.
+
+Spatial filtering is expressed with the `GeoP` predicates `GeoWithin()`, `GeoContains()`, `GeoIntersects()`,
+`GeoDisjoint()` and `GeoEquals()`. The geometry kinds are named for `P.TypeOf()` by the `GType` values `Geometry`,
+`Point`, `LineString`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon` and `GeometryCollection`, while
+`Cartesian` and `Geographic` match a geometry of any kind by its coordinate model.
+
+[source,go]
+----
+store, err := gremlingo.NewPoint(-73.98, 40.75, gremlingo.Model.Geographic)
+if err != nil {
+    return err
+}
+if err := <-g.AddV("store").Property("name", "Midtown").Property("loc", store).Iterate(); err != nil {
+    return err
+}
+
+// stores inside the zone
+at := func(x, y float64) *gremlingo.Point {
+    return gremlingo.MustNewPoint(x, y, gremlingo.Model.Geographic)
+}
+zone := gremlingo.MustNewPolygon(gremlingo.MustNewLineString(
+    at(-74.0, 40.7), at(-73.9, 40.7), at(-73.9, 40.8), at(-74.0, 40.8), at(-74.0, 40.7)))
+names, err := g.V().Has("store", "loc", gremlingo.GeoP.GeoWithin(zone)).Values("name").ToList()
+fmt.Println(names, err)
+
+// stores sharing a point with the zone, and stores lying away from it
+names, err = g.V().Has("store", "loc", gremlingo.GeoP.GeoIntersects(zone)).Values("name").ToList()
+fmt.Println(names, err)
+names, err = g.V().Has("store", "loc", gremlingo.GeoP.GeoDisjoint(zone)).Values("name").ToList()
+fmt.Println(names, err)
+
+// every geographic point
+count, err := g.V().Has("loc",
+    gremlingo.P.TypeOf(gremlingo.GType.Geographic).And(gremlingo.P.TypeOf(gremlingo.GType.Point))).Count().Next()
+fmt.Println(count, err)
+----
+
 [[gremlin-go-pdt]]
 === Provider Defined Types
 
@@ -2863,6 +2902,32 @@ outside its range raises an `Error`. Geometries are frozen, compare exactly thro
 and binary forms through `toWKT()`, `toEWKT()` and `toWKB()`. They define no ordering and perform no spatial
 computation, which remains the responsibility of the server.
 
+Spatial filtering is expressed with the `GeoP` predicates `geoWithin()`, `geoContains()`, `geoIntersects()`,
+`geoDisjoint()` and `geoEquals()`, exported from `gremlin.process`. The geometry kinds are named for `P.typeOf()` by
+the `GType` keys `geometry`, `point`, `lineString`, `polygon`, `multiPoint`, `multiLineString`, `multiPolygon` and
+`geometryCollection`, while `cartesian` and `geographic` match a geometry of any kind by its coordinate model.
+
+[source,javascript]
+----
+const { GeoP, GType, P } = gremlin.process;
+const { LineString, Model, Point, Polygon } = gremlin.structure;
+
+const store = Point.of(-73.98, 40.75, Model.GEOGRAPHIC);
+await g.addV('store').property('name', 'Midtown').property('loc', store).iterate();
+
+// stores inside the zone
+const p = (x, y) => Point.of(x, y, Model.GEOGRAPHIC);
+const zone = Polygon.of(LineString.of(p(-74.0, 40.7), p(-73.9, 40.7), p(-73.9, 40.8), p(-74.0, 40.8), p(-74.0, 40.7)));
+await g.V().has('store', 'loc', GeoP.geoWithin(zone)).values('name').toList();
+
+// stores sharing a point with the zone, and stores lying away from it
+await g.V().has('store', 'loc', GeoP.geoIntersects(zone)).values('name').toList();
+await g.V().has('store', 'loc', GeoP.geoDisjoint(zone)).values('name').toList();
+
+// every geographic point
+await g.V().has('loc', P.typeOf(GType.geographic).and(P.typeOf(GType.point))).count().next();
+----
+
 [[gremlin-javascript-pdt]]
 === Provider Defined Types
 
@@ -3567,6 +3632,32 @@ outside its range throws an `ArgumentException`. Geometries are immutable, compa
 `IEquatable<Geometry>` and the `==` and `!=` operators, and write their own text and binary forms through `ToWkt()`,
 `ToEwkt()` and `ToWkb()`. They define no ordering and perform no spatial computation, which remains the responsibility
 of the server.
+
+Spatial filtering is expressed with the `GeoP` predicates `GeoWithin()`, `GeoContains()`, `GeoIntersects()`,
+`GeoDisjoint()` and `GeoEquals()`. The geometry kinds are named for `P.TypeOf()` by the `GType` constants `Geometry`,
+`Point`, `LineString`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon` and `GeometryCollection`, while
+`Cartesian` and `Geographic` match a geometry of any kind by its coordinate model.
+
+[source,csharp]
+----
+using Gremlin.Net.Process.Traversal;
+using Gremlin.Net.Structure.Geo;
+
+var store = new Point(-73.98, 40.75, Model.Geographic);
+g.AddV("store").Property("name", "Midtown").Property("loc", store).Iterate();
+
+// stores inside the zone
+Point At(double x, double y) => new Point(x, y, Model.Geographic);
+var zone = new Polygon(new LineString(At(-74.0, 40.7), At(-73.9, 40.7), At(-73.9, 40.8), At(-74.0, 40.8), At(-74.0, 40.7)));
+g.V().Has("store", "loc", GeoP.GeoWithin(zone)).Values<string>("name").ToList();
+
+// stores sharing a point with the zone, and stores lying away from it
+g.V().Has("store", "loc", GeoP.GeoIntersects(zone)).Values<string>("name").ToList();
+g.V().Has("store", "loc", GeoP.GeoDisjoint(zone)).Values<string>("name").ToList();
+
+// every geographic point
+g.V().Has("loc", P.TypeOf(GType.Geographic).And(P.TypeOf(GType.Point))).Count().Next();
+----
 
 [[gremlin-dotnet-pdt]]
 === Provider Defined Types
@@ -4402,6 +4493,33 @@ Construction validates each value, so a non-finite coordinate, an unclosed polyg
 outside its range raises a `ValueError`. Geometries are immutable, compare exactly through `__eq__` and `__hash__`, and
 write their own text and binary forms through `to_wkt()`, `to_ewkt()` and `to_wkb()`. They define no ordering and
 perform no spatial computation, which remains the responsibility of the server.
+
+Spatial filtering is expressed with the `GeoP` predicates `geo_within()`, `geo_contains()`, `geo_intersects()`,
+`geo_disjoint()` and `geo_equals()`, each of which is also available as a module level function of the same name
+through `statics`. The geometry kinds are named for `P.type_of()` by the `GType` constants `GEOMETRY`, `POINT`,
+`LINESTRING`, `POLYGON`, `MULTIPOINT`, `MULTILINESTRING`, `MULTIPOLYGON` and `GEOMETRYCOLLECTION`, while `CARTESIAN`
+and `GEOGRAPHIC` match a geometry of any kind by its coordinate model.
+
+[source,python]
+----
+from gremlin_python.process.traversal import GeoP, GType, P
+from gremlin_python.structure.geo import LineString, Model, Point, Polygon
+
+store = Point(-73.98, 40.75, model=Model.GEOGRAPHIC)
+g.add_v('store').property('name', 'Midtown').property('loc', store).iterate()
+
+# stores inside the zone
+zone = Polygon(LineString([Point(x, y, model=Model.GEOGRAPHIC) for x, y in
+                           [(-74.0, 40.7), (-73.9, 40.7), (-73.9, 40.8), (-74.0, 40.8), (-74.0, 40.7)]]))
+g.V().has('store', 'loc', GeoP.geo_within(zone)).values('name').to_list()
+
+# stores sharing a point with the zone, and stores lying away from it
+g.V().has('store', 'loc', GeoP.geo_intersects(zone)).values('name').to_list()
+g.V().has('store', 'loc', GeoP.geo_disjoint(zone)).values('name').to_list()
+
+# every geographic point
+g.V().has('loc', P.type_of(GType.GEOGRAPHIC).and_(P.type_of(GType.POINT))).count().next()
+----
 
 [[gremlin-python-pdt]]
 === Provider Defined Types

@@ -20,11 +20,12 @@
 import assert from 'assert';
 import { Buffer } from 'buffer';
 import { GraphTraversalSource, __, CardinalityValue } from '../../lib/process/graph-traversal.js';
-import { P, TextP, T, Order, Scope, Column, Operator, Pop, Cardinality,
+import { P, TextP, GeoP, GType, T, Order, Scope, Column, Operator, Pop, Cardinality,
          WithOptions, Direction } from '../../lib/process/traversal.js';
 import { ReadOnlyStrategy, SubgraphStrategy, OptionsStrategy,
          PartitionStrategy, SeedStrategy } from '../../lib/process/traversal-strategy.js';
 import { Graph, Vertex, CompositePDT, PrimitivePDT } from '../../lib/structure/graph.js';
+import { LineString, Model, Point, Polygon } from '../../lib/structure/geo.js';
 import { TraversalStrategies } from '../../lib/process/traversal-strategy.js';
 import { Long, toFloat, toDouble, toShort, toByte, toInt, toLong } from '../../lib/utils.js';
 import GremlinLang from '../../lib/process/gremlin-lang.js';
@@ -861,6 +862,104 @@ describe('GremlinLang', function () {
       gl.addStep('inject', [new DualType('hello')]);
       // primitive should win
       assert.strictEqual(gl.getGremlin(), 'g.inject(PDT("DualType","hello"))');
+    });
+  });
+
+  describe('Geospatial tests', function () {
+    const square = Polygon.of(
+      LineString.of(Point.of(0, 0), Point.of(4, 0), Point.of(4, 4), Point.of(0, 4), Point.of(0, 0)),
+    );
+
+    it('should write a geometry with its WKT and SRID', function () {
+      assert.strictEqual(g.inject(Point.of(1, 2)).getGremlinLang().getGremlin(), 'g.inject(Geometry("POINT(1 2)",0))');
+      assert.strictEqual(g.inject(Point.of(1, 2, Model.GEOGRAPHIC)).getGremlinLang().getGremlin(),
+        'g.inject(Geometry("POINT(1 2)",4326))');
+      assert.strictEqual(g.inject(Point.of(1, 2, 32618)).getGremlinLang().getGremlin(),
+        'g.inject(Geometry("POINT(1 2)",32618))');
+      assert.strictEqual(g.inject(Point.ofZ(1, 2, 3)).getGremlinLang().getGremlin(),
+        'g.inject(Geometry("POINT Z (1 2 3)",0))');
+      assert.strictEqual(g.inject(Point.empty()).getGremlinLang().getGremlin(),
+        'g.inject(Geometry("POINT EMPTY",0))');
+    });
+
+    it('should write a geometry inside a list and a map', function () {
+      assert.strictEqual(g.inject([Point.of(1, 2)]).getGremlinLang().getGremlin(),
+        'g.inject([Geometry("POINT(1 2)",0)])');
+      assert.strictEqual(g.inject(new Map([['loc', Point.of(1, 2)]])).getGremlinLang().getGremlin(),
+        'g.inject([\'loc\':Geometry("POINT(1 2)",0)])');
+      // a map key is parenthesized, which the mapKey rule of the grammar allows
+      assert.strictEqual(g.inject(new Map([[Point.of(1, 2), 'home']])).getGremlinLang().getGremlin(),
+        'g.inject([(Geometry("POINT(1 2)",0)):\'home\'])');
+    });
+
+    it('should write a geometry bound as a parameter', function () {
+      const gremlinLang = g.inject(new GValue('xx1', Point.of(1, 2))).getGremlinLang();
+      assert.strictEqual(gremlinLang.getGremlin(), 'g.inject(xx1)');
+      assert.strictEqual(gremlinLang.getParametersAsString(), '[\'xx1\':Geometry("POINT(1 2)",0)]');
+    });
+
+    it('should write a geometry bound as a parameter of a geo predicate', function () {
+      const gremlinLang = g.V().is(GeoP.geoWithin(new GValue('zone', Point.of(1, 2)))).getGremlinLang();
+      assert.strictEqual(gremlinLang.getGremlin(), 'g.V().is(geoWithin(zone))');
+      assert.strictEqual(gremlinLang.getParametersAsString(), '[\'zone\':Geometry("POINT(1 2)",0)]');
+    });
+
+    it('should write the geo predicates with their arguments', function () {
+      assert.strictEqual(g.V().is(GeoP.geoWithin(square)).getGremlinLang().getGremlin(),
+        'g.V().is(geoWithin(Geometry("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))",0)))');
+      assert.strictEqual(g.V().is(GeoP.geoContains(Point.of(2, 2))).getGremlinLang().getGremlin(),
+        'g.V().is(geoContains(Geometry("POINT(2 2)",0)))');
+      assert.strictEqual(g.V().is(GeoP.geoIntersects(square)).getGremlinLang().getGremlin(),
+        'g.V().is(geoIntersects(Geometry("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))",0)))');
+      assert.strictEqual(g.V().is(GeoP.geoDisjoint(square)).getGremlinLang().getGremlin(),
+        'g.V().is(geoDisjoint(Geometry("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))",0)))');
+      assert.strictEqual(g.V().is(GeoP.geoEquals(Point.of(2, 2))).getGremlinLang().getGremlin(),
+        'g.V().is(geoEquals(Geometry("POINT(2 2)",0)))');
+    });
+
+    it('should write a geo predicate with a traversal argument', function () {
+      assert.strictEqual(g.V().is(GeoP.geoWithin(__.select('v').values('zone'))).getGremlinLang().getGremlin(),
+        "g.V().is(geoWithin(__.select('v').values('zone')))");
+      assert.strictEqual(g.V().is(GeoP.geoContains(__.select('v').values('zone'))).getGremlinLang().getGremlin(),
+        "g.V().is(geoContains(__.select('v').values('zone')))");
+      assert.strictEqual(g.V().is(GeoP.geoIntersects(__.select('v').values('zone'))).getGremlinLang().getGremlin(),
+        "g.V().is(geoIntersects(__.select('v').values('zone')))");
+      assert.strictEqual(g.V().is(GeoP.geoDisjoint(__.select('v').values('zone'))).getGremlinLang().getGremlin(),
+        "g.V().is(geoDisjoint(__.select('v').values('zone')))");
+      assert.strictEqual(g.V().is(GeoP.geoEquals(__.select('v').values('zone'))).getGremlinLang().getGremlin(),
+        "g.V().is(geoEquals(__.select('v').values('zone')))");
+    });
+
+    it('should write geo predicates connected by and, or and not', function () {
+      const inside = 'geoWithin(Geometry("POINT(1 2)",0))';
+      const around = 'geoContains(Geometry("POINT(3 4)",0))';
+      assert.strictEqual(
+        g.V().is(GeoP.geoWithin(Point.of(1, 2)).and(GeoP.geoContains(Point.of(3, 4)))).getGremlinLang().getGremlin(),
+        `g.V().is(${inside}.and(${around}))`);
+      assert.strictEqual(
+        g.V().is(GeoP.geoWithin(Point.of(1, 2)).or(GeoP.geoContains(Point.of(3, 4)))).getGremlinLang().getGremlin(),
+        `g.V().is(${inside}.or(${around}))`);
+      assert.strictEqual(g.V().is(P.not(GeoP.geoWithin(Point.of(1, 2)))).getGremlinLang().getGremlin(),
+        `g.V().is(not(${inside}))`);
+    });
+
+    it('should write each geometry type constant by its name', function () {
+      const expected = {
+        geometry: 'GEOMETRY',
+        point: 'POINT',
+        lineString: 'LINESTRING',
+        polygon: 'POLYGON',
+        multiPoint: 'MULTIPOINT',
+        multiLineString: 'MULTILINESTRING',
+        multiPolygon: 'MULTIPOLYGON',
+        geometryCollection: 'GEOMETRYCOLLECTION',
+        cartesian: 'CARTESIAN',
+        geographic: 'GEOGRAPHIC',
+      };
+      Object.entries(expected).forEach(([key, name]) => {
+        assert.strictEqual(g.V().is(P.typeOf(GType[key])).getGremlinLang().getGremlin(),
+          `g.V().is(typeOf(GType.${name}))`);
+      });
     });
   });
 });

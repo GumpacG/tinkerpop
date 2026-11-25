@@ -1227,6 +1227,9 @@ traversalPredicate
     | traversalPredicate_notRegex
     | traversalPredicate_geoWithin
     | traversalPredicate_geoContains
+    | traversalPredicate_geoIntersects
+    | traversalPredicate_geoDisjoint
+    | traversalPredicate_geoEquals
     | traversalPredicate DOT K_AND LPAREN traversalPredicate RPAREN
     | traversalPredicate DOT K_OR LPAREN traversalPredicate RPAREN
     | traversalPredicate DOT K_NEGATE LPAREN RPAREN
@@ -1375,6 +1378,21 @@ traversalPredicate_geoWithin
 traversalPredicate_geoContains
     : (K_GEOP DOT K_GEOCONTAINS | K_GEOCONTAINS) LPAREN geometryArgument RPAREN
     | (K_GEOP DOT K_GEOCONTAINS | K_GEOCONTAINS) LPAREN nestedTraversal RPAREN
+    ;
+
+traversalPredicate_geoIntersects
+    : (K_GEOP DOT K_GEOINTERSECTS | K_GEOINTERSECTS) LPAREN geometryArgument RPAREN
+    | (K_GEOP DOT K_GEOINTERSECTS | K_GEOINTERSECTS) LPAREN nestedTraversal RPAREN
+    ;
+
+traversalPredicate_geoDisjoint
+    : (K_GEOP DOT K_GEODISJOINT | K_GEODISJOINT) LPAREN geometryArgument RPAREN
+    | (K_GEOP DOT K_GEODISJOINT | K_GEODISJOINT) LPAREN nestedTraversal RPAREN
+    ;
+
+traversalPredicate_geoEquals
+    : (K_GEOP DOT K_GEOEQUALS | K_GEOEQUALS) LPAREN geometryArgument RPAREN
+    | (K_GEOP DOT K_GEOEQUALS | K_GEOEQUALS) LPAREN nestedTraversal RPAREN
     ;
 
 traversalTerminalMethod_explain
@@ -1983,8 +2001,11 @@ keyword
     | K_FORMAT
     | K_FROM
     | K_GEOCONTAINS
+    | K_GEODISJOINT
+    | K_GEOEQUALS
     | K_GEOGRAPHIC
     | K_GEOGRAPHICU
+    | K_GEOINTERSECTS
     | K_GEOMETRY
     | K_GEOMETRYC
     | K_GEOMETRYCOLLECTION
@@ -2325,8 +2346,11 @@ K_FOLD: 'fold';
 K_FORMAT: 'format';
 K_FROM: 'from';
 K_GEOCONTAINS: 'geoContains';
+K_GEODISJOINT: 'geoDisjoint';
+K_GEOEQUALS: 'geoEquals';
 K_GEOGRAPHIC: 'geographic';
 K_GEOGRAPHICU: 'GEOGRAPHIC';
+K_GEOINTERSECTS: 'geoIntersects';
 K_GEOMETRY: 'geometry';
 K_GEOMETRYC: 'Geometry';
 K_GEOMETRYU: 'GEOMETRY';

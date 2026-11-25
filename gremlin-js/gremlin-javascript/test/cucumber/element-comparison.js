@@ -28,6 +28,7 @@
 import { Assertion } from 'chai';
 import deepEqual from 'deep-eql';
 import { Edge, Vertex, VertexProperty } from '../../lib/structure/graph.js';
+import { Geometry } from '../../lib/structure/geo.js';
 
 function isElement(obj) {
     return obj instanceof Edge || obj instanceof Vertex || obj instanceof VertexProperty;
@@ -109,6 +110,11 @@ export function deepMembersById (subset, msg) {
 }
 
 export function compareElements(a, b) {
+    // a geometry keeps its coordinates private, so it is compared through its own
+    // equality rather than by walking its properties
+    if (a instanceof Geometry || b instanceof Geometry) {
+        return a instanceof Geometry && b instanceof Geometry && a.equals(b);
+    }
     if (!isElement(a) || !isElement(b)) {
         return null;
     } else {

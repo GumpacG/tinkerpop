@@ -534,6 +534,66 @@ function createTextP(operator: string, args: any) {
   return new (Function.prototype.bind.apply(TextP, args))();
 }
 
+export class GeoP<T1 = any, T2 = any> {
+  /**
+   * Represents a geospatial operation.
+   */
+  constructor(
+    public operator: string,
+    public value: T1,
+    public other: T2,
+  ) {}
+
+  /**
+   * Returns the string representation of the instance.
+   * @returns {string}
+   */
+  toString() {
+    if (this.other === undefined) {
+      return this.operator + '(' + String(this.value) + ')';
+    }
+    return this.operator + '(' + String(this.value) + ', ' + String(this.other) + ')';
+  }
+
+  and(arg: any) {
+    return new P('and', this, arg);
+  }
+
+  or(arg: any) {
+    return new P('or', this, arg);
+  }
+
+  /** @param {...Object} args */
+  static geoWithin(...args: any[]) {
+    return createGeoP('geoWithin', args);
+  }
+
+  /** @param {...Object} args */
+  static geoContains(...args: any[]) {
+    return createGeoP('geoContains', args);
+  }
+
+  /** @param {...Object} args */
+  static geoIntersects(...args: any[]) {
+    return createGeoP('geoIntersects', args);
+  }
+
+  /** @param {...Object} args */
+  static geoDisjoint(...args: any[]) {
+    return createGeoP('geoDisjoint', args);
+  }
+
+  /** @param {...Object} args */
+  static geoEquals(...args: any[]) {
+    return createGeoP('geoEquals', args);
+  }
+}
+
+function createGeoP(operator: string, args: any) {
+  args.unshift(null, operator);
+  return new (Function.prototype.bind.apply(GeoP, args))();
+}
+
 export class Traverser<T = any> {
   constructor(
     public object: T,
@@ -598,7 +658,7 @@ export const Cardinality = toEnum('Cardinality', ['list', 'set', 'single']);
 export const Column = toEnum('Column', ['keys', 'values']);
 export const Direction = toDirectionEnum('Direction');
 export const DT = toEnum('DT', ['second', 'minute', 'hour', 'day']);
-export const GType = toEnum('GType', ['bigDecimal', 'bigInt', 'binary', 'boolean', 'byte', 'char', 'datetime', 'double', 'duration', 'edge', 'float', 'graph', 'int', 'list', 'long', 'map', 'null', 'number', 'path', 'property', 'set', 'short', 'string', 'tree', 'uuid', 'vertex', 'vproperty'], (k) => k.toUpperCase());
+export const GType = toEnum('GType', ['bigDecimal', 'bigInt', 'binary', 'boolean', 'byte', 'cartesian', 'char', 'datetime', 'double', 'duration', 'edge', 'float', 'geographic', 'geometry', 'geometryCollection', 'graph', 'int', 'lineString', 'list', 'long', 'map', 'multiLineString', 'multiPoint', 'multiPolygon', 'null', 'number', 'path', 'point', 'polygon', 'property', 'set', 'short', 'string', 'tree', 'uuid', 'vertex', 'vproperty'], (k) => k.toUpperCase());
 export const GryoVersion = toEnum('GryoVersion', ['V1_0', 'V3_0']);
 export const Merge = toEnum('Merge', ['onCreate', 'onMatch', 'outV', 'inV']);
 export const Operator = toEnum('Operator', ['addAll', 'and', 'assign', 'div', 'max', 'min', 'minus', 'mult', 'or', 'sum', 'sumLong']);

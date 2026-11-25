@@ -28,6 +28,7 @@ import org.apache.tinkerpop.gremlin.process.computer.util.MapMemory;
 import org.apache.tinkerpop.gremlin.process.remote.traversal.DefaultRemoteTraverser;
 import org.apache.tinkerpop.gremlin.process.traversal.Contains;
 import org.apache.tinkerpop.gremlin.process.traversal.DT;
+import org.apache.tinkerpop.gremlin.process.traversal.GeoP;
 import org.apache.tinkerpop.gremlin.process.traversal.GType;
 import org.apache.tinkerpop.gremlin.process.traversal.Merge;
 import org.apache.tinkerpop.gremlin.process.traversal.Operator;
@@ -325,7 +326,8 @@ public enum GryoVersion {
             add(GryoTypeReg.of(MultiPoint.class, 208, new UtilSerializers.GeometrySerializer<>()));
             add(GryoTypeReg.of(MultiLineString.class, 209, new UtilSerializers.GeometrySerializer<>()));
             add(GryoTypeReg.of(MultiPolygon.class, 210, new UtilSerializers.GeometrySerializer<>()));
-            add(GryoTypeReg.of(GeometryCollection.class, 211, new UtilSerializers.GeometrySerializer<>()));          // ***LAST ID***
+            add(GryoTypeReg.of(GeometryCollection.class, 211, new UtilSerializers.GeometrySerializer<>()));
+            add(GryoTypeReg.of(GeoP.class, 212, new GryoSerializersV3.GeoPSerializer()));          // ***LAST ID***
 
             add(GryoTypeReg.of(Edge.class, 65, new GryoSerializersV3.EdgeSerializer()));
             add(GryoTypeReg.of(Vertex.class, 66, new GryoSerializersV3.VertexSerializer()));
@@ -361,7 +363,7 @@ public enum GryoVersion {
             add(GryoTypeReg.of(Pick.class, 137));
             add(GryoTypeReg.of(DT.class, 198));
             add(GryoTypeReg.of(Merge.class, 196));
-            add(GryoTypeReg.of(GType.class, 200));          // ***LAST ID***
+            add(GryoTypeReg.of(GType.class, 200));
             add(GryoTypeReg.of(HashSetSupplier.class, 136, new UtilSerializers.HashSetSupplierSerializer()));
             add(GryoTypeReg.of(MultiComparator.class, 165));
 
@@ -546,7 +548,8 @@ public enum GryoVersion {
             add(GryoTypeReg.of(MultiPoint.class, 208, new UtilSerializers.GeometrySerializer<>()));
             add(GryoTypeReg.of(MultiLineString.class, 209, new UtilSerializers.GeometrySerializer<>()));
             add(GryoTypeReg.of(MultiPolygon.class, 210, new UtilSerializers.GeometrySerializer<>()));
-            add(GryoTypeReg.of(GeometryCollection.class, 211, new UtilSerializers.GeometrySerializer<>()));          // ***LAST ID***
+            add(GryoTypeReg.of(GeometryCollection.class, 211, new UtilSerializers.GeometrySerializer<>()));
+            add(GryoTypeReg.of(GeoP.class, 212, new GryoSerializersV1.GeoPSerializer()));          // ***LAST ID***
 
             add(GryoTypeReg.of(Edge.class, 65, new GryoSerializersV1.EdgeSerializer()));
             add(GryoTypeReg.of(Vertex.class, 66, new GryoSerializersV1.VertexSerializer()));
@@ -581,7 +584,7 @@ public enum GryoVersion {
             add(GryoTypeReg.of(Pick.class, 137));
             add(GryoTypeReg.of(DT.class, 198));
             add(GryoTypeReg.of(Merge.class, 196));
-            add(GryoTypeReg.of(GType.class, 200));          // ***LAST ID***
+            add(GryoTypeReg.of(GType.class, 200));
             add(GryoTypeReg.of(HashSetSupplier.class, 136, new UtilSerializers.HashSetSupplierSerializer()));
             add(GryoTypeReg.of(MultiComparator.class, 165));
 

@@ -18,6 +18,7 @@
  */
 package org.apache.tinkerpop.gremlin.language.grammar;
 
+import org.apache.tinkerpop.gremlin.process.traversal.Geo;
 import org.apache.tinkerpop.gremlin.process.traversal.GeoP;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -159,18 +160,14 @@ public class GremlinQueryParserTest {
 
     @Test
     public void shouldNotParseAGeoPredicateArgumentThatCanNeverMatch() {
-        final GremlinParserException gpe = assertThrows(GremlinParserException.class,
-                () -> GremlinQueryParser.parse("g.V().has('loc',geoWithin(Geometry(\"POINT(1 2)\", 32618)))"));
-        assertEquals("Invalid geo predicate: The geometry of geoWithin must be in the CARTESIAN or " +
-                "GEOGRAPHIC model, but SRID 32618 is OTHER", gpe.getMessage());
-    }
-
-    @Test
-    public void shouldNotParseAGeoContainsArgumentThatCanNeverMatch() {
-        final GremlinParserException gpe = assertThrows(GremlinParserException.class,
-                () -> GremlinQueryParser.parse("g.V().has('loc',geoContains(Geometry(\"POINT(1 2)\", 32618)))"));
-        assertEquals("Invalid geo predicate: The geometry of geoContains must be in the CARTESIAN or " +
-                "GEOGRAPHIC model, but SRID 32618 is OTHER", gpe.getMessage());
+        for (final Geo predicate : Geo.values()) {
+            final String query = String.format("g.V().has('loc',%s(Geometry(\"POINT(1 2)\", 32618)))",
+                    predicate.name());
+            final GremlinParserException gpe = assertThrows(predicate.name(), GremlinParserException.class,
+                    () -> GremlinQueryParser.parse(query));
+            assertEquals("Invalid geo predicate: The geometry of " + predicate.name() + " must be in the " +
+                    "CARTESIAN or GEOGRAPHIC model, but SRID 32618 is OTHER", gpe.getMessage());
+        }
     }
 
     @Test

@@ -918,6 +918,46 @@ class path. Their implementation packages need neither `exports` nor `opens`.
 for a GraphBinary `Graph` result or a `subgraph()` side effect. `tinkergraph-gremlin` registers `TinkerGraph` for this
 purpose. An application may use another implementation instead, but only one distinct implementation may be present.
 
+[[provider-geometry-predicates]]
+==== Geometry Predicates
+
+The `geoWithin`, `geoContains`, `geoIntersects`, `geoDisjoint` and `geoEquals` predicates are evaluated by
+`gremlin-core`, so a provider that can store a `Geometry` as a property value gets working spatial filters without
+writing any spatial code. Their semantics are defined in <<gremlin-semantics-geometry,Geometry>>.
+
+A provider with a spatial index can answer such a filter from that index instead. A geometry filter reaches the
+provider as a `HasContainer` whose `getBiPredicate()` is a `Geo` value, in the same way that an equality filter
+carries `Compare.eq` and a text filter carries `Text.containing`, so a `ProviderOptimizationStrategy` recognizes it by
+identity. The `Geo` values a strategy may fold are `Geo.geoWithin`, `Geo.geoContains`, `Geo.geoIntersects`,
+`Geo.geoDisjoint` and `Geo.geoEquals`. The argument is read from the container, where the value is the geometry the
+predicate was given. A negated geo predicate carries a `not` predicate rather than a `Geo` value, so `gremlin-core`
+evaluates it, while a parameter argument resolves to its current value through `getValue()`.
+
+[source,java]
+----
+if (hasContainer.hasTraversal()) return;  // the argument is resolved per traverser and cannot be folded
+
+final BiPredicate<?,?> predicate = hasContainer.getBiPredicate();
+if (predicate == Geo.geoWithin) {
+    foldIntoWithinIndex(hasContainer.getKey(), (Geometry) hasContainer.getValue());
+} else if (predicate == Geo.geoContains) {
+    foldIntoContainsIndex(hasContainer.getKey(), (Geometry) hasContainer.getValue());
+} else if (predicate == Geo.geoIntersects) {
+    foldIntoIntersectsIndex(hasContainer.getKey(), (Geometry) hasContainer.getValue());
+}
+----
+
+A strategy that answers the filter itself must reproduce the documented semantics, including the exclusion of the
+boundary from `geoWithin` and `geoContains`, and the rule that a value which cannot be compared does not match rather
+than raising an error. `geoDisjoint` needs particular care, because it is not the negation of `geoIntersects`: a value
+that cannot be compared does not match either predicate, and an empty geometry is disjoint from every geometry in the
+same spatial reference system.
+
+The accuracy expected of each model is defined in <<gremlin-semantics-coordinate-models,Coordinate Models>>. The
+portable test suite keeps its geographic scenarios inside the accuracy bar, so a provider that meets the bar passes
+them whichever geodetic math it uses. Results outside the bar, such as a relationship across the antimeridian, are
+permitted to differ between providers and should be documented as such.
+
 [[validating-with-gremlin-test]]
 [llms-summary="Using the gremlin-test suite to validate a graph implementation: the structure and process test standards and how to opt in or out of feature-gated tests."]
 === Validating with Gremlin-Test

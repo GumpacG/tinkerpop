@@ -1325,6 +1325,12 @@ public class GeneralLiteralVisitorTest {
             expected.put(Geometry.fromWkt("POINT(1 2)", 4326), "home");
             assertEquals(expected, literal);
         }
+
+        @Test
+        public void shouldParseLowercaseGeometryInList() {
+            final Object literal = visitGenericLiteral("[geometry(\"POINT(1 2)\"), Geometry(\"POINT(3 4)\")]");
+            assertEquals(Arrays.asList(Geometry.fromWkt("POINT(1 2)"), Geometry.fromWkt("POINT(3 4)")), literal);
+        }
     }
 
     public static class ValidPdtLiteralTest {

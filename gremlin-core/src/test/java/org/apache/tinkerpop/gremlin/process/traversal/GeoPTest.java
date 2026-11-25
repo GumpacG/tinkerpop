@@ -51,6 +51,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 
 @RunWith(Enclosed.class)
 public class GeoPTest {
@@ -68,6 +69,35 @@ public class GeoPTest {
      */
     private static Traverser.Admin<?> traverser(final Object object) {
         return new B_O_Traverser<>(object, 1L);
+    }
+
+    /**
+     * Tests a value of any type, as a step does, since a value that is not a geometry is false
+     * rather than an error.
+     */
+    @SuppressWarnings("unchecked")
+    private static boolean testAnyValue(final P<?> predicate, final Object value) {
+        return ((P<Object>) predicate).test(value);
+    }
+
+    /**
+     * The answer each predicate gives for a point against a square, either the square that holds
+     * the point or one that lies away from it. A point lies in and meets the square that holds it,
+     * is disjoint from the one that does not, and neither holds nor equals a square.
+     */
+    private static boolean expectedForPoint(final Geo predicate, final boolean squareHoldsThePoint) {
+        switch (predicate) {
+            case geoWithin:
+            case geoIntersects:
+                return squareHoldsThePoint;
+            case geoDisjoint:
+                return !squareHoldsThePoint;
+            case geoContains:
+            case geoEquals:
+                return false;
+            default:
+                throw new AssertionError("no expectation for " + predicate);
+        }
     }
 
     /**
@@ -121,6 +151,127 @@ public class GeoPTest {
     }
 
     /**
+     * {@code geoIntersects} and {@code geoDisjoint} are opposites for values that can be compared,
+     * and each is symmetric, so every row is read in both directions and for both predicates. Every
+     * row here can be compared; the values that cannot, where both predicates are false, are in
+     * {@link RulesTest}.
+     */
+    @RunWith(Parameterized.class)
+    public static class IntersectsAndDisjointTest {
+
+        @Parameterized.Parameter(value = 0)
+        public String value;
+
+        @Parameterized.Parameter(value = 1)
+        public String argument;
+
+        @Parameterized.Parameter(value = 2)
+        public boolean intersects;
+
+        @Parameterized.Parameters(name = "{0} intersects {1} is {2}")
+        public static Collection<Object[]> data() {
+            return Arrays.asList(new Object[][]{
+                    {"POINT(2 2)", SQUARE, true},
+                    // a value that lies on the boundary shares that point, though it is not within
+                    {"POINT(0 2)", SQUARE, true},
+                    {"POINT(5 5)", SQUARE, false},
+                    // the hole holds no point of the polygon
+                    {"POINT(1.5 1.5)", HOLED_SQUARE, false},
+                    {"LINESTRING(1 1, 5 5)", SQUARE, true},
+                    {"LINESTRING(5 5, 9 9)", SQUARE, false},
+                    // two polygons that meet along an edge share the points of that edge
+                    {"POLYGON((4 0, 8 0, 8 4, 4 4, 4 0))", SQUARE, true},
+                    {"POLYGON((5 0, 8 0, 8 4, 5 4, 5 0))", SQUARE, false},
+                    {"MULTIPOINT((1 1), (9 9))", SQUARE, true},
+                    {"MULTILINESTRING((5 5, 6 6), (1 1, 2 2))", SQUARE, true},
+                    {"GEOMETRYCOLLECTION(POINT(9 9), LINESTRING(2 2, 3 3))", SQUARE, true},
+                    {"GEOMETRYCOLLECTION(POINT(9 9), LINESTRING(6 6, 7 7))", SQUARE, false},
+                    // z is ignored, so a 3D value is tested against a 2D argument in 2D
+                    {"POINT Z (2 2 9)", SQUARE, true},
+            });
+        }
+
+        @Test
+        public void shouldEvaluateIntersects() {
+            assertEquals(intersects, GeoP.geoIntersects(Geometry.fromWkt(argument)).test(Geometry.fromWkt(value)));
+        }
+
+        @Test
+        public void shouldEvaluateIntersectsInEitherDirection() {
+            assertEquals(intersects, GeoP.geoIntersects(Geometry.fromWkt(value)).test(Geometry.fromWkt(argument)));
+        }
+
+        @Test
+        public void shouldEvaluateDisjointAsTheOppositeOfIntersects() {
+            assertEquals(!intersects, GeoP.geoDisjoint(Geometry.fromWkt(argument)).test(Geometry.fromWkt(value)));
+        }
+
+        @Test
+        public void shouldEvaluateDisjointInEitherDirection() {
+            assertEquals(!intersects, GeoP.geoDisjoint(Geometry.fromWkt(value)).test(Geometry.fromWkt(argument)));
+        }
+    }
+
+    /**
+     * {@code geoEquals} compares the points two geometries cover rather than the way each one is
+     * written, and is symmetric, so every row is read in both directions.
+     */
+    @RunWith(Parameterized.class)
+    public static class EqualsTest {
+
+        @Parameterized.Parameter(value = 0)
+        public String value;
+
+        @Parameterized.Parameter(value = 1)
+        public String argument;
+
+        @Parameterized.Parameter(value = 2)
+        public boolean equal;
+
+        @Parameterized.Parameters(name = "{0} equals {1} is {2}")
+        public static Collection<Object[]> data() {
+            return Arrays.asList(new Object[][]{
+                    {"POINT(2 2)", "POINT(2 2)", true},
+                    {"POINT(2 2)", "POINT(2 3)", false},
+                    {"POINT(2 2)", SQUARE, false},
+                    {SQUARE, SQUARE, true},
+                    // the same ring from another vertex, with one more vertex on an edge it keeps
+                    {SQUARE, "POLYGON((4 0, 4 4, 0 4, 0 0, 2 0, 4 0))", true},
+                    {SQUARE, HOLED_SQUARE, false},
+                    // the same points in the other direction
+                    {"LINESTRING(0 0, 2 2)", "LINESTRING(2 2, 0 0)", true},
+                    // a vertex that bends nothing leaves the points of a line as they are
+                    {"LINESTRING(0 0, 2 2)", "LINESTRING(0 0, 1 1, 2 2)", true},
+                    {"LINESTRING(0 0, 2 2)", "LINESTRING(0 0, 1 2, 2 2)", false},
+                    {"MULTIPOINT((1 1), (2 2))", "MULTIPOINT((2 2), (1 1))", true},
+                    {"MULTIPOINT((1 1), (2 2))", "MULTIPOINT((1 1), (3 3))", false},
+                    // a repeated point adds no point to the set one geometry covers
+                    {"MULTIPOINT((1 1), (1 1))", "POINT(1 1)", true},
+                    {"GEOMETRYCOLLECTION(POINT(1 1), POINT(1 1))", "POINT(1 1)", true},
+                    // a point of a collection that lies on a line of it covers nothing more
+                    {"GEOMETRYCOLLECTION(POINT(0 0), LINESTRING(0 0, 1 1))", "LINESTRING(0 0, 1 1)", true},
+                    // two geometries that hold no point are equal whatever their kinds
+                    {"POINT EMPTY", "POLYGON EMPTY", true},
+                    {"POINT EMPTY", "POINT(2 2)", false},
+                    // z is ignored, so a 3D value equals the 2D argument it covers
+                    {"POINT Z (2 2 9)", "POINT(2 2)", true},
+            });
+        }
+
+        @Test
+        public void shouldEvaluateEquals() {
+            assertEquals(equal, GeoP.geoEquals(Geometry.fromWkt(argument)).test(Geometry.fromWkt(value)));
+        }
+
+        @Test
+        public void shouldEvaluateEqualsInEitherDirection() {
+            // a row whose two sides are the same geometry reads the same way round
+            assumeFalse(value.equals(argument));
+            assertEquals(equal, GeoP.geoEquals(Geometry.fromWkt(value)).test(Geometry.fromWkt(argument)));
+        }
+    }
+
+    /**
      * An argument given as a child traversal is resolved against each traverser.
      */
     public static class TraversalArgumentTest {
@@ -147,6 +298,29 @@ public class GeoPTest {
 
             predicate.resolve(traverser(Collections.singletonMap("zone", FAR_SQUARE_VALUE)));
             assertFalse(predicate.test(Point.of(2, 2)));
+        }
+
+        @Test
+        public void shouldEvaluateEveryOtherPredicateFromATraversalArgument() {
+            final P<Geometry> contains = GeoP.geoContains(__.constant(Point.of(2, 2)));
+            contains.resolve(traverser());
+            assertTrue(contains.test(Geometry.fromWkt(SQUARE)));
+            assertFalse(contains.test(FAR_SQUARE_VALUE));
+
+            final P<Geometry> intersects = GeoP.geoIntersects(__.constant(SQUARE_VALUE));
+            intersects.resolve(traverser());
+            assertTrue(intersects.test(Point.of(0, 2)));
+            assertFalse(intersects.test(Point.of(5, 5)));
+
+            final P<Geometry> disjoint = GeoP.geoDisjoint(__.constant(SQUARE_VALUE));
+            disjoint.resolve(traverser());
+            assertTrue(disjoint.test(Point.of(5, 5)));
+            assertFalse(disjoint.test(Point.of(0, 2)));
+
+            final P<Geometry> equals = GeoP.geoEquals(__.constant(SQUARE_VALUE));
+            equals.resolve(traverser());
+            assertTrue(equals.test(Geometry.fromWkt(SQUARE)));
+            assertFalse(equals.test(Point.of(2, 2)));
         }
     }
 
@@ -192,6 +366,19 @@ public class GeoPTest {
             assertFalse(GeoP.geoWithin(square).test(onTheBoundary));
             assertFalse(GeoP.geoContains(onTheBoundary).test(square));
         }
+
+        @Test
+        public void shouldEvaluateTheOtherPredicatesInLongitudeAndLatitude() {
+            final Geometry square = Geometry.fromWkt(SQUARE, Model.GEOGRAPHIC);
+            final Geometry onTheBoundary = Geometry.fromWkt("POINT(0 2)", Model.GEOGRAPHIC);
+            final Geometry outside = Geometry.fromWkt("POINT(9 9)", Model.GEOGRAPHIC);
+
+            assertTrue(GeoP.geoIntersects(square).test(onTheBoundary));
+            assertFalse(GeoP.geoDisjoint(square).test(onTheBoundary));
+            assertFalse(GeoP.geoIntersects(square).test(outside));
+            assertTrue(GeoP.geoDisjoint(square).test(outside));
+            assertFalse(GeoP.geoEquals(square).test(onTheBoundary));
+        }
     }
 
     /**
@@ -204,22 +391,44 @@ public class GeoPTest {
         private static final Geometry SQUARE_VALUE = Geometry.fromWkt(SQUARE);
 
         private static List<P<?>> predicatesAgainst(final Geometry argument) {
-            return Arrays.asList(GeoP.geoWithin(argument), GeoP.geoContains(argument));
-        }
-
-        private static void assertFalseForEvery(final Geometry argument, final Object value) {
-            for (final P<?> predicate : predicatesAgainst(argument)) {
-                assertFalse(predicate.getPredicateName() + " of " + value, test(predicate, value));
-            }
+            return Arrays.asList(GeoP.geoWithin(argument), GeoP.geoContains(argument),
+                    GeoP.geoIntersects(argument), GeoP.geoDisjoint(argument), GeoP.geoEquals(argument));
         }
 
         /**
-         * Tests a value of any type, as a step does, since a value that is not a geometry is false
-         * rather than an error.
+         * The predicates that need a point both sides hold, so that a geometry holding none can
+         * never satisfy them. {@code geoDisjoint} and {@code geoEquals} answer one in their own way.
          */
-        @SuppressWarnings("unchecked")
-        private static boolean test(final P<?> predicate, final Object value) {
-            return ((P<Object>) predicate).test(value);
+        private static List<P<?>> predicatesThatNeedPoints(final Geometry argument) {
+            return Arrays.asList(GeoP.geoWithin(argument), GeoP.geoContains(argument),
+                    GeoP.geoIntersects(argument));
+        }
+
+        private static void assertFalseForEvery(final Geometry argument, final Object value) {
+            assertFalseFor(predicatesAgainst(argument), value);
+        }
+
+        /**
+         * Every predicate with a child traversal argument, resolved against one traverser, which
+         * is how an argument the constructor rejects as a constant reaches a predicate.
+         */
+        private static List<P<?>> predicatesAgainstATraversalYielding(final Geometry argument) {
+            final List<P<?>> predicates = Arrays.asList(GeoP.geoWithin(__.constant(argument)),
+                    GeoP.geoContains(__.constant(argument)), GeoP.geoIntersects(__.constant(argument)),
+                    GeoP.geoDisjoint(__.constant(argument)), GeoP.geoEquals(__.constant(argument)));
+            for (final P<?> predicate : predicates) {
+                predicate.resolve(traverser());
+                // the argument reached the predicate, so a false answer is the model's and not
+                // that of an argument the traversal never gave
+                assertFalse(predicate.isResolvedEmpty());
+            }
+            return predicates;
+        }
+
+        private static void assertFalseFor(final List<P<?>> predicates, final Object value) {
+            for (final P<?> predicate : predicates) {
+                assertFalse(predicate.getPredicateName() + " of " + value, testAnyValue(predicate, value));
+            }
         }
 
         @Test
@@ -232,16 +441,32 @@ public class GeoPTest {
 
         @Test
         public void shouldNotMatchAnEmptyValue() {
-            assertFalseForEvery(SQUARE_VALUE, Geometry.fromWkt("POINT EMPTY"));
-            assertFalseForEvery(SQUARE_VALUE, Geometry.fromWkt("POLYGON EMPTY"));
+            // a value that holds no point lies in nothing, holds nothing and meets nothing
+            for (final String empty : Arrays.asList("POINT EMPTY", "POLYGON EMPTY")) {
+                final Geometry value = Geometry.fromWkt(empty);
+                assertFalseFor(predicatesThatNeedPoints(SQUARE_VALUE), value);
+                // it shares no point with the square, and does not cover the points the square does
+                assertTrue(empty, GeoP.geoDisjoint(SQUARE_VALUE).test(value));
+                assertFalse(empty, GeoP.geoEquals(SQUARE_VALUE).test(value));
+            }
         }
 
         @Test
         public void shouldNotMatchAnyValueForAnEmptyArgument() {
             final Geometry empty = Geometry.fromWkt("POLYGON EMPTY");
-            assertFalseForEvery(empty, POINT);
-            assertFalseForEvery(empty, SQUARE_VALUE);
-            assertFalseForEvery(empty, Geometry.fromWkt("POINT EMPTY"));
+            // an argument that holds no point is equalled only by a value that holds none either
+            final Object[][] valuesAndEquals = {
+                    {POINT, false},
+                    {SQUARE_VALUE, false},
+                    {Geometry.fromWkt("POINT EMPTY"), true},
+            };
+            for (final Object[] valueAndEquals : valuesAndEquals) {
+                final Geometry value = (Geometry) valueAndEquals[0];
+                assertFalseFor(predicatesThatNeedPoints(empty), value);
+                // no value shares a point with an argument that holds none
+                assertTrue(String.valueOf(value), GeoP.geoDisjoint(empty).test(value));
+                assertEquals(String.valueOf(value), valueAndEquals[1], GeoP.geoEquals(empty).test(value));
+            }
         }
 
         @Test
@@ -252,10 +477,26 @@ public class GeoPTest {
         }
 
         @Test
+        public void shouldNotMatchAnEmptyValueInAnotherSrid() {
+            // an empty geometry is disjoint from every geometry it can be compared with and equals
+            // every empty one, but the SRID is answered first, so even those two are false
+            final Geometry geographicSquare = Geometry.fromWkt(SQUARE, Model.GEOGRAPHIC);
+            final Geometry cartesianEmpty = Geometry.fromWkt("POINT EMPTY");
+            assertFalseForEvery(geographicSquare, cartesianEmpty);
+            assertFalseForEvery(cartesianEmpty, geographicSquare);
+            assertFalseForEvery(cartesianEmpty, Geometry.fromWkt("POINT EMPTY", Model.GEOGRAPHIC));
+        }
+
+        @Test
         public void shouldNotMatchWhenBothSidesAreInAnotherSpatialReferenceSystem() {
-            final P<Geometry> predicate = GeoP.geoWithin(__.constant(Geometry.fromWkt(SQUARE, 32618)));
-            predicate.resolve(traverser());
-            assertFalse(predicate.test(Geometry.fromWkt("POINT(2 2)", 32618)));
+            // a constant of the OTHER model is rejected when the predicate is built, so the
+            // argument comes from a child traversal
+            final Geometry otherSquare = Geometry.fromWkt(SQUARE, 32618);
+            final List<P<?>> predicates = predicatesAgainstATraversalYielding(otherSquare);
+            assertFalseFor(predicates, Geometry.fromWkt("POINT(2 2)", 32618));
+            // the square both sides would be equal, and not disjoint, in a model with math
+            assertFalseFor(predicates, Geometry.fromWkt(SQUARE, 32618));
+            assertFalseFor(predicates, Geometry.fromWkt("POINT EMPTY", 32618));
         }
 
         @Test
@@ -269,7 +510,7 @@ public class GeoPTest {
             for (final Object[] argumentAndValue : cases) {
                 final P<Geometry> predicate = GeoP.geoWithin(__.constant(argumentAndValue[0]));
                 predicate.resolve(traverser());
-                assertFalse(String.valueOf(argumentAndValue[0]), test(predicate, argumentAndValue[1]));
+                assertFalse(String.valueOf(argumentAndValue[0]), testAnyValue(predicate, argumentAndValue[1]));
             }
         }
 
@@ -295,6 +536,17 @@ public class GeoPTest {
                     () -> GeoP.geoContains(otherSrid));
             assertEquals("The geometry of geoContains must be in the CARTESIAN or GEOGRAPHIC model, " +
                     "but SRID 32618 is OTHER", iae.getMessage());
+        }
+
+        @Test
+        public void shouldRejectAConstantArgumentThatCanNeverMatchForEveryPredicate() {
+            final Geometry otherSrid = Geometry.fromWkt(SQUARE, 32618);
+            for (final Geo predicate : Geo.values()) {
+                final IllegalArgumentException iae = assertThrows(predicate.name(),
+                        IllegalArgumentException.class, () -> new GeoP(predicate, otherSrid));
+                assertEquals("The geometry of " + predicate.name() + " must be in the CARTESIAN or " +
+                        "GEOGRAPHIC model, but SRID 32618 is OTHER", iae.getMessage());
+            }
         }
 
         @Test
@@ -325,6 +577,11 @@ public class GeoPTest {
             final HasContainer within = new HasContainer("loc", GeoP.geoWithin(SQUARE_VALUE));
             assertSame(Geo.geoWithin, within.getBiPredicate());
             assertEquals(SQUARE_VALUE, within.getValue());
+
+            // every geo predicate reaches a provider as the Geo entry it was built from
+            for (final Geo predicate : Geo.values()) {
+                assertSame(predicate, new HasContainer("loc", new GeoP(predicate, SQUARE_VALUE)).getBiPredicate());
+            }
         }
 
         @Test
@@ -343,6 +600,8 @@ public class GeoPTest {
             assertEquals(GeoP.geoWithin(SQUARE_VALUE).hashCode(), GeoP.geoWithin(Geometry.fromWkt(SQUARE)).hashCode());
 
             assertNotEquals(GeoP.geoWithin(SQUARE_VALUE), GeoP.geoContains(SQUARE_VALUE));
+            assertNotEquals(GeoP.geoIntersects(SQUARE_VALUE), GeoP.geoDisjoint(SQUARE_VALUE));
+            assertNotEquals(GeoP.geoEquals(SQUARE_VALUE), GeoP.geoWithin(SQUARE_VALUE));
             assertNotEquals(GeoP.geoWithin(SQUARE_VALUE), GeoP.geoWithin(POINT));
             assertNotEquals(GeoP.geoWithin(SQUARE_VALUE), P.eq(SQUARE_VALUE));
         }
@@ -357,16 +616,91 @@ public class GeoPTest {
 
         @Test
         public void shouldCloneWithTheSameArguments() {
-            final GeoP original = GeoP.geoWithin(GValue.of("zone", SQUARE_VALUE));
-            final GeoP clone = original.clone();
-            assertEquals(original, clone);
-            assertTrue(clone.test(POINT));
+            final Geometry farSquare = Geometry.fromWkt("POLYGON((10 10, 14 10, 14 14, 10 14, 10 10))");
+            for (final Geo predicate : Geo.values()) {
+                final GeoP original = new GeoP(predicate, GValue.of("zone", SQUARE_VALUE));
+                final GeoP clone = original.clone();
+                assertEquals(predicate.name(), original, clone);
+                assertEquals(predicate.name(), expectedForPoint(predicate, true), clone.test(POINT));
 
-            // giving the clone's variable a new value leaves the original's variables as they were
-            clone.updateVariable("zone", Geometry.fromWkt("POLYGON((10 10, 14 10, 14 14, 10 14, 10 10))"));
-            assertEquals(Collections.singleton(GValue.of("zone", SQUARE_VALUE)), original.getGValues());
-            assertEquals(SQUARE_VALUE, original.getValue());
-            assertTrue(original.test(POINT));
+                // giving the clone's variable a new value leaves the original's variables as they were
+                clone.updateVariable("zone", farSquare);
+                assertEquals(predicate.name(), Collections.singleton(GValue.of("zone", SQUARE_VALUE)),
+                        original.getGValues());
+                assertEquals(predicate.name(), SQUARE_VALUE, original.getValue());
+                assertEquals(predicate.name(), expectedForPoint(predicate, true), original.test(POINT));
+            }
+        }
+    }
+
+    /**
+     * A geo predicate can be negated or joined with another one, which {@code P} answers from the
+     * predicates it wraps rather than from the geometry model.
+     */
+    public static class NegationAndConnectiveTest {
+
+        private static final Geometry SQUARE_VALUE = Geometry.fromWkt(SQUARE);
+        private static final Geometry INSIDE = Point.of(2, 2);
+        private static final Geometry OUTSIDE = Point.of(5, 5);
+
+        @Test
+        public void shouldNegateEveryPredicate() {
+            for (final Geo predicate : Geo.values()) {
+                final P<Geometry> negated = new GeoP(predicate, SQUARE_VALUE).negate();
+                assertEquals(predicate.name(), !expectedForPoint(predicate, true), negated.test(INSIDE));
+                assertEquals(predicate.name(), !expectedForPoint(predicate, false), negated.test(OUTSIDE));
+            }
+        }
+
+        @Test
+        public void shouldNegateAValueThatCannotBeCompared() {
+            // a value the model cannot answer is false, so a negated predicate holds it
+            for (final Geo predicate : Geo.values()) {
+                final P<Geometry> negated = new GeoP(predicate, SQUARE_VALUE).negate();
+                assertTrue(predicate.name(), testAnyValue(negated, null));
+                assertTrue(predicate.name(), testAnyValue(negated, "POINT(2 2)"));
+                assertTrue(predicate.name(), negated.test(Point.of(2, 2, Model.GEOGRAPHIC)));
+            }
+        }
+
+        @Test
+        public void shouldNegateAnArgumentInAnotherSpatialReferenceSystem() {
+            // a constant of the OTHER model is rejected when the predicate is built, so the
+            // argument comes from a child traversal
+            final Geometry otherSquare = Geometry.fromWkt(SQUARE, 32618);
+            for (final Geo predicate : Geo.values()) {
+                final P<Geometry> negated = new GeoP(predicate, __.constant(otherSquare).asAdmin()).negate();
+                negated.resolve(traverser());
+                assertTrue(predicate.name(), negated.test(Geometry.fromWkt("POINT(2 2)", 32618)));
+            }
+        }
+
+        @Test
+        public void shouldEvaluateAndOfEveryPairOfPredicates() {
+            for (final Geo first : Geo.values()) {
+                for (final Geo second : Geo.values()) {
+                    final P<Geometry> and = new GeoP(first, SQUARE_VALUE).and(new GeoP(second, SQUARE_VALUE));
+                    final String pair = first.name() + " and " + second.name();
+                    assertEquals(pair + " of the point inside the square",
+                            expectedForPoint(first, true) && expectedForPoint(second, true), and.test(INSIDE));
+                    assertEquals(pair + " of the point outside the square",
+                            expectedForPoint(first, false) && expectedForPoint(second, false), and.test(OUTSIDE));
+                }
+            }
+        }
+
+        @Test
+        public void shouldEvaluateOrOfEveryPairOfPredicates() {
+            for (final Geo first : Geo.values()) {
+                for (final Geo second : Geo.values()) {
+                    final P<Geometry> or = new GeoP(first, SQUARE_VALUE).or(new GeoP(second, SQUARE_VALUE));
+                    final String pair = first.name() + " or " + second.name();
+                    assertEquals(pair + " of the point inside the square",
+                            expectedForPoint(first, true) || expectedForPoint(second, true), or.test(INSIDE));
+                    assertEquals(pair + " of the point outside the square",
+                            expectedForPoint(first, false) || expectedForPoint(second, false), or.test(OUTSIDE));
+                }
+            }
         }
     }
 
@@ -390,18 +724,23 @@ public class GeoPTest {
 
         @Test
         public void shouldMatchTheNewValueWhenAVariableTakesOne() {
-            final GeoP predicate = GeoP.geoWithin(GValue.of("zone", SQUARE_VALUE));
-            assertTrue(predicate.test(POINT));
+            for (final Geo name : Geo.values()) {
+                final GeoP predicate = new GeoP(name, GValue.of("zone", SQUARE_VALUE));
+                assertEquals(name.name(), expectedForPoint(name, true), predicate.test(POINT));
 
-            predicate.updateVariable("zone", FAR_SQUARE);
-            assertEquals(FAR_SQUARE, predicate.getValue());
-            assertFalse(predicate.test(POINT));
+                predicate.updateVariable("zone", FAR_SQUARE);
+                assertEquals(name.name(), FAR_SQUARE, predicate.getValue());
+                assertEquals(name.name(), expectedForPoint(name, false), predicate.test(POINT));
+            }
         }
 
         @Test
         public void shouldBeTheConstantPredicateWhenAnArgumentIsALiteral() {
             assertEquals(GeoP.geoWithin(SQUARE_VALUE), GeoP.geoWithin(GValue.of(null, SQUARE_VALUE)));
             assertEquals(GeoP.geoContains(SQUARE_VALUE), GeoP.geoContains(GValue.of(null, SQUARE_VALUE)));
+            assertEquals(GeoP.geoIntersects(SQUARE_VALUE), GeoP.geoIntersects(GValue.of(null, SQUARE_VALUE)));
+            assertEquals(GeoP.geoDisjoint(SQUARE_VALUE), GeoP.geoDisjoint(GValue.of(null, SQUARE_VALUE)));
+            assertEquals(GeoP.geoEquals(SQUARE_VALUE), GeoP.geoEquals(GValue.of(null, SQUARE_VALUE)));
             assertFalse(GeoP.geoWithin(GValue.of(null, SQUARE_VALUE)).isParameterized());
         }
 

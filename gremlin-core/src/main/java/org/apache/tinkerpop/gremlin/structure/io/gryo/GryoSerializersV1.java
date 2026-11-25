@@ -19,6 +19,8 @@
 package org.apache.tinkerpop.gremlin.structure.io.gryo;
 
 import org.apache.tinkerpop.gremlin.process.remote.traversal.DefaultRemoteTraverser;
+import org.apache.tinkerpop.gremlin.process.traversal.Geo;
+import org.apache.tinkerpop.gremlin.process.traversal.GeoP;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Text;
@@ -190,13 +192,29 @@ public final class GryoSerializersV1 {
                         result = P.without((Collection) value);
                     else
                         result = (P) P.class.getMethod(predicate, Collection.class).invoke(null, (Collection) value);
-                } else
-                    result = (P) P.class.getMethod(predicate, Object.class).invoke(null, value);
+                } else {
+                    final Geo geoPredicate = geoPredicateNamed(predicate);
+                    result = null == geoPredicate ?
+                            (P) P.class.getMethod(predicate, Object.class).invoke(null, value) :
+                            new GeoP(geoPredicate, value);
+                }
 
                 return negated ? result.negate() : result;
             } catch (final Exception e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
+        }
+
+        /**
+         * Returns the {@link Geo} predicate of the given name, or null when no predicate carries it. {@link P} has
+         * no factory method for a geometry predicate, so a negated {@link GeoP}, which reaches this serializer as a
+         * {@link org.apache.tinkerpop.gremlin.process.traversal.NotP}, is read back as a {@code GeoP}.
+         */
+        private static Geo geoPredicateNamed(final String name) {
+            for (final Geo predicate : Geo.values()) {
+                if (predicate.name().equals(name)) return predicate;
+            }
+            return null;
         }
     }
 
@@ -224,6 +242,31 @@ public final class GryoSerializersV1 {
             } catch (final Exception e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
+        }
+    }
+
+    public final static class GeoPSerializer implements SerializerShim<GeoP> {
+        @Override
+        public <O extends OutputShim> void write(final KryoShim<?, O> kryo, final O output, final GeoP p) {
+            if (p.hasTraversal()) {
+                throw new IllegalStateException(String.format(
+                        "Gryo cannot serialize %s with a child traversal argument", p.getPredicateName()));
+            }
+            final BiPredicate<?, ?> biPredicate = p.getBiPredicate();
+            if (!(biPredicate instanceof Geo)) {
+                throw new IllegalStateException(String.format(
+                        "Gryo cannot serialize a GeoP whose predicate is not a Geo, but was %s",
+                        p.getPredicateName()));
+            }
+            output.writeString(p.getPredicateName());
+            // a variable argument is written as the value it holds, dropping its name, as PSerializer does
+            kryo.writeClassAndObject(output, p.getValue());
+        }
+
+        @Override
+        public <I extends InputShim> GeoP read(final KryoShim<I, ?> kryo, final I input, final Class<GeoP> clazz) {
+            final Geo predicate = Geo.valueOf(input.readString());
+            return new GeoP(predicate, kryo.readClassAndObject(input));
         }
     }
 

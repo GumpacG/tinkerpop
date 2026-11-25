@@ -402,6 +402,189 @@ func NewEmptyGeometryCollectionWithSrid(srid int32) *GeometryCollection {
 }
 
 // ------------------------------------------------------------------------
+// Panicking constructors
+// ------------------------------------------------------------------------
+
+// The Must forms build the same values as the constructors above and panic with the
+// constructor's error instead of returning it. They suit a geometry written as a fixed value,
+// such as a zone in a query or a literal in generated code, where an invalid argument is a
+// mistake in the source rather than a runtime condition. Use the New forms for input that comes
+// from outside the program.
+//
+// A kind whose empty form takes an explicit SRID has no Must form, because an empty geometry
+// holds no coordinate to validate and NewEmptyXWithSrid returns no error.
+
+// MustNewPoint creates a 2D point with the given coordinate model and panics if NewPoint
+// rejects its arguments.
+func MustNewPoint(x, y float64, m model) *Point {
+	p, err := NewPoint(x, y, m)
+	if err != nil {
+		panic(err)
+	}
+	return p
+}
+
+// MustNewPointZ creates a 3D point with the given coordinate model and panics if NewPointZ
+// rejects its arguments.
+func MustNewPointZ(x, y, z float64, m model) *Point {
+	p, err := NewPointZ(x, y, z, m)
+	if err != nil {
+		panic(err)
+	}
+	return p
+}
+
+// MustNewPointWithSrid creates a 2D point with an explicit SRID and panics if
+// NewPointWithSrid rejects its arguments.
+func MustNewPointWithSrid(x, y float64, srid int32) *Point {
+	p, err := NewPointWithSrid(x, y, srid)
+	if err != nil {
+		panic(err)
+	}
+	return p
+}
+
+// MustNewPointZWithSrid creates a 3D point with an explicit SRID and panics if
+// NewPointZWithSrid rejects its arguments.
+func MustNewPointZWithSrid(x, y, z float64, srid int32) *Point {
+	p, err := NewPointZWithSrid(x, y, z, srid)
+	if err != nil {
+		panic(err)
+	}
+	return p
+}
+
+// MustNewEmptyPoint creates an empty 2D point with the given coordinate model and panics if
+// NewEmptyPoint rejects it.
+func MustNewEmptyPoint(m model) *Point {
+	p, err := NewEmptyPoint(m)
+	if err != nil {
+		panic(err)
+	}
+	return p
+}
+
+// MustNewLineString creates a line string from at least 2 points and panics if NewLineString
+// rejects them.
+func MustNewLineString(points ...*Point) *LineString {
+	ls, err := NewLineString(points...)
+	if err != nil {
+		panic(err)
+	}
+	return ls
+}
+
+// MustNewEmptyLineString creates an empty line string with the given coordinate model and panics
+// if NewEmptyLineString rejects it.
+func MustNewEmptyLineString(m model) *LineString {
+	ls, err := NewEmptyLineString(m)
+	if err != nil {
+		panic(err)
+	}
+	return ls
+}
+
+// MustNewPolygon creates a polygon from a shell ring and optional hole rings and panics if
+// NewPolygon rejects them.
+func MustNewPolygon(shell *LineString, holes ...*LineString) *Polygon {
+	poly, err := NewPolygon(shell, holes...)
+	if err != nil {
+		panic(err)
+	}
+	return poly
+}
+
+// MustNewEmptyPolygon creates an empty polygon with the given coordinate model and panics if
+// NewEmptyPolygon rejects it.
+func MustNewEmptyPolygon(m model) *Polygon {
+	poly, err := NewEmptyPolygon(m)
+	if err != nil {
+		panic(err)
+	}
+	return poly
+}
+
+// MustNewMultiPoint creates a multi-point from at least 1 point and panics if NewMultiPoint
+// rejects them.
+func MustNewMultiPoint(points ...*Point) *MultiPoint {
+	mp, err := NewMultiPoint(points...)
+	if err != nil {
+		panic(err)
+	}
+	return mp
+}
+
+// MustNewEmptyMultiPoint creates a multi-point with no parts and the given coordinate model and
+// panics if NewEmptyMultiPoint rejects it.
+func MustNewEmptyMultiPoint(m model) *MultiPoint {
+	mp, err := NewEmptyMultiPoint(m)
+	if err != nil {
+		panic(err)
+	}
+	return mp
+}
+
+// MustNewMultiLineString creates a multi-line string from at least 1 line string and panics if
+// NewMultiLineString rejects them.
+func MustNewMultiLineString(lineStrings ...*LineString) *MultiLineString {
+	mls, err := NewMultiLineString(lineStrings...)
+	if err != nil {
+		panic(err)
+	}
+	return mls
+}
+
+// MustNewEmptyMultiLineString creates a multi-line string with no parts and the given coordinate
+// model and panics if NewEmptyMultiLineString rejects it.
+func MustNewEmptyMultiLineString(m model) *MultiLineString {
+	mls, err := NewEmptyMultiLineString(m)
+	if err != nil {
+		panic(err)
+	}
+	return mls
+}
+
+// MustNewMultiPolygon creates a multi-polygon from at least 1 polygon and panics if
+// NewMultiPolygon rejects them.
+func MustNewMultiPolygon(polygons ...*Polygon) *MultiPolygon {
+	mpoly, err := NewMultiPolygon(polygons...)
+	if err != nil {
+		panic(err)
+	}
+	return mpoly
+}
+
+// MustNewEmptyMultiPolygon creates a multi-polygon with no parts and the given coordinate model
+// and panics if NewEmptyMultiPolygon rejects it.
+func MustNewEmptyMultiPolygon(m model) *MultiPolygon {
+	mpoly, err := NewEmptyMultiPolygon(m)
+	if err != nil {
+		panic(err)
+	}
+	return mpoly
+}
+
+// MustNewGeometryCollection creates a geometry collection from at least 1 geometry and panics if
+// NewGeometryCollection rejects them.
+func MustNewGeometryCollection(geometries ...Geometry) *GeometryCollection {
+	gc, err := NewGeometryCollection(geometries...)
+	if err != nil {
+		panic(err)
+	}
+	return gc
+}
+
+// MustNewEmptyGeometryCollection creates a geometry collection with no parts and the given
+// coordinate model and panics if NewEmptyGeometryCollection rejects it.
+func MustNewEmptyGeometryCollection(m model) *GeometryCollection {
+	gc, err := NewEmptyGeometryCollection(m)
+	if err != nil {
+		panic(err)
+	}
+	return gc
+}
+
+// ------------------------------------------------------------------------
 // Internal constructors, which take ownership of the slices they are given
 // ------------------------------------------------------------------------
 

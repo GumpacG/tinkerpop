@@ -83,15 +83,6 @@ const jvmGeometryTranslations = [
   ],
 ];
 
-// The geometry inputs the Python, .NET, Go and JavaScript translators reject, with what each names in its message.
-const unsupportedGeometry = [
-  ['g.inject(Geometry("POINT(1 2)"))', 'geometry literals'],
-  ['g.V().has("loc", geoWithin(x))', 'geo predicates'],
-  ['g.V().has("loc", geoContains(x))', 'geo predicates'],
-  ['g.inject(123).is(P.typeOf(GType.POINT))', 'geometry types'],
-  ['g.inject(Model.OTHER)', 'geometry models'],
-];
-
 // Geometry literals the Java translator rejects.
 const jvmGeometryErrors = [
   ['g.inject(Geometry("POINT(1 2)", 32618B))', 'Invalid Geometry literal: 32618B is out of range for its type'],
@@ -172,23 +163,16 @@ describe('GremlinTranslator', function () {
       ['g.tx().begin()', 'g.tx().begin()'],
       ['g.tx().commit()', 'g.tx().commit()'],
       ['g.tx().rollback()', 'g.tx().rollback()'],
+      // GType names
+      ['g.inject(123).is(P.typeOf(GType.LINESTRING))', 'g.inject(123).is(P.typeOf(GType.lineString))'],
+      ['g.inject(123).is(P.typeOf(GType.GEOMETRYCOLLECTION))', 'g.inject(123).is(P.typeOf(GType.geometryCollection))'],
+      ['g.inject(123).is(P.typeOf(lineString))', 'g.inject(123).is(P.typeOf(GType.lineString))'],
     ];
 
     tests.forEach(function ([input, expected]) {
       it(`translates: ${input}`, function () {
         const result = GremlinTranslator.translate(input);
         assert.strictEqual(result.getTranslated(), expected);
-      });
-    });
-  });
-
-  describe('geometry is unsupported', function () {
-    unsupportedGeometry.forEach(function ([input, kind]) {
-      it(`throws for: ${input}`, function () {
-        assert.throws(() => GremlinTranslator.translate(input), {
-          name: 'TranslatorException',
-          message: `Javascript does not support ${kind}`,
-        });
       });
     });
   });
@@ -329,19 +313,15 @@ describe('PythonTranslateVisitor', function () {
       ['g.tx().rollback()', 'g.tx().rollback()'],
       // a GType name is written upper case
       ['g.inject(1).is(P.typeOf(GType.bigDecimal))', 'g.inject(1).is_(P.type_of(GType.BIGDECIMAL))'],
+      // GType names
+      ['g.inject(123).is(P.typeOf(GType.LINESTRING))', 'g.inject(123).is_(P.type_of(GType.LINESTRING))'],
+      ['g.inject(123).is(P.typeOf(GType.GEOMETRYCOLLECTION))', 'g.inject(123).is_(P.type_of(GType.GEOMETRYCOLLECTION))'],
+      ['g.inject(123).is(P.typeOf(lineString))', 'g.inject(123).is_(P.type_of(GType.LINESTRING))'],
     ];
 
     tests.forEach(function ([input, expected]) {
       it(`translates: ${input}`, function () {
         assert.strictEqual(translate(input), expected);
-      });
-    });
-  });
-
-  describe('geometry is unsupported', function () {
-    unsupportedGeometry.forEach(function ([input, kind]) {
-      it(`throws for: ${input}`, function () {
-        assert.throws(() => translate(input), { name: 'TranslatorException', message: `Python does not support ${kind}` });
       });
     });
   });
@@ -429,19 +409,18 @@ describe('GoTranslateVisitor', function () {
       ['g.tx().begin()', 'g.Tx().Begin()'],
       ['g.tx().commit()', 'g.Tx().Commit()'],
       ['g.tx().rollback()', 'g.Tx().Rollback()'],
+      // GType names
+      ['g.inject(123).is(P.typeOf(GType.LINESTRING))', 'g.Inject(123).Is(gremlingo.P.TypeOf(gremlingo.GType.LineString))'],
+      [
+        'g.inject(123).is(P.typeOf(GType.GEOMETRYCOLLECTION))',
+        'g.Inject(123).Is(gremlingo.P.TypeOf(gremlingo.GType.GeometryCollection))',
+      ],
+      ['g.inject(123).is(P.typeOf(lineString))', 'g.Inject(123).Is(gremlingo.P.TypeOf(gremlingo.GType.LineString))'],
     ];
 
     tests.forEach(function ([input, expected]) {
       it(`translates: ${input}`, function () {
         assert.strictEqual(translate(input), expected);
-      });
-    });
-  });
-
-  describe('geometry is unsupported', function () {
-    unsupportedGeometry.forEach(function ([input, kind]) {
-      it(`throws for: ${input}`, function () {
-        assert.throws(() => translate(input), { name: 'TranslatorException', message: `Go does not support ${kind}` });
       });
     });
   });
@@ -530,19 +509,18 @@ describe('DotNetTranslateVisitor', function () {
       ['g.tx().begin()', 'g.Tx().Begin()'],
       ['g.tx().commit()', 'g.Tx().Commit()'],
       ['g.tx().rollback()', 'g.Tx().Rollback()'],
+      // GType names
+      ['g.inject(123).is(P.typeOf(GType.LINESTRING))', 'g.Inject<object>(123).Is(P.TypeOf(GType.LineString))'],
+      [
+        'g.inject(123).is(P.typeOf(GType.GEOMETRYCOLLECTION))',
+        'g.Inject<object>(123).Is(P.TypeOf(GType.GeometryCollection))',
+      ],
+      ['g.inject(123).is(P.typeOf(lineString))', 'g.Inject<object>(123).Is(P.TypeOf(GType.LineString))'],
     ];
 
     tests.forEach(function ([input, expected]) {
       it(`translates: ${input}`, function () {
         assert.strictEqual(translate(input), expected);
-      });
-    });
-  });
-
-  describe('geometry is unsupported', function () {
-    unsupportedGeometry.forEach(function ([input, kind]) {
-      it(`throws for: ${input}`, function () {
-        assert.throws(() => translate(input), { name: 'TranslatorException', message: `.NET does not support ${kind}` });
       });
     });
   });
@@ -627,6 +605,13 @@ describe('JavaTranslateVisitor', function () {
       ['g.tx().begin()', 'g.tx().begin()'],
       ['g.tx().commit()', 'g.tx().commit()'],
       ['g.tx().rollback()', 'g.tx().rollback()'],
+      // GType names
+      ['g.inject(123).is(P.typeOf(GType.LINESTRING))', 'g.inject(123).is(P.typeOf(GType.LINESTRING))'],
+      [
+        'g.inject(123).is(P.typeOf(GType.GEOMETRYCOLLECTION))',
+        'g.inject(123).is(P.typeOf(GType.GEOMETRYCOLLECTION))',
+      ],
+      ['g.inject(123).is(P.typeOf(lineString))', 'g.inject(123).is(P.typeOf(GType.LINESTRING))'],
     ];
 
     tests.forEach(function ([input, expected]) {
@@ -741,6 +726,13 @@ describe('GroovyTranslateVisitor', function () {
       ['g.tx().begin()', 'g.tx().begin()'],
       ['g.tx().commit()', 'g.tx().commit()'],
       ['g.tx().rollback()', 'g.tx().rollback()'],
+      // GType names
+      ['g.inject(123).is(P.typeOf(GType.LINESTRING))', 'g.inject(123).is(P.typeOf(GType.LINESTRING))'],
+      [
+        'g.inject(123).is(P.typeOf(GType.GEOMETRYCOLLECTION))',
+        'g.inject(123).is(P.typeOf(GType.GEOMETRYCOLLECTION))',
+      ],
+      ['g.inject(123).is(P.typeOf(lineString))', 'g.inject(123).is(P.typeOf(GType.LINESTRING))'],
     ];
 
     tests.forEach(function ([input, expected]) {
@@ -849,6 +841,13 @@ describe('AnonymizedTranslateVisitor', function () {
       ['g.V().order().by(Order.asc)', 'g.V().order().by(Order.asc)'],
       // variables pass through unchanged
       ['g.V(vid1)', 'g.V(vid1)'],
+      // GType names
+      ['g.inject(123).is(P.typeOf(GType.LINESTRING))', 'g.inject(number0).is(P.typeOf(GType.LINESTRING))'],
+      [
+        'g.inject(123).is(P.typeOf(GType.GEOMETRYCOLLECTION))',
+        'g.inject(number0).is(P.typeOf(GType.GEOMETRYCOLLECTION))',
+      ],
+      ['g.inject(123).is(P.typeOf(lineString))', 'g.inject(number0).is(P.typeOf(GType.LINESTRING))'],
     ];
 
     tests
@@ -873,6 +872,189 @@ describe('AnonymizedTranslateVisitor', function () {
     it('has ANONYMIZED factory', function () {
       const visitor = Translator.ANONYMIZED('g');
       assert.ok(visitor instanceof AnonymizedTranslateVisitor);
+    });
+  });
+});
+
+describe('geometry literals', function () {
+  const translate = (q, dialect) => GremlinTranslator.translate(q, 'g', dialect).getTranslated();
+
+  const point = 'g.inject(Geometry("POINT(1 2)"))';
+  const geographicPoint = 'g.inject(Geometry("POINT(13.4 52.5)", GEOGRAPHIC))';
+  const sridPoint = 'g.inject(Geometry("POINT(1 2)", 32618))';
+  const ewktPoint = 'g.inject(Geometry("SRID=4326;POINT(13.4 52.5)"))';
+  const holedSquare = 'g.inject(Geometry("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))"))';
+  const nestedCollection = 'g.inject(Geometry("GEOMETRYCOLLECTION(POINT(1 1), MULTIPOINT EMPTY)"))';
+  const pointZ = 'g.inject(Geometry("POINT Z (1 2 3)"))';
+  const untaggedPointZ = 'g.inject(Geometry("POINT(1 2 3)"))';
+  const untaggedLineStringZ = 'g.inject(Geometry("LINESTRING(0 0 1, 1 1 2)"))';
+  const emptyPoint = 'g.inject(Geometry("POINT EMPTY"))';
+  const negativeZero = 'g.inject(Geometry("POINT(-0 0)"))';
+  const otherModel = 'g.inject(Model.OTHER)';
+  const geographicModel = 'g.inject(Model.GEOGRAPHIC)';
+
+  const tests = [
+    // the gremlin-lang dialect writes the literal as it was given, with whitespace normalized
+    ['CANONICAL', point, 'g.inject(Geometry("POINT(1 2)"))'],
+    ['CANONICAL', geographicPoint, 'g.inject(Geometry("POINT(13.4 52.5)", GEOGRAPHIC))'],
+    // the JVM languages read the WKT back
+    ['JAVA', point, 'g.inject(Geometry.fromWkt("POINT(1 2)"))'],
+    ['JAVA', geographicPoint, 'g.inject(Geometry.fromWkt("POINT(13.4 52.5)", Model.GEOGRAPHIC))'],
+    ['JAVA', sridPoint, 'g.inject(Geometry.fromWkt("POINT(1 2)", 32618))'],
+    ['JAVA', ewktPoint, 'g.inject(Geometry.fromWkt("POINT(13.4 52.5)", Model.GEOGRAPHIC))'],
+    ['JAVA', pointZ, 'g.inject(Geometry.fromWkt("POINT Z (1 2 3)"))'],
+    ['GROOVY', emptyPoint, 'g.inject(Geometry.fromWkt("POINT EMPTY"))'],
+    // the GLVs build the value from the constructors of their kinds
+    ['JAVASCRIPT', point, 'g.inject(Point.of(1.0, 2.0))'],
+    ['JAVASCRIPT', geographicPoint, 'g.inject(Point.of(13.4, 52.5, Model.GEOGRAPHIC))'],
+    ['JAVASCRIPT', sridPoint, 'g.inject(Point.of(1.0, 2.0, 32618))'],
+    // an SRID may be written in any integer width and in hexadecimal, octal or decimal form
+    ['JAVASCRIPT', 'g.inject(Geometry("POINT(1 2)", 32618N))', 'g.inject(Point.of(1.0, 2.0, 32618))'],
+    ['JAVASCRIPT', 'g.inject(Geometry("POINT(1 2)", 32_618))', 'g.inject(Point.of(1.0, 2.0, 32618))'],
+    ['JAVASCRIPT', 'g.inject(Geometry("POINT(1 2)", 0x7F5A))', 'g.inject(Point.of(1.0, 2.0, 32602))'],
+    ['JAVASCRIPT', 'g.inject(Geometry("POINT(1 2)", 017))', 'g.inject(Point.of(1.0, 2.0, 15))'],
+    ['JAVASCRIPT', 'g.inject(Geometry("POINT(1 2)", -32618))', 'g.inject(Point.of(1.0, 2.0, -32618))'],
+    ['JAVASCRIPT', pointZ, 'g.inject(Point.ofZ(1.0, 2.0, 3.0))'],
+    ['JAVASCRIPT', emptyPoint, 'g.inject(Point.empty())'],
+    ['JAVASCRIPT', negativeZero, 'g.inject(Point.of(-0.0, 0.0))'],
+    ['JAVASCRIPT', holedSquare,
+      'g.inject(Polygon.of(LineString.of(Point.of(0.0, 0.0), Point.of(4.0, 0.0), Point.of(4.0, 4.0), ' +
+      'Point.of(0.0, 4.0), Point.of(0.0, 0.0)), LineString.of(Point.of(1.0, 1.0), Point.of(1.0, 2.0), ' +
+      'Point.of(2.0, 2.0), Point.of(2.0, 1.0), Point.of(1.0, 1.0))))'],
+    ['JAVASCRIPT', nestedCollection, 'g.inject(GeometryCollection.of(Point.of(1.0, 1.0), MultiPoint.empty()))'],
+    ['PYTHON', point, 'g.inject(Point(1.0, 2.0))'],
+    ['PYTHON', geographicPoint, 'g.inject(Point(13.4, 52.5, model=Model.GEOGRAPHIC))'],
+    ['PYTHON', sridPoint, 'g.inject(Point(1.0, 2.0, srid=32618))'],
+    ['PYTHON', holedSquare,
+      'g.inject(Polygon(LineString([Point(0.0, 0.0), Point(4.0, 0.0), Point(4.0, 4.0), Point(0.0, 4.0), ' +
+      'Point(0.0, 0.0)]), [LineString([Point(1.0, 1.0), Point(1.0, 2.0), Point(2.0, 2.0), Point(2.0, 1.0), ' +
+      'Point(1.0, 1.0)])]))'],
+    ['PYTHON', nestedCollection, 'g.inject(GeometryCollection([Point(1.0, 1.0), MultiPoint.empty()]))'],
+    ['DOTNET', point, 'g.Inject<object>(new Point(1.0, 2.0))'],
+    ['DOTNET', geographicPoint, 'g.Inject<object>(new Point(13.4, 52.5, Model.Geographic))'],
+    ['DOTNET', sridPoint, 'g.Inject<object>(Point.WithSrid(1.0, 2.0, 32618))'],
+    ['DOTNET', emptyPoint, 'g.Inject<object>(Point.Empty())'],
+    ['GO', point, 'g.Inject(gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian))'],
+    ['GO', geographicPoint, 'g.Inject(gremlingo.MustNewPoint(13.4, 52.5, gremlingo.Model.Geographic))'],
+    ['GO', sridPoint, 'g.Inject(gremlingo.MustNewPointWithSrid(1.0, 2.0, 32618))'],
+    ['GO', emptyPoint, 'g.Inject(gremlingo.MustNewEmptyPoint(gremlingo.Model.Cartesian))'],
+    ['GO', 'g.inject(Geometry("POINT EMPTY", 32618))', 'g.Inject(gremlingo.NewEmptyPointWithSrid(32618))'],
+    ['GO', negativeZero, 'g.Inject(gremlingo.MustNewPoint(math.Copysign(0, -1), 0.0, gremlingo.Model.Cartesian))'],
+    // a Model value on its own, which each GLV renders as it names the enum entry
+    ['JAVASCRIPT', otherModel, 'g.inject(Model.OTHER)'],
+    ['JAVASCRIPT', geographicModel, 'g.inject(Model.GEOGRAPHIC)'],
+    ['PYTHON', otherModel, 'g.inject(Model.OTHER)'],
+    ['PYTHON', geographicModel, 'g.inject(Model.GEOGRAPHIC)'],
+    ['DOTNET', otherModel, 'g.Inject<object>(Model.Other)'],
+    ['DOTNET', geographicModel, 'g.Inject<object>(Model.Geographic)'],
+    ['GO', otherModel, 'g.Inject(gremlingo.Model.Other)'],
+    ['GO', geographicModel, 'g.Inject(gremlingo.Model.Geographic)'],
+    // the anonymizer replaces a geometry with a placeholder named for the kind its WKT leads with
+    ['ANONYMIZED', point, 'g.inject(point0)'],
+    ['ANONYMIZED', 'g.inject(Geometry("POINT(1 2)"), Geometry("POINT(3 4)"), Geometry("POINT(1 2)"))',
+      'g.inject(point0, point1, point0)'],
+    // PostGIS EWKT writes a 3D value with no Z tag, which the reader takes as 3D. The JVM dialects echo the
+    // WKT as given, where the Java translator writes back the ISO form it reads.
+    ['CANONICAL', untaggedPointZ, 'g.inject(Geometry("POINT(1 2 3)"))'],
+    ['JAVA', untaggedPointZ, 'g.inject(Geometry.fromWkt("POINT(1 2 3)"))'],
+    ['GROOVY', untaggedPointZ, 'g.inject(Geometry.fromWkt("POINT(1 2 3)"))'],
+    ['JAVASCRIPT', untaggedPointZ, 'g.inject(Point.ofZ(1.0, 2.0, 3.0))'],
+    ['PYTHON', untaggedPointZ, 'g.inject(Point(1.0, 2.0, 3.0))'],
+    ['DOTNET', untaggedPointZ, 'g.Inject<object>(new Point(1.0, 2.0, 3.0))'],
+    ['GO', untaggedPointZ, 'g.Inject(gremlingo.MustNewPointZ(1.0, 2.0, 3.0, gremlingo.Model.Cartesian))'],
+    ['ANONYMIZED', untaggedPointZ, 'g.inject(point0)'],
+    ['CANONICAL', untaggedLineStringZ, 'g.inject(Geometry("LINESTRING(0 0 1, 1 1 2)"))'],
+    ['JAVA', untaggedLineStringZ, 'g.inject(Geometry.fromWkt("LINESTRING(0 0 1, 1 1 2)"))'],
+    ['GROOVY', untaggedLineStringZ, 'g.inject(Geometry.fromWkt("LINESTRING(0 0 1, 1 1 2)"))'],
+    ['JAVASCRIPT', untaggedLineStringZ, 'g.inject(LineString.of(Point.ofZ(0.0, 0.0, 1.0), Point.ofZ(1.0, 1.0, 2.0)))'],
+    ['PYTHON', untaggedLineStringZ, 'g.inject(LineString([Point(0.0, 0.0, 1.0), Point(1.0, 1.0, 2.0)]))'],
+    ['DOTNET', untaggedLineStringZ,
+      'g.Inject<object>(new LineString(new Point(0.0, 0.0, 1.0), new Point(1.0, 1.0, 2.0)))'],
+    ['GO', untaggedLineStringZ,
+      'g.Inject(gremlingo.MustNewLineString(gremlingo.MustNewPointZ(0.0, 0.0, 1.0, gremlingo.Model.Cartesian), ' +
+      'gremlingo.MustNewPointZ(1.0, 1.0, 2.0, gremlingo.Model.Cartesian)))'],
+    ['ANONYMIZED', untaggedLineStringZ, 'g.inject(linestring0)'],
+  ];
+
+  tests.forEach(function ([dialect, input, expected]) {
+    it(`[${dialect.toLowerCase()}] translates: ${input}`, function () {
+      assert.strictEqual(translate(input, dialect), expected);
+    });
+  });
+
+  describe('rejections', function () {
+    it('throws TranslatorException for an empty 3D geometry in a GLV', function () {
+      ['JAVASCRIPT', 'PYTHON', 'DOTNET', 'GO'].forEach(function (dialect) {
+        assert.throws(
+          () => translate('g.inject(Geometry("POINT Z EMPTY"))', dialect),
+          TranslatorException,
+          `${dialect} should not construct an empty 3D geometry`,
+        );
+      });
+    });
+
+    it('reads an empty 3D geometry back from its WKT in the JVM languages', function () {
+      assert.strictEqual(translate('g.inject(Geometry("POINT Z EMPTY"))', 'JAVA'),
+        'g.inject(Geometry.fromWkt("POINT Z EMPTY"))');
+    });
+
+    it('throws TranslatorException for malformed WKT', function () {
+      assert.throws(() => translate('g.inject(Geometry("POINT(1)"))', 'JAVASCRIPT'), TranslatorException);
+      assert.throws(() => translate('g.inject(Geometry("CIRCULARSTRING(1 1, 2 2, 3 3)"))', 'JAVASCRIPT'),
+        TranslatorException);
+      assert.throws(() => translate('g.inject(Geometry("POLYGON((0 0, 1 0, 1 1))"))', 'JAVASCRIPT'),
+        TranslatorException);
+    });
+
+    it('throws TranslatorException when an SRID prefix conflicts with the argument', function () {
+      assert.throws(() => translate('g.inject(Geometry("SRID=4326;POINT(1 2)", CARTESIAN))', 'JAVASCRIPT'),
+        /Invalid Geometry literal: EWKT SRID 4326 conflicts with model CARTESIAN/);
+    });
+
+    it('throws TranslatorException for an SRID outside the 32-bit range', function () {
+      assert.throws(() => translate('g.inject(Geometry("POINT(1 2)", 99999999999999))', 'JAVASCRIPT'),
+        /Invalid Geometry literal: SRID is out of range for a 32-bit integer/);
+    });
+  });
+});
+
+describe('geo predicates', function () {
+  const translate = (q, dialect) => GremlinTranslator.translate(q, 'g', dialect).getTranslated();
+
+  const within = 'g.V().is(geoWithin(Geometry("POINT(1 2)")))';
+  const contains = 'g.V().is(GeoP.geoContains(Geometry("POINT(1 2)")))';
+  const intersects = 'g.V().is(geoIntersects(Geometry("POINT(1 2)")))';
+  const disjoint = 'g.V().is(GeoP.geoDisjoint(Geometry("POINT(1 2)")))';
+  const equals = 'g.V().is(geoEquals(Geometry("POINT(1 2)")))';
+  const fromTraversal = 'g.V().values("loc").is(geoWithin(__.select("v").values("zone")))';
+
+  const tests = [
+    ['CANONICAL', within, 'g.V().is(GeoP.geoWithin(Geometry("POINT(1 2)")))'],
+    ['CANONICAL', intersects, 'g.V().is(GeoP.geoIntersects(Geometry("POINT(1 2)")))'],
+    ['CANONICAL', equals, 'g.V().is(GeoP.geoEquals(Geometry("POINT(1 2)")))'],
+    ['JAVA', within, 'g.V().is(GeoP.geoWithin(Geometry.fromWkt("POINT(1 2)")))'],
+    ['JAVA', disjoint, 'g.V().is(GeoP.geoDisjoint(Geometry.fromWkt("POINT(1 2)")))'],
+    ['JAVASCRIPT', within, 'g.V().is(GeoP.geoWithin(Point.of(1.0, 2.0)))'],
+    ['JAVASCRIPT', contains, 'g.V().is(GeoP.geoContains(Point.of(1.0, 2.0)))'],
+    ['JAVASCRIPT', intersects, 'g.V().is(GeoP.geoIntersects(Point.of(1.0, 2.0)))'],
+    ['JAVASCRIPT', disjoint, 'g.V().is(GeoP.geoDisjoint(Point.of(1.0, 2.0)))'],
+    ['JAVASCRIPT', equals, 'g.V().is(GeoP.geoEquals(Point.of(1.0, 2.0)))'],
+    ['JAVASCRIPT', fromTraversal, 'g.V().values("loc").is(GeoP.geoWithin(__.select("v").values("zone")))'],
+    ['PYTHON', within, "g.V().is_(GeoP.geo_within(Point(1.0, 2.0)))"],
+    ['PYTHON', intersects, "g.V().is_(GeoP.geo_intersects(Point(1.0, 2.0)))"],
+    ['DOTNET', within, 'g.V().Is(GeoP.GeoWithin(new Point(1.0, 2.0)))'],
+    ['DOTNET', disjoint, 'g.V().Is(GeoP.GeoDisjoint(new Point(1.0, 2.0)))'],
+    ['GO', within,
+      'g.V().Is(gremlingo.GeoP.GeoWithin(gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian)))'],
+    ['GO', equals,
+      'g.V().Is(gremlingo.GeoP.GeoEquals(gremlingo.MustNewPoint(1.0, 2.0, gremlingo.Model.Cartesian)))'],
+    ['ANONYMIZED', within, 'g.V().is(GeoP.geoWithin(point0))'],
+    ['ANONYMIZED', intersects, 'g.V().is(GeoP.geoIntersects(point0))'],
+  ];
+
+  tests.forEach(function ([dialect, input, expected]) {
+    it(`[${dialect.toLowerCase()}] translates: ${input}`, function () {
+      assert.strictEqual(translate(input, dialect), expected);
     });
   });
 });

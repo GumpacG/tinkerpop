@@ -23,14 +23,19 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tinkerpop.gremlin.language.antlr.GremlinParser;
+import org.apache.tinkerpop.gremlin.process.traversal.GType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.decoration.OptionsStrategy;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.geo.Geometry;
+import org.apache.tinkerpop.gremlin.structure.geo.Model;
+import org.apache.tinkerpop.gremlin.structure.geo.Point;
 import org.apache.tinkerpop.gremlin.util.DatetimeHelper;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -192,19 +197,49 @@ public class DotNetTranslateVisitor extends AbstractTranslateVisitor {
         throw new TranslatorException(".NET does not support range literals");
     }
 
+    /**
+     * Builds a geometry with the constructors of {@code Gremlin.Net.Structure.Geo}, which take the parts of a kind
+     * as arguments. A model is a last argument and an SRID needs the {@code WithSrid} factory.
+     */
     @Override
     public Void visitGeometryLiteral(final GremlinParser.GeometryLiteralContext ctx) {
-        throw new TranslatorException(".NET does not support geometry literals");
+        appendGeometry(parseGeometryLiteral(ctx));
+        return null;
     }
 
     @Override
-    public Void visitTraversalPredicate_geoWithin(final GremlinParser.TraversalPredicate_geoWithinContext ctx) {
-        throw new TranslatorException(".NET does not support geo predicates");
+    protected String geometryConstructorOf(final String kind) {
+        return "new " + kind + "(";
     }
 
     @Override
-    public Void visitTraversalPredicate_geoContains(final GremlinParser.TraversalPredicate_geoContainsContext ctx) {
-        throw new TranslatorException(".NET does not support geo predicates");
+    protected void appendGeometryPoint(final Point point) {
+        final boolean withSrid = point.model() == Model.OTHER;
+        sb.append(withSrid ? "Point.WithSrid(" : "new Point(");
+        appendGeometryCoordinate(point.x());
+        sb.append(", ");
+        appendGeometryCoordinate(point.y());
+        if (point.hasZ()) {
+            sb.append(", ");
+            appendGeometryCoordinate(point.z());
+        }
+        if (withSrid)
+            sb.append(", ").append(point.srid());
+        else if (point.model() == Model.GEOGRAPHIC)
+            sb.append(", Model.Geographic");
+        sb.append(")");
+    }
+
+    @Override
+    protected void appendEmptyGeometry(final String kind, final Geometry geometry) {
+        if (geometry.hasZ())
+            throw new TranslatorException(".NET has no constructor for an empty 3D geometry: " + geometry.toWKT());
+        sb.append(kind).append(".Empty(");
+        if (geometry.model() == Model.GEOGRAPHIC)
+            sb.append("Model.Geographic");
+        else if (geometry.model() == Model.OTHER)
+            sb.append(geometry.srid());
+        sb.append(")");
     }
 
     @Override
@@ -1494,18 +1529,16 @@ public class DotNetTranslateVisitor extends AbstractTranslateVisitor {
 
     @Override
     public Void visitTraversalGType(GremlinParser.TraversalGTypeContext ctx) {
-        if (isGeometryGType(ctx))
-            throw new TranslatorException(".NET does not support geometry types");
-
-        final String[] split = ctx.getText().split("\\.");
-        sb.append(processGremlinSymbol(split[0])).append(".");
-        sb.append(processGremlinSymbol(split[1].toLowerCase()));
+        sb.append(GType.class.getSimpleName()).append(".");
+        sb.append(processGremlinSymbol(extractGTypeName(ctx).toLowerCase()));
         return null;
     }
 
     @Override
     public Void visitGeoModel(final GremlinParser.GeoModelContext ctx) {
-        throw new TranslatorException(".NET does not support geometry models");
+        // the model is written in upper case in Gremlin, while the .NET enum entry is Pascal case
+        appendExplicitNaming(extractGeoModelName(ctx).toLowerCase(Locale.ROOT), Model.class.getSimpleName());
+        return null;
     }
 
     /**
@@ -1731,6 +1764,11 @@ public class DotNetTranslateVisitor extends AbstractTranslateVisitor {
             TO_CS_MAP.put("datetime", "DateTime");
             TO_CS_MAP.put("uuid", "UUID");
             TO_CS_MAP.put("vproperty", "VProperty");
+            TO_CS_MAP.put("linestring", "LineString");
+            TO_CS_MAP.put("multipoint", "MultiPoint");
+            TO_CS_MAP.put("multilinestring", "MultiLineString");
+            TO_CS_MAP.put("multipolygon", "MultiPolygon");
+            TO_CS_MAP.put("geometrycollection", "GeometryCollection");
             TO_CS_MAP.forEach((k, v) -> FROM_CS_MAP.put(v, k));
         }
 

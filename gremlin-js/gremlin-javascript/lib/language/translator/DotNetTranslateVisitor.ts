@@ -21,6 +21,7 @@
 // require accepting arbitrary context types at runtime.
 
 import TranslateVisitor from './TranslateVisitor.js';
+import { Geometry, Model, Point } from '../../structure/geo.js';
 import { TranslatorException } from './TranslatorException.js';
 
 // Steps whose return type needs <object, object>
@@ -62,14 +63,14 @@ export default class DotNetTranslateVisitor extends TranslateVisitor {
     }
 
     visitTraversalGType(ctx: any): void {
-        if (TranslateVisitor.isGeometryGType(ctx)) {
-            throw new TranslatorException('.NET does not support geometry types');
-        }
-
-        const parts: string[] = ctx.getText().split('.');
-        this.sb.push(this.processGremlinSymbol(parts[0]));
+        this.sb.push('GType');
         this.sb.push('.');
-        this.sb.push(this.processGremlinSymbol(parts[1].toLowerCase()));
+        this.sb.push(this.processGremlinSymbol(TranslateVisitor.extractGTypeName(ctx).toLowerCase()));
+    }
+
+    visitGeoModel(ctx: any): void {
+        // the model is written in upper case in Gremlin, while the .NET enum entry is Pascal case
+        this.appendExplicitNaming(TranslateVisitor.extractGeoModelName(ctx).toLowerCase(), 'Model');
     }
 
     visitTraversalDirection(ctx: any): void {
@@ -174,22 +175,6 @@ export default class DotNetTranslateVisitor extends TranslateVisitor {
 
     visitGenericRangeLiteral(_ctx: any): void {
         throw new TranslatorException('.NET does not support range literals');
-    }
-
-    visitGeometryLiteral(_ctx: any): void {
-        throw new TranslatorException('.NET does not support geometry literals');
-    }
-
-    visitGeoModel(_ctx: any): void {
-        throw new TranslatorException('.NET does not support geometry models');
-    }
-
-    visitTraversalPredicate_geoWithin(_ctx: any): void {
-        throw new TranslatorException('.NET does not support geo predicates');
-    }
-
-    visitTraversalPredicate_geoContains(_ctx: any): void {
-        throw new TranslatorException('.NET does not support geo predicates');
     }
 
     visitGenericSetLiteral(ctx: any): void {
@@ -974,6 +959,49 @@ export default class DotNetTranslateVisitor extends TranslateVisitor {
     private tryAppendCastToString_StringLit(ctx: any): void {
         if (ctx != null) this.sb.push('(string) ');
     }
+
+    /**
+     * Builds a geometry with the constructors of `Gremlin.Net.Structure.Geo`, which take the parts
+     * of a kind as arguments. A model is a last argument and an SRID needs the `WithSrid` factory.
+     */
+    visitGeometryLiteral(ctx: any): void {
+        this.appendGeometry(this.parseGeometryLiteral(ctx));
+    }
+
+    protected override geometryConstructorOf(kind: string): string {
+        return 'new ' + kind + '(';
+    }
+
+    protected override appendGeometryPoint(point: Point): void {
+        const withSrid = point.model === Model.OTHER;
+        this.sb.push(withSrid ? 'Point.WithSrid(' : 'new Point(');
+        this.appendGeometryCoordinate(point.x);
+        this.sb.push(', ');
+        this.appendGeometryCoordinate(point.y);
+        if (point.hasZ) {
+            this.sb.push(', ');
+            this.appendGeometryCoordinate(point.z as number);
+        }
+        if (withSrid) {
+            this.sb.push(`, ${point.srid}`);
+        } else if (point.model === Model.GEOGRAPHIC) {
+            this.sb.push(', Model.Geographic');
+        }
+        this.sb.push(')');
+    }
+
+    protected override appendEmptyGeometry(kind: string, geometry: Geometry): void {
+        if (geometry.hasZ) {
+            throw new TranslatorException(`.NET has no constructor for an empty 3D geometry: ${geometry.toWKT()}`);
+        }
+        this.sb.push(kind + '.Empty(');
+        if (geometry.model === Model.GEOGRAPHIC) {
+            this.sb.push('Model.Geographic');
+        } else if (geometry.model === Model.OTHER) {
+            this.sb.push(String(geometry.srid));
+        }
+        this.sb.push(')');
+    }
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -1021,6 +1049,11 @@ class SymbolHelper {
         'datetime': 'DateTime',
         'uuid': 'UUID',
         'vproperty': 'VProperty',
+        'linestring': 'LineString',
+        'multipoint': 'MultiPoint',
+        'multilinestring': 'MultiLineString',
+        'multipolygon': 'MultiPolygon',
+        'geometrycollection': 'GeometryCollection',
     };
 
     static toCSharp(symbol: string): string {

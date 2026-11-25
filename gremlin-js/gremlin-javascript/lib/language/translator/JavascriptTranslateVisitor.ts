@@ -22,6 +22,7 @@
 // its TypeScript types from the main module entry point).
 
 import TranslateVisitor from './TranslateVisitor.js';
+import { Geometry, Model, Point } from '../../structure/geo.js';
 import { TranslatorException } from './TranslatorException.js';
 
 /**
@@ -74,14 +75,9 @@ export default class JavascriptTranslateVisitor extends TranslateVisitor {
     }
 
     visitTraversalGType(ctx: any): void {
-        if (TranslateVisitor.isGeometryGType(ctx)) {
-            throw new TranslatorException('Javascript does not support geometry types');
-        }
-
-        const parts: string[] = ctx.getText().split('.');
-        this.sb.push(this.processGremlinSymbol(parts[0]));
+        this.sb.push('GType');
         this.sb.push('.');
-        this.sb.push(this.processGremlinSymbol(parts[1].toLowerCase()));
+        this.sb.push(this.processGremlinSymbol(TranslateVisitor.extractGTypeName(ctx).toLowerCase()));
     }
 
     visitGenericMapLiteral(ctx: any): void {
@@ -204,20 +200,52 @@ export default class JavascriptTranslateVisitor extends TranslateVisitor {
         this.sb.push(",'base64')");
     }
 
-    visitGeometryLiteral(_ctx: any): void {
-        throw new TranslatorException('Javascript does not support geometry literals');
+    /**
+     * Builds a geometry with the factories of `gremlin.structure.geo`, which take the parts of a
+     * kind as arguments and take a model or an SRID as a last argument.
+     */
+    visitGeometryLiteral(ctx: any): void {
+        this.appendGeometry(this.parseGeometryLiteral(ctx));
     }
 
-    visitGeoModel(_ctx: any): void {
-        throw new TranslatorException('Javascript does not support geometry models');
+    protected override geometryConstructorOf(kind: string): string {
+        return kind + '.of(';
     }
 
-    visitTraversalPredicate_geoWithin(_ctx: any): void {
-        throw new TranslatorException('Javascript does not support geo predicates');
+    protected override appendGeometryPoint(point: Point): void {
+        this.sb.push(point.hasZ ? 'Point.ofZ(' : 'Point.of(');
+        this.appendGeometryCoordinate(point.x);
+        this.sb.push(', ');
+        this.appendGeometryCoordinate(point.y);
+        if (point.hasZ) {
+            this.sb.push(', ');
+            this.appendGeometryCoordinate(point.z as number);
+        }
+        if (point.model !== Model.CARTESIAN) {
+            this.sb.push(', ');
+            this.#appendGeometryModelOrSrid(point);
+        }
+        this.sb.push(')');
     }
 
-    visitTraversalPredicate_geoContains(_ctx: any): void {
-        throw new TranslatorException('Javascript does not support geo predicates');
+    protected override appendEmptyGeometry(kind: string, geometry: Geometry): void {
+        if (geometry.hasZ) {
+            throw new TranslatorException(
+                `Javascript has no constructor for an empty 3D geometry: ${geometry.toWKT()}`);
+        }
+        this.sb.push(kind + '.empty(');
+        if (geometry.model !== Model.CARTESIAN) {
+            this.#appendGeometryModelOrSrid(geometry);
+        }
+        this.sb.push(')');
+    }
+
+    #appendGeometryModelOrSrid(geometry: Geometry): void {
+        if (geometry.model === Model.GEOGRAPHIC) {
+            this.sb.push('Model.GEOGRAPHIC');
+        } else {
+            this.sb.push(String(geometry.srid));
+        }
     }
 }
 
@@ -258,6 +286,11 @@ class SymbolHelper {
         'with': 'with_',
         'bigdecimal': 'bigDecimal',
         'bigint': 'bigInt',
+        'linestring': 'lineString',
+        'multipoint': 'multiPoint',
+        'multilinestring': 'multiLineString',
+        'multipolygon': 'multiPolygon',
+        'geometrycollection': 'geometryCollection',
     };
 
     static toJavascript(symbol: string): string {

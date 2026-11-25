@@ -43,6 +43,10 @@ namespace Gremlin.Net.IntegrationTest.Gherkin
                 case IgnoreReason.NoReason:
                     reasonSuffix = "";
                     break;
+                case IgnoreReason.EmptyGeometryWithZ:
+                    reasonSuffix = ": Gremlin.Net has no factory for an empty 3D geometry, so the traversal cannot"
+                                   + " be written";
+                    break;
             }
             return $"Scenario ignored" + reasonSuffix;
         }
@@ -73,8 +77,8 @@ namespace Gremlin.Net.IntegrationTest.Gherkin
         MultiLabelDefaultNotSupportedOnTestGraph,
 
         /// <summary>
-        /// Gremlin.Net has no geo predicates and the translator rejects geometries.
+        /// Gremlin.Net has no factory for an empty 3D geometry, so the traversal cannot be written.
         /// </summary>
-        GeometryNotSupported
+        EmptyGeometryWithZ
     }
 }

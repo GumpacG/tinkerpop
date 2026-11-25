@@ -70,6 +70,7 @@ namespace Gremlin.Net.IntegrationTest.Gherkin
                 {@"char\[(.)\]", ToChar},
                 {@"dur\[(.+)\]", ToDuration},
                 {@"bin\[(.*)\]", ToBinary},
+                {@"geo\[(.*)\]", ToGeometry},
                 {@"d\[(.*)\]\.([bsilfdmn])", ToNumber},
                 {@"D\[(.+)\]", ToDirection},
                 {@"M\[(.+)\]", ToMerge},
@@ -785,6 +786,14 @@ namespace Gremlin.Net.IntegrationTest.Gherkin
         private static object ToBinary(string base64, string graphName)
         {
             return Convert.FromBase64String(base64);
+        }
+
+        /// <summary>
+        ///     Reads a geo token, which holds EWKT when the SRID is not zero and plain WKT otherwise.
+        /// </summary>
+        private static object ToGeometry(string wkt, string graphName)
+        {
+            return WktParser.Parse(wkt);
         }
 
         private static Vertex ToVertex(string name, string graphName)

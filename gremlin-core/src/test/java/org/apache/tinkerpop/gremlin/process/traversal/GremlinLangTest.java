@@ -205,6 +205,12 @@ public class GremlinLangTest {
                         "g.V().has(\"loc\",GeoP.geoWithin(Geometry(\"POINT(1 2)\",0)))"},
                 {g.V().has("loc", GeoP.geoContains(Point.of(1, 2, Model.GEOGRAPHIC))),
                         "g.V().has(\"loc\",GeoP.geoContains(Geometry(\"POINT(1 2)\",4326)))"},
+                {g.V().has("loc", GeoP.geoIntersects(Point.of(1, 2))),
+                        "g.V().has(\"loc\",GeoP.geoIntersects(Geometry(\"POINT(1 2)\",0)))"},
+                {g.V().has("loc", GeoP.geoDisjoint(Point.of(1, 2))),
+                        "g.V().has(\"loc\",GeoP.geoDisjoint(Geometry(\"POINT(1 2)\",0)))"},
+                {g.V().has("loc", GeoP.geoEquals(Point.of(1, 2, Model.GEOGRAPHIC))),
+                        "g.V().has(\"loc\",GeoP.geoEquals(Geometry(\"POINT(1 2)\",4326)))"},
                 {g.V().has("loc", GeoP.geoWithin(Point.of(1, 2)).negate()),
                         "g.V().has(\"loc\",P.not(GeoP.geoWithin(Geometry(\"POINT(1 2)\",0))))"},
                 // a connective keeps both geo predicates
@@ -685,9 +691,14 @@ public class GremlinLangTest {
             final List<P<Geometry>> predicates = Arrays.asList(
                     GeoP.geoWithin(point),
                     GeoP.geoContains(square),
+                    GeoP.geoIntersects(point),
+                    GeoP.geoDisjoint(square),
+                    GeoP.geoEquals(point),
                     GeoP.geoWithin(point).negate(),
                     GeoP.geoWithin(__.select("zone")),
+                    GeoP.geoDisjoint(__.select("zone")),
                     GeoP.geoWithin(point).and(GeoP.geoContains(square)),
+                    GeoP.geoIntersects(point).and(GeoP.geoEquals(point)),
                     GeoP.geoWithin(point).or(GeoP.geoContains(square)));
 
             for (final P<Geometry> predicate : predicates) {

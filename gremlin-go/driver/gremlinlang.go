@@ -238,6 +238,10 @@ func (gl *GremlinLang) argAsString(arg interface{}) (string, error) {
 		return gl.translateTextPredicate(&v)
 	case *textP:
 		return gl.translateTextPredicate(v)
+	case geoP:
+		return gl.translateGeoPredicate(&v)
+	case *geoP:
+		return gl.translateGeoPredicate(v)
 	case p:
 		return gl.translatePredicate(&v)
 	case *p:
@@ -312,6 +316,10 @@ func (gl *GremlinLang) argAsString(arg interface{}) (string, error) {
 		return fmt.Sprintf("Binary(\"%s\")", base64.StdEncoding.EncodeToString(v)), nil
 	case Char:
 		return fmt.Sprintf("\"%s\"c", escapeString(string(rune(v)))), nil
+	case Geometry:
+		// WKT contains no quotes or backslashes, so the text needs no escaping. The SRID is
+		// always written as an int so that every model round trips, including Model.Other.
+		return fmt.Sprintf("Geometry(\"%s\",%d)", v.WKT(), v.Srid()), nil
 	default:
 		// Registry-based dehydration: a registered adapter intentionally takes precedence
 		// over any reflection/struct-based fallback, allowing explicit adapters to override
@@ -427,6 +435,17 @@ func (gl *GremlinLang) translateTextPredicate(v *textP) (string, error) {
 	return gl.translatePValue(v.operator, v.values)
 }
 
+func (gl *GremlinLang) translateGeoPredicate(v *geoP) (string, error) {
+	if v.operator == "" && len(v.values) == 0 {
+		return "", nil
+	}
+
+	if v.operator == "or" || v.operator == "and" {
+		return gl.translateConnPOp(v.operator, v.values, gl.getPredicateString)
+	}
+	return gl.translatePValue(v.operator, v.values)
+}
+
 func (gl *GremlinLang) translatePredicate(v *p) (string, error) {
 	if v.operator == "" && len(v.values) == 0 {
 		return "", nil
@@ -456,6 +475,12 @@ func (gl *GremlinLang) getPredicateString(v interface{}) (string, error) {
 	}
 	if val, ok := v.(*textP); ok {
 		return gl.translateTextPredicate(val)
+	}
+	if val, ok := v.(geoP); ok {
+		return gl.translateGeoPredicate(&val)
+	}
+	if val, ok := v.(*geoP); ok {
+		return gl.translateGeoPredicate(val)
 	}
 	if val, ok := v.(p); ok {
 		return gl.translatePredicate(&val)

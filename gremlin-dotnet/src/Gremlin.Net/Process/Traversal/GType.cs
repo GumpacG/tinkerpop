@@ -40,20 +40,30 @@ namespace Gremlin.Net.Process.Traversal
         public static GType Binary => new GType("BINARY");
         public static GType Boolean => new GType("BOOLEAN");
         public static GType Byte => new GType("BYTE");
+        public static GType Cartesian => new GType("CARTESIAN");
         public static GType Char => new GType("CHAR");
         public static GType DateTime => new GType("DATETIME");
         public static GType Double => new GType("DOUBLE");
         public static GType Duration => new GType("DURATION");
         public static GType Edge => new GType("EDGE");
         public static GType Float => new GType("FLOAT");
+        public static GType Geographic => new GType("GEOGRAPHIC");
+        public static GType Geometry => new GType("GEOMETRY");
+        public static GType GeometryCollection => new GType("GEOMETRYCOLLECTION");
         public static GType Graph => new GType("GRAPH");
         public static GType Int => new GType("INT");
+        public static GType LineString => new GType("LINESTRING");
         public static GType List => new GType("LIST");
         public static GType Long => new GType("LONG");
         public static GType Map => new GType("MAP");
+        public static GType MultiLineString => new GType("MULTILINESTRING");
+        public static GType MultiPoint => new GType("MULTIPOINT");
+        public static GType MultiPolygon => new GType("MULTIPOLYGON");
         public static GType Null => new GType("NULL");
         public static GType Number => new GType("NUMBER");
         public static GType Path => new GType("PATH");
+        public static GType Point => new GType("POINT");
+        public static GType Polygon => new GType("POLYGON");
         public static GType Property => new GType("PROPERTY");
         public static GType Set => new GType("SET");
         public static GType Short => new GType("SHORT");
@@ -70,20 +80,30 @@ namespace Gremlin.Net.Process.Traversal
             { "BINARY", Binary },
             { "BOOLEAN", Boolean },
             { "BYTE", Byte },
+            { "CARTESIAN", Cartesian },
             { "CHAR", Char },
             { "DATETIME", DateTime },
             { "DOUBLE", Double },
             { "DURATION", Duration },
             { "EDGE", Edge },
             { "FLOAT", Float },
+            { "GEOGRAPHIC", Geographic },
+            { "GEOMETRY", Geometry },
+            { "GEOMETRYCOLLECTION", GeometryCollection },
             { "GRAPH", Graph },
             { "INT", Int },
+            { "LINESTRING", LineString },
             { "LIST", List },
             { "LONG", Long },
             { "MAP", Map },
+            { "MULTILINESTRING", MultiLineString },
+            { "MULTIPOINT", MultiPoint },
+            { "MULTIPOLYGON", MultiPolygon },
             { "NULL", Null },
             { "NUMBER", Number },
             { "PATH", Path },
+            { "POINT", Point },
+            { "POLYGON", Polygon },
             { "PROPERTY", Property },
             { "SET", Set },
             { "SHORT", Short },

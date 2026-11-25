@@ -438,64 +438,84 @@ var DT = dts{
 type gType string
 
 type gTypes struct {
-	BigDecimal gType
-	BigInt     gType
-	Binary     gType
-	Boolean    gType
-	Byte       gType
-	Char       gType
-	DateTime   gType
-	Double     gType
-	Duration   gType
-	Edge       gType
-	Float      gType
-	Graph      gType
-	Int        gType
-	List       gType
-	Long       gType
-	Map        gType
-	Null       gType
-	Number     gType
-	Path       gType
-	Property   gType
-	Set        gType
-	Short      gType
-	String     gType
-	Tree       gType
-	UUID       gType
-	Vertex     gType
-	VProperty  gType
+	BigDecimal         gType
+	BigInt             gType
+	Binary             gType
+	Boolean            gType
+	Byte               gType
+	Cartesian          gType
+	Char               gType
+	DateTime           gType
+	Double             gType
+	Duration           gType
+	Edge               gType
+	Float              gType
+	Geographic         gType
+	Geometry           gType
+	GeometryCollection gType
+	Graph              gType
+	Int                gType
+	LineString         gType
+	List               gType
+	Long               gType
+	Map                gType
+	MultiLineString    gType
+	MultiPoint         gType
+	MultiPolygon       gType
+	Null               gType
+	Number             gType
+	Path               gType
+	Point              gType
+	Polygon            gType
+	Property           gType
+	Set                gType
+	Short              gType
+	String             gType
+	Tree               gType
+	UUID               gType
+	Vertex             gType
+	VProperty          gType
 }
 
 // GType is a set of Gremlin types for type checking.
 var GType = gTypes{
-	BigDecimal: "BIGDECIMAL",
-	BigInt:     "BIGINT",
-	Binary:     "BINARY",
-	Boolean:    "BOOLEAN",
-	Byte:       "BYTE",
-	Char:       "CHAR",
-	DateTime:   "DATETIME",
-	Double:     "DOUBLE",
-	Duration:   "DURATION",
-	Edge:       "EDGE",
-	Float:      "FLOAT",
-	Graph:      "GRAPH",
-	Int:        "INT",
-	List:       "LIST",
-	Long:       "LONG",
-	Map:        "MAP",
-	Null:       "NULL",
-	Number:     "NUMBER",
-	Path:       "PATH",
-	Property:   "PROPERTY",
-	Set:        "SET",
-	Short:      "SHORT",
-	String:     "STRING",
-	Tree:       "TREE",
-	UUID:       "UUID",
-	Vertex:     "VERTEX",
-	VProperty:  "VPROPERTY",
+	BigDecimal:         "BIGDECIMAL",
+	BigInt:             "BIGINT",
+	Binary:             "BINARY",
+	Boolean:            "BOOLEAN",
+	Byte:               "BYTE",
+	Cartesian:          "CARTESIAN",
+	Char:               "CHAR",
+	DateTime:           "DATETIME",
+	Double:             "DOUBLE",
+	Duration:           "DURATION",
+	Edge:               "EDGE",
+	Float:              "FLOAT",
+	Geographic:         "GEOGRAPHIC",
+	Geometry:           "GEOMETRY",
+	GeometryCollection: "GEOMETRYCOLLECTION",
+	Graph:              "GRAPH",
+	Int:                "INT",
+	LineString:         "LINESTRING",
+	List:               "LIST",
+	Long:               "LONG",
+	Map:                "MAP",
+	MultiLineString:    "MULTILINESTRING",
+	MultiPoint:         "MULTIPOINT",
+	MultiPolygon:       "MULTIPOLYGON",
+	Null:               "NULL",
+	Number:             "NUMBER",
+	Path:               "PATH",
+	Point:              "POINT",
+	Polygon:            "POLYGON",
+	Property:           "PROPERTY",
+	Set:                "SET",
+	Short:              "SHORT",
+	String:             "STRING",
+	Tree:               "TREE",
+	UUID:               "UUID",
+	Vertex:             "VERTEX",
+	VProperty:          "VPROPERTY",
 }
 
 type merge string
@@ -796,6 +816,86 @@ func (tp *textP) And(args ...interface{}) TextPredicate {
 // Or TextPredicate returns a TextPredicate composed of two predicates (logical OR of them).
 func (tp *textP) Or(args ...interface{}) TextPredicate {
 	return newTextPWithP("or", *tp, args...)
+}
+
+// GeoPredicate is a predicate over Geometry values. A predicate is false when the value is not a
+// geometry, and when the value and the argument do not share a coordinate model and an SRID. The
+// z ordinate is ignored, so all math is 2D.
+type GeoPredicate interface {
+	// GeoWithin GeoPredicate determines if a geometry lies entirely inside a given geometry. A
+	// geometry that only touches the boundary of the given geometry is not within it.
+	GeoWithin(args ...interface{}) GeoPredicate
+	// GeoContains GeoPredicate determines if a geometry entirely contains a given geometry. A
+	// geometry does not contain its own boundary.
+	GeoContains(args ...interface{}) GeoPredicate
+	// GeoIntersects GeoPredicate determines if a geometry shares at least one point with a given
+	// geometry, where a point of either boundary counts. An empty geometry holds no point, so it
+	// intersects nothing.
+	GeoIntersects(args ...interface{}) GeoPredicate
+	// GeoDisjoint GeoPredicate determines if a geometry shares no point with a given geometry,
+	// which an empty geometry does with every geometry.
+	GeoDisjoint(args ...interface{}) GeoPredicate
+	// GeoEquals GeoPredicate determines if a geometry covers the same points as a given geometry,
+	// however each one is written. Two empty geometries are equal whatever their kinds, and an
+	// empty geometry equals nothing else.
+	GeoEquals(args ...interface{}) GeoPredicate
+	// And GeoPredicate returns a GeoPredicate composed of two predicates (logical AND of them).
+	And(args ...interface{}) GeoPredicate
+	// Or GeoPredicate returns a GeoPredicate composed of two predicates (logical OR of them).
+	Or(args ...interface{}) GeoPredicate
+}
+
+type geoP p
+
+// GeoP is a set of predicates over Geometry values.
+var GeoP GeoPredicate = &geoP{}
+
+func newGeoP(operator string, args ...interface{}) GeoPredicate {
+	values := make([]interface{}, 0)
+	values = append(values, args...)
+	return &geoP{operator: operator, values: values}
+}
+
+func newGeoPWithP(operator string, gp geoP, args ...interface{}) GeoPredicate {
+	values := make([]interface{}, 1)
+	values[0] = gp
+	values = append(values, args...)
+	return &geoP{operator: operator, values: values}
+}
+
+// GeoWithin GeoPredicate determines if a geometry lies entirely inside a given geometry.
+func (*geoP) GeoWithin(args ...interface{}) GeoPredicate {
+	return newGeoP("geoWithin", args...)
+}
+
+// GeoContains GeoPredicate determines if a geometry entirely contains a given geometry.
+func (*geoP) GeoContains(args ...interface{}) GeoPredicate {
+	return newGeoP("geoContains", args...)
+}
+
+// GeoIntersects GeoPredicate determines if a geometry shares at least one point with a given geometry.
+func (*geoP) GeoIntersects(args ...interface{}) GeoPredicate {
+	return newGeoP("geoIntersects", args...)
+}
+
+// GeoDisjoint GeoPredicate determines if a geometry shares no point with a given geometry.
+func (*geoP) GeoDisjoint(args ...interface{}) GeoPredicate {
+	return newGeoP("geoDisjoint", args...)
+}
+
+// GeoEquals GeoPredicate determines if a geometry covers the same points as a given geometry.
+func (*geoP) GeoEquals(args ...interface{}) GeoPredicate {
+	return newGeoP("geoEquals", args...)
+}
+
+// And GeoPredicate returns a GeoPredicate composed of two predicates (logical AND of them).
+func (gp *geoP) And(args ...interface{}) GeoPredicate {
+	return newGeoPWithP("and", *gp, args...)
+}
+
+// Or GeoPredicate returns a GeoPredicate composed of two predicates (logical OR of them).
+func (gp *geoP) Or(args ...interface{}) GeoPredicate {
+	return newGeoPWithP("or", *gp, args...)
 }
 
 type withOptions struct {

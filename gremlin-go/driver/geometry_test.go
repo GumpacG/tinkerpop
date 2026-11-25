@@ -483,6 +483,103 @@ func TestGeometryEquality(t *testing.T) {
 	})
 }
 
+func TestMustGeometryConstruction(t *testing.T) {
+	t.Run("each Must constructor builds the same value as its New form", func(t *testing.T) {
+		assert.True(t, MustNewPoint(1, 2, Model.Cartesian).Equal(mustPoint(t, 1, 2, Model.Cartesian)))
+		assert.True(t, MustNewPointZ(1, 2, 3, Model.Cartesian).Equal(mustPointZ(t, 1, 2, 3, Model.Cartesian)))
+		assert.True(t, MustNewPointWithSrid(1, 2, 32618).Equal(mustPointWithSrid(t, 1, 2, 32618)))
+		pointZWithSrid, err := NewPointZWithSrid(1, 2, 3, 32618)
+		assert.Nil(t, err)
+		assert.True(t, MustNewPointZWithSrid(1, 2, 3, 32618).Equal(pointZWithSrid))
+		assert.True(t, MustNewEmptyPoint(Model.Cartesian).Equal(mustEmptyPoint(t, Model.Cartesian)))
+
+		shell := MustNewLineString(
+			MustNewPoint(0, 0, Model.Cartesian),
+			MustNewPoint(4, 0, Model.Cartesian),
+			MustNewPoint(4, 4, Model.Cartesian),
+			MustNewPoint(0, 4, Model.Cartesian),
+			MustNewPoint(0, 0, Model.Cartesian))
+		assert.True(t, shell.Equal(mustLineString(t,
+			mustPoint(t, 0, 0, Model.Cartesian),
+			mustPoint(t, 4, 0, Model.Cartesian),
+			mustPoint(t, 4, 4, Model.Cartesian),
+			mustPoint(t, 0, 4, Model.Cartesian),
+			mustPoint(t, 0, 0, Model.Cartesian))))
+		assert.True(t, MustNewPolygon(shell).Equal(mustPolygon(t, shell)))
+		assert.True(t, MustNewMultiPoint(MustNewPoint(1, 1, Model.Cartesian)).
+			Equal(mustMultiPoint(t, mustPoint(t, 1, 1, Model.Cartesian))))
+		assert.True(t, MustNewMultiLineString(shell).Equal(mustMultiLineString(t, shell)))
+		assert.True(t, MustNewMultiPolygon(MustNewPolygon(shell)).Equal(mustMultiPolygon(t, mustPolygon(t, shell))))
+		assert.True(t, MustNewGeometryCollection(MustNewPoint(1, 1, Model.Cartesian)).
+			Equal(mustGeometryCollection(t, mustPoint(t, 1, 1, Model.Cartesian))))
+
+		assert.True(t, MustNewEmptyLineString(Model.Cartesian).Equal(NewEmptyLineStringWithSrid(sridCartesian)))
+		assert.True(t, MustNewEmptyPolygon(Model.Cartesian).Equal(NewEmptyPolygonWithSrid(sridCartesian)))
+		assert.True(t, MustNewEmptyMultiPoint(Model.Cartesian).Equal(NewEmptyMultiPointWithSrid(sridCartesian)))
+		assert.True(t, MustNewEmptyMultiLineString(Model.Cartesian).
+			Equal(NewEmptyMultiLineStringWithSrid(sridCartesian)))
+		assert.True(t, MustNewEmptyMultiPolygon(Model.Cartesian).Equal(NewEmptyMultiPolygonWithSrid(sridCartesian)))
+		assert.True(t, MustNewEmptyGeometryCollection(Model.Geographic).
+			Equal(NewEmptyGeometryCollectionWithSrid(sridGeographic)))
+	})
+
+	t.Run("a Must constructor panics with the error of its New form", func(t *testing.T) {
+		otherModelMessage := "Model.Other cannot be used in a constructor;" +
+			" use a constructor that takes an explicit SRID"
+
+		assertPanicsWithMessage(t, otherModelMessage, func() { MustNewPoint(1, 2, Model.Other) })
+		assertPanicsWithMessage(t, otherModelMessage, func() { MustNewPointZ(1, 2, 3, Model.Other) })
+		assertPanicsWithMessage(t, otherModelMessage, func() { MustNewEmptyPoint(Model.Other) })
+		assertPanicsWithMessage(t, otherModelMessage, func() { MustNewEmptyLineString(Model.Other) })
+		assertPanicsWithMessage(t, otherModelMessage, func() { MustNewEmptyPolygon(Model.Other) })
+		assertPanicsWithMessage(t, otherModelMessage, func() { MustNewEmptyMultiPoint(Model.Other) })
+		assertPanicsWithMessage(t, otherModelMessage, func() { MustNewEmptyMultiLineString(Model.Other) })
+		assertPanicsWithMessage(t, otherModelMessage, func() { MustNewEmptyMultiPolygon(Model.Other) })
+		assertPanicsWithMessage(t, otherModelMessage, func() { MustNewEmptyGeometryCollection(Model.Other) })
+
+		assertPanicsWithMessage(t, "GEOGRAPHIC latitude must be in [-90, 90], got: 100",
+			func() { MustNewPointWithSrid(1, 100, sridGeographic) })
+		assertPanicsWithMessage(t, "GEOGRAPHIC longitude must be in [-180, 180], got: 200",
+			func() { MustNewPointZWithSrid(200, 1, 3, sridGeographic) })
+		assertPanicsWithMessage(t, "a line string must have at least 2 points, got 0;"+
+			" use NewEmptyLineString for an empty line string",
+			func() { MustNewLineString() })
+		assertPanicsWithMessage(t, "the shell ring of a polygon cannot be nil",
+			func() { MustNewPolygon(nil) })
+		assertPanicsWithMessage(t, "a multi-point must have at least 1 point;"+
+			" use NewEmptyMultiPoint for a multi-point with no parts",
+			func() { MustNewMultiPoint() })
+		assertPanicsWithMessage(t, "a multi-line string must have at least 1 line string;"+
+			" use NewEmptyMultiLineString for a multi-line string with no parts",
+			func() { MustNewMultiLineString() })
+		assertPanicsWithMessage(t, "a multi-polygon must have at least 1 polygon;"+
+			" use NewEmptyMultiPolygon for a multi-polygon with no parts",
+			func() { MustNewMultiPolygon() })
+		assertPanicsWithMessage(t, "a geometry collection must have at least 1 geometry;"+
+			" use NewEmptyGeometryCollection for a geometry collection with no parts",
+			func() { MustNewGeometryCollection() })
+	})
+}
+
+// assertPanicsWithMessage asserts that call panics with an error carrying the given message.
+func assertPanicsWithMessage(t *testing.T, message string, call func()) {
+	t.Helper()
+	defer func() {
+		r := recover()
+		if r == nil {
+			t.Errorf("expected a panic with message %q", message)
+			return
+		}
+		err, ok := r.(error)
+		if !ok {
+			t.Errorf("expected a panic with an error, got %v", r)
+			return
+		}
+		assert.EqualError(t, err, message)
+	}()
+	call()
+}
+
 func mustPoint(t *testing.T, x, y float64, m model) *Point {
 	t.Helper()
 	p, err := NewPoint(x, y, m)

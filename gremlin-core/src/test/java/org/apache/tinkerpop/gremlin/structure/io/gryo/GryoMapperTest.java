@@ -20,6 +20,12 @@ package org.apache.tinkerpop.gremlin.structure.io.gryo;
 
 import com.sun.management.ThreadMXBean;
 import org.apache.tinkerpop.gremlin.process.remote.traversal.DefaultRemoteTraverser;
+import org.apache.tinkerpop.gremlin.process.traversal.Geo;
+import org.apache.tinkerpop.gremlin.process.traversal.GeoP;
+import org.apache.tinkerpop.gremlin.process.traversal.NotP;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.step.GValue;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.GremlinLang;
 import org.apache.tinkerpop.gremlin.process.traversal.Merge;
 import org.apache.tinkerpop.gremlin.process.traversal.TextP;
@@ -101,6 +107,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
@@ -815,6 +822,76 @@ public class GryoMapperTest {
         assertEquals(startingWith, serializeDeserialize(startingWith, TextP.class));
         final TextP regex = TextP.regex("meh");
         assertEquals(regex, serializeDeserialize(regex, TextP.class));
+    }
+
+    @Test
+    public void shouldHandleGeoP() throws Exception {
+        final GeoP within = GeoP.geoWithin(Geometry.fromWkt("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))"));
+        assertEquals(within, serializeDeserialize(within, GeoP.class));
+        final GeoP contains = GeoP.geoContains(Point.of(1, 2, Model.GEOGRAPHIC));
+        assertEquals(contains, serializeDeserialize(contains, GeoP.class));
+        final GeoP intersects = GeoP.geoIntersects(Geometry.fromWkt("LINESTRING(0 0, 4 4)"));
+        assertEquals(intersects, serializeDeserialize(intersects, GeoP.class));
+        final GeoP disjoint = GeoP.geoDisjoint(Point.of(1, 2));
+        assertEquals(disjoint, serializeDeserialize(disjoint, GeoP.class));
+        final GeoP equals = GeoP.geoEquals(Point.of(1, 2, Model.GEOGRAPHIC));
+        assertEquals(equals, serializeDeserialize(equals, GeoP.class));
+    }
+
+    /**
+     * A variable argument is written as the value it holds, which is the geometry that comes back.
+     */
+    @Test
+    public void shouldHandleGeoPWithAVariableArgument() throws Exception {
+        final Geometry square = Geometry.fromWkt("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))");
+        final GeoP within = GeoP.geoWithin(GValue.of("zone", square));
+        assertEquals(GeoP.geoWithin(square), serializeDeserialize(within, GeoP.class));
+    }
+
+    @Test
+    public void shouldHandleGeoPWithAnEmptyGeometryArgument() throws Exception {
+        final GeoP equals = GeoP.geoEquals(Geometry.fromWkt("POLYGON EMPTY"));
+        assertEquals(equals, serializeDeserialize(equals, GeoP.class));
+    }
+
+    /**
+     * A negated geo predicate is a {@code NotP}, which the class resolver maps to {@link P}, so it is written by
+     * {@code PSerializer} and read back as the {@link GeoP} it wraps.
+     */
+    @Test
+    public void shouldHandleNegatedGeoP() throws Exception {
+        final Geometry square = Geometry.fromWkt("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))");
+        for (final Geo predicate : Geo.values()) {
+            final GeoP geoP = new GeoP(predicate, square);
+            final P<Geometry> negated = geoP.negate();
+            final P read = serializeDeserialize(negated, P.class);
+
+            assertEquals(predicate.name(), negated, read);
+            assertThat(predicate.name(), read, instanceOf(NotP.class));
+            assertEquals(predicate.name(), geoP, ((NotP<?>) read).getWrapped());
+        }
+    }
+
+    @Test
+    public void shouldHandleConnectiveGeoP() throws Exception {
+        final Geometry square = Geometry.fromWkt("POLYGON((0 0, 4 0, 4 4, 0 4, 0 0))");
+        final GeoP within = GeoP.geoWithin(square);
+        final GeoP intersects = GeoP.geoIntersects(Point.of(2, 2));
+
+        final P and = (P) within.and(intersects);
+        assertEquals(and, serializeDeserialize(and, P.class));
+        final P or = (P) within.or(intersects);
+        assertEquals(or, serializeDeserialize(or, P.class));
+    }
+
+    @Test
+    public void shouldRejectGeoPWithAChildTraversal() {
+        for (final Geo predicate : Geo.values()) {
+            final IllegalStateException ise = assertThrows(predicate.name(), IllegalStateException.class,
+                    () -> serializeDeserialize(new GeoP(predicate, __.select("zone").asAdmin()), GeoP.class));
+            assertEquals("Gryo cannot serialize " + predicate.name() + " with a child traversal argument",
+                    ise.getMessage());
+        }
     }
 
     @Test

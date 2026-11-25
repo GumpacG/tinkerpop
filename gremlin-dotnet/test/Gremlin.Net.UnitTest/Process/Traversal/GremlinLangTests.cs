@@ -28,6 +28,7 @@ using Gremlin.Net.Process.Traversal;
 using Gremlin.Net.Process.Traversal.Strategy.Decoration;
 using Gremlin.Net.Process.Traversal.Strategy.Verification;
 using Gremlin.Net.Structure;
+using Gremlin.Net.Structure.Geo;
 using Xunit;
 
 namespace Gremlin.Net.UnitTest.Process.Traversal
@@ -963,6 +964,239 @@ namespace Gremlin.Net.UnitTest.Process.Traversal
         {
             Assert.Equal("g.inject(1).asNumber(GType.DOUBLE)",
                 _g.Inject(1).AsNumber(GType.Double).GremlinLang.GetGremlin());
+        }
+
+        // --- Geometry Tests ---
+
+        [Fact]
+        public void g_Inject_Point_Cartesian()
+        {
+            Assert.Equal("g.inject(Geometry(\"POINT(1 2)\",0))",
+                _g.Inject<object>(new Point(1, 2)).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_Inject_Point_Geographic()
+        {
+            Assert.Equal("g.inject(Geometry(\"POINT(1 2)\",4326))",
+                _g.Inject<object>(new Point(1, 2, Model.Geographic)).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_Inject_Point_WithSrid()
+        {
+            Assert.Equal("g.inject(Geometry(\"POINT(1 2)\",32618))",
+                _g.Inject<object>(Point.WithSrid(1, 2, 32618)).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_Inject_Point_With_Z()
+        {
+            Assert.Equal("g.inject(Geometry(\"POINT Z (1 2 3)\",0))",
+                _g.Inject<object>(new Point(1, 2, 3)).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_Inject_Empty_Point()
+        {
+            Assert.Equal("g.inject(Geometry(\"POINT EMPTY\",0))",
+                _g.Inject<object>(Point.Empty()).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_Inject_List_Of_Geometry()
+        {
+            Assert.Equal("g.inject([Geometry(\"POINT(1 2)\",0),Geometry(\"POINT(3 4)\",0)])",
+                _g.Inject<object>(new List<object> { new Point(1, 2), new Point(3, 4) }).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_Inject_Map_With_Geometry_Value()
+        {
+            Assert.Equal("g.inject([\"loc\":Geometry(\"POINT(1 2)\",0)])",
+                _g.Inject<object>(new Dictionary<object, object> { { "loc", new Point(1, 2) } })
+                    .GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_Inject_Map_With_Geometry_Key()
+        {
+            Assert.Equal("g.inject([Geometry(\"POINT(1 2)\",0):\"home\"])",
+                _g.Inject<object>(new Dictionary<object, object> { { new Point(1, 2), "home" } })
+                    .GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_Point()
+        {
+            Assert.Equal("g.V().has(\"loc\",Geometry(\"POINT(1 2)\",0))",
+                _g.V().Has("loc", new Point(1, 2)).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_Inject_Point_As_GValue_Parameter()
+        {
+            var traversal = _g.V().Has("loc", new GValue<object>("xx1", new Point(1, 2)));
+            Assert.Equal("g.V().has(\"loc\",xx1)", traversal.GremlinLang.GetGremlin());
+            Assert.Equal("[\"xx1\":Geometry(\"POINT(1 2)\",0)]", traversal.GremlinLang.GetParametersAsString());
+        }
+
+        public static IEnumerable<object[]> GeometryGTypes() => new[]
+        {
+            new object[] { GType.Geometry, "GEOMETRY" },
+            new object[] { GType.Point, "POINT" },
+            new object[] { GType.LineString, "LINESTRING" },
+            new object[] { GType.Polygon, "POLYGON" },
+            new object[] { GType.MultiPoint, "MULTIPOINT" },
+            new object[] { GType.MultiLineString, "MULTILINESTRING" },
+            new object[] { GType.MultiPolygon, "MULTIPOLYGON" },
+            new object[] { GType.GeometryCollection, "GEOMETRYCOLLECTION" },
+            new object[] { GType.Cartesian, "CARTESIAN" },
+            new object[] { GType.Geographic, "GEOGRAPHIC" }
+        };
+
+        [Theory]
+        [MemberData(nameof(GeometryGTypes))]
+        public void g_Inject_1_Is_TypeOf_Geometry_GType(GType type, string name)
+        {
+            Assert.Equal($"g.inject(1).is(typeOf(GType.{name}))",
+                _g.Inject(1).Is(P.TypeOf(type)).GremlinLang.GetGremlin());
+        }
+
+
+        [Fact]
+        public void g_V_Has_loc_GeoWithin_Point()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoWithin(Geometry(\"POINT(1 2)\",0)))",
+                _g.V().Has("loc", GeoP.GeoWithin(new Point(1, 2))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoContains_Geographic_Point()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoContains(Geometry(\"POINT(1 2)\",4326)))",
+                _g.V().Has("loc", GeoP.GeoContains(new Point(1, 2, Model.Geographic))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoWithin_Traversal()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoWithin(__.select(\"zone\")))",
+                _g.V().Has("loc", GeoP.GeoWithin(__.Select<object>("zone"))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoIntersects_Point()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoIntersects(Geometry(\"POINT(1 2)\",0)))",
+                _g.V().Has("loc", GeoP.GeoIntersects(new Point(1, 2))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoDisjoint_Point()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoDisjoint(Geometry(\"POINT(1 2)\",0)))",
+                _g.V().Has("loc", GeoP.GeoDisjoint(new Point(1, 2))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoEquals_Geographic_Point()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoEquals(Geometry(\"POINT(1 2)\",4326)))",
+                _g.V().Has("loc", GeoP.GeoEquals(new Point(1, 2, Model.Geographic))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoIntersects_Traversal()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoIntersects(__.select(\"zone\")))",
+                _g.V().Has("loc", GeoP.GeoIntersects(__.Select<object>("zone"))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoContains_Traversal()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoContains(__.select(\"zone\")))",
+                _g.V().Has("loc", GeoP.GeoContains(__.Select<object>("zone"))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoDisjoint_Traversal()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoDisjoint(__.select(\"zone\")))",
+                _g.V().Has("loc", GeoP.GeoDisjoint(__.Select<object>("zone"))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoEquals_Traversal()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoEquals(__.select(\"zone\")))",
+                _g.V().Has("loc", GeoP.GeoEquals(__.Select<object>("zone"))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoWithin_GValue()
+        {
+            var traversal = _g.V().Has("loc", GeoP.GeoWithin(new GValue<Geometry>("zone", new Point(1, 2))));
+            Assert.Equal("g.V().has(\"loc\",geoWithin(zone))", traversal.GremlinLang.GetGremlin());
+            Assert.Equal("[\"zone\":Geometry(\"POINT(1 2)\",0)]", traversal.GremlinLang.GetParametersAsString());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoContains_GValue()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoContains(zone))",
+                _g.V().Has("loc", GeoP.GeoContains(new GValue<Geometry>("zone", new Point(1, 2))))
+                    .GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoIntersects_GValue()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoIntersects(zone))",
+                _g.V().Has("loc", GeoP.GeoIntersects(new GValue<Geometry>("zone", new Point(1, 2))))
+                    .GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoDisjoint_GValue()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoDisjoint(zone))",
+                _g.V().Has("loc", GeoP.GeoDisjoint(new GValue<Geometry>("zone", new Point(1, 2))))
+                    .GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoEquals_GValue()
+        {
+            Assert.Equal("g.V().has(\"loc\",geoEquals(zone))",
+                _g.V().Has("loc", GeoP.GeoEquals(new GValue<Geometry>("zone", new Point(1, 2))))
+                    .GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_Not_GeoWithin_Point()
+        {
+            Assert.Equal("g.V().has(\"loc\",P.not(geoWithin(Geometry(\"POINT(1 2)\",0))))",
+                _g.V().Has("loc", P.Not(GeoP.GeoWithin(new Point(1, 2)))).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoWithin_Or_GeoWithin()
+        {
+            Assert.Equal(
+                "g.V().has(\"loc\",geoWithin(Geometry(\"POINT(1 2)\",0)).or(geoWithin(Geometry(\"POINT(3 4)\",0))))",
+                _g.V().Has("loc", GeoP.GeoWithin(new Point(1, 2)).Or(GeoP.GeoWithin(new Point(3, 4))))
+                    .GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Has_loc_GeoWithin_And_GeoContains()
+        {
+            Assert.Equal(
+                "g.V().has(\"loc\",geoWithin(Geometry(\"POINT(1 2)\",0)).and(geoContains(Geometry(\"POINT(3 4)\",0))))",
+                _g.V().Has("loc", GeoP.GeoWithin(new Point(1, 2)).And(GeoP.GeoContains(new Point(3, 4))))
+                    .GremlinLang.GetGremlin());
         }
 
         // --- GValue Validation Tests 124-130 ---

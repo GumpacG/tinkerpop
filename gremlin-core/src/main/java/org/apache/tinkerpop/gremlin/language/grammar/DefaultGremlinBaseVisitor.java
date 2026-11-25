@@ -1306,6 +1306,18 @@ public class DefaultGremlinBaseVisitor<T> extends AbstractParseTreeVisitor<T> im
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override public T visitTraversalPredicate_geoIntersects(final GremlinParser.TraversalPredicate_geoIntersectsContext ctx) { notImplemented(ctx); return null; }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override public T visitTraversalPredicate_geoDisjoint(final GremlinParser.TraversalPredicate_geoDisjointContext ctx) { notImplemented(ctx); return null; }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override public T visitTraversalPredicate_geoEquals(final GremlinParser.TraversalPredicate_geoEqualsContext ctx) { notImplemented(ctx); return null; }
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override public T visitTraversalTerminalMethod_iterate(final GremlinParser.TraversalTerminalMethod_iterateContext ctx) { notImplemented(ctx); return null; }
 	/**
 	 * {@inheritDoc}

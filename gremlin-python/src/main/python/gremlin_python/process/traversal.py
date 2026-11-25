@@ -25,6 +25,7 @@ import uuid
 import warnings
 
 from aenum import Enum
+from gremlin_python.structure.geo import Geometry
 from gremlin_python.structure.graph import Vertex, Edge, Path, Property, CompositePDT, PrimitivePDT
 
 from .. import statics
@@ -269,27 +270,37 @@ statics.add_static('add_all', Operator.add_all)
 statics.add_static('sum_long', Operator.sum_long)
 
 
-GType = Enum('GType', ' BIGDECIMAL BIGINT BINARY BOOLEAN BYTE CHAR DATETIME DOUBLE DURATION EDGE FLOAT GRAPH INT LIST LONG MAP NULL NUMBER PATH PROPERTY SET SHORT STRING TREE UUID VERTEX VPROPERTY')
+GType = Enum('GType', ' BIGDECIMAL BIGINT BINARY BOOLEAN BYTE CARTESIAN CHAR DATETIME DOUBLE DURATION EDGE FLOAT GEOGRAPHIC GEOMETRY GEOMETRYCOLLECTION GRAPH INT LINESTRING LIST LONG MAP MULTILINESTRING MULTIPOINT MULTIPOLYGON NULL NUMBER PATH POINT POLYGON PROPERTY SET SHORT STRING TREE UUID VERTEX VPROPERTY')
 
 statics.add_static('BIGDECIMAL', GType.BIGDECIMAL)
 statics.add_static('BIGINT', GType.BIGINT)
 statics.add_static('BINARY', GType.BINARY)
 statics.add_static('BOOLEAN', GType.BOOLEAN)
 statics.add_static('BYTE', GType.BYTE)
+statics.add_static('CARTESIAN', GType.CARTESIAN)
 statics.add_static('CHAR', GType.CHAR)
 statics.add_static('DATETIME', GType.DATETIME)
 statics.add_static('DOUBLE', GType.DOUBLE)
 statics.add_static('DURATION', GType.DURATION)
 statics.add_static('EDGE', GType.EDGE)
 statics.add_static('FLOAT', GType.FLOAT)
+statics.add_static('GEOGRAPHIC', GType.GEOGRAPHIC)
+statics.add_static('GEOMETRY', GType.GEOMETRY)
+statics.add_static('GEOMETRYCOLLECTION', GType.GEOMETRYCOLLECTION)
 statics.add_static('GRAPH', GType.GRAPH)
 statics.add_static('INT', GType.INT)
+statics.add_static('LINESTRING', GType.LINESTRING)
 statics.add_static('LIST', GType.LIST)
 statics.add_static('LONG', GType.LONG)
 statics.add_static('MAP', GType.MAP)
+statics.add_static('MULTILINESTRING', GType.MULTILINESTRING)
+statics.add_static('MULTIPOINT', GType.MULTIPOINT)
+statics.add_static('MULTIPOLYGON', GType.MULTIPOLYGON)
 statics.add_static('NULL', GType.NULL)
 statics.add_static('NUMBER', GType.NUMBER)
 statics.add_static('PATH', GType.PATH)
+statics.add_static('POINT', GType.POINT)
+statics.add_static('POLYGON', GType.POLYGON)
 statics.add_static('PROPERTY', GType.PROPERTY)
 statics.add_static('SET', GType.SET)
 statics.add_static('SHORT', GType.SHORT)
@@ -626,6 +637,94 @@ statics.add_static('regex', regex)
 
 statics.add_static('not_regex', not_regex)
 
+
+class GeoP(P):
+    """Predicates that filter geometry values by a spatial relationship."""
+
+    def __init__(self, operator, value, other=None):
+        P.__init__(self, operator, value, other)
+
+    @staticmethod
+    def geo_contains(*args):
+        """
+        A geometry entirely contains the given geometry. A geometry does not contain a value that
+        lies only on its boundary.
+
+        :param args: a geometry, or a traversal resolved against each traverser
+        """
+        return GeoP("geoContains", *args)
+
+    @staticmethod
+    def geo_disjoint(*args):
+        """
+        A geometry shares no point with the given geometry, which an empty geometry does with every
+        geometry.
+
+        :param args: a geometry, or a traversal resolved against each traverser
+        """
+        return GeoP("geoDisjoint", *args)
+
+    @staticmethod
+    def geo_equals(*args):
+        """
+        A geometry covers the same points as the given geometry, however each one is written. Two
+        empty geometries are equal whatever their kinds, and an empty geometry equals nothing else.
+
+        :param args: a geometry, or a traversal resolved against each traverser
+        """
+        return GeoP("geoEquals", *args)
+
+    @staticmethod
+    def geo_intersects(*args):
+        """
+        A geometry shares at least one point with the given geometry, where a point of either
+        boundary counts. An empty geometry holds no point, so it intersects nothing.
+
+        :param args: a geometry, or a traversal resolved against each traverser
+        """
+        return GeoP("geoIntersects", *args)
+
+    @staticmethod
+    def geo_within(*args):
+        """
+        A geometry lies entirely inside the given geometry. A value that lies only on the given
+        geometry's boundary is not within it.
+
+        :param args: a geometry, or a traversal resolved against each traverser
+        """
+        return GeoP("geoWithin", *args)
+
+
+def geo_contains(*args):
+    return GeoP.geo_contains(*args)
+
+
+def geo_disjoint(*args):
+    return GeoP.geo_disjoint(*args)
+
+
+def geo_equals(*args):
+    return GeoP.geo_equals(*args)
+
+
+def geo_intersects(*args):
+    return GeoP.geo_intersects(*args)
+
+
+def geo_within(*args):
+    return GeoP.geo_within(*args)
+
+
+statics.add_static('geo_contains', geo_contains)
+
+statics.add_static('geo_disjoint', geo_disjoint)
+
+statics.add_static('geo_equals', geo_equals)
+
+statics.add_static('geo_intersects', geo_intersects)
+
+statics.add_static('geo_within', geo_within)
+
 '''
 IO
 '''
@@ -901,6 +1000,11 @@ class GremlinLang(object):
 
         if isinstance(arg, bytes):
             return f'Binary("{base64.b64encode(arg).decode("ascii")}")'
+
+        if isinstance(arg, Geometry):
+            # WKT holds no quotes or backslashes, so the text needs no escaping. The SRID is always
+            # written as an int so that every model round trips, including OTHER.
+            return f'Geometry("{arg.to_wkt()}",{arg.srid})'
 
         if isinstance(arg, Enum):
             tmp = str(arg)
