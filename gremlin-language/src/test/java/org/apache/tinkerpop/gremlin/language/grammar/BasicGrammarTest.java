@@ -186,4 +186,45 @@ public class BasicGrammarTest extends AbstractGrammarTest {
     public void shouldParseTypeOfString() {
         parse("g.V().is(typeOf(\"int\"))", ParserRule.QUERY_LIST);
     }
+
+    @Test
+    public void shouldParseAsGeometry() {
+        parse("g.V().values(\"loc\").asGeometry()", ParserRule.QUERY_LIST);
+    }
+
+    @Test
+    public void shouldParseAsGeography() {
+        parse("g.V().values(\"loc\").asGeography()", ParserRule.QUERY_LIST);
+    }
+
+    @Test
+    public void shouldParseDistanceGeometry() {
+        parse("g.V().values(\"loc\").asGeometry().distance(Geometry(\"POINT(3 4)\"))", ParserRule.QUERY_LIST);
+        parse("g.V().values(\"loc\").asGeography().distance(Geometry(\"POINT(3 4)\", GEOGRAPHIC))", ParserRule.QUERY_LIST);
+    }
+
+    @Test
+    public void shouldParseDistanceTraversal() {
+        parse("g.V().values(\"loc\").asGeometry().distance(__.select(\"a\").values(\"loc\"))", ParserRule.QUERY_LIST);
+    }
+
+    @Test
+    public void shouldParseBuffer() {
+        parse("g.V().values(\"loc\").asGeography().buffer(1000)", ParserRule.QUERY_LIST);
+        parse("g.V().values(\"loc\").asGeometry().buffer(1.5)", ParserRule.QUERY_LIST);
+        parse("g.V().values(\"loc\").asGeometry().buffer(-1.5)", ParserRule.QUERY_LIST);
+        parse("g.V().values(\"loc\").asGeometry().buffer(2.0D)", ParserRule.QUERY_LIST);
+        // the form the Go translator emits for an integer distance
+        parse("g.V().values(\"loc\").asGeography().buffer(1000D)", ParserRule.QUERY_LIST);
+    }
+
+    @Test
+    public void shouldParseEnvelope() {
+        parse("g.V().values(\"loc\").asGeometry().envelope()", ParserRule.QUERY_LIST);
+    }
+
+    @Test
+    public void shouldParseShortestPathDistance() {
+        parse("g.V().shortestPath().with(ShortestPath.distance, \"weight\")", ParserRule.QUERY_LIST);
+    }
 }

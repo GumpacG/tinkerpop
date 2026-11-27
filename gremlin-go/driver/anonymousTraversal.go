@@ -81,6 +81,10 @@ type AnonymousTraversal interface {
 	AsBool(args ...interface{}) *GraphTraversal
 	// AsDate adds the as step to the GraphTraversal.
 	AsDate(args ...interface{}) *GraphTraversal
+	// AsGeography adds the asGeography step to the GraphTraversal.
+	AsGeography(args ...interface{}) *GraphTraversal
+	// AsGeometry adds the asGeometry step to the GraphTraversal.
+	AsGeometry(args ...interface{}) *GraphTraversal
 	// AsNumber adds the as step to the GraphTraversal.
 	AsNumber(args ...interface{}) *GraphTraversal
 	// AsString adds the asString step to the GraphTraversal.
@@ -95,6 +99,8 @@ type AnonymousTraversal interface {
 	BothV(args ...interface{}) *GraphTraversal
 	// Branch adds the branch step to the GraphTraversal.
 	Branch(args ...interface{}) *GraphTraversal
+	// Buffer adds the buffer step to the GraphTraversal.
+	Buffer(args ...interface{}) *GraphTraversal
 	// By adds the by step to the GraphTraversal.
 	By(args ...interface{}) *GraphTraversal
 	// Call adds the call step to the GraphTraversal.
@@ -133,6 +139,8 @@ type AnonymousTraversal interface {
 	Discard(args ...interface{}) *GraphTraversal
 	// Disjunct adds the disjunct step to the GraphTraversal.
 	Disjunct(args ...interface{}) *GraphTraversal
+	// Distance adds the distance step to the GraphTraversal.
+	Distance(args ...interface{}) *GraphTraversal
 	// Drop adds the drop step to the GraphTraversal.
 	Drop(args ...interface{}) *GraphTraversal
 	// DropLabel adds the dropLabel step to the GraphTraversal.
@@ -145,6 +153,8 @@ type AnonymousTraversal interface {
 	ElementMap(args ...interface{}) *GraphTraversal
 	// Emit adds the emit step to the GraphTraversal.
 	Emit(args ...interface{}) *GraphTraversal
+	// Envelope adds the envelope step to the GraphTraversal.
+	Envelope(args ...interface{}) *GraphTraversal
 	// Fail adds the fail step to the GraphTraversal.
 	Fail(args ...interface{}) *GraphTraversal
 	// Filter adds the filter step to the GraphTraversal.
@@ -414,6 +424,16 @@ func (anonymousTraversal *anonymousTraversal) AsBool(args ...interface{}) *Graph
 	return anonymousTraversal.graphTraversal().AsBool(args...)
 }
 
+// AsGeography adds the AsGeography step to the GraphTraversal.
+func (anonymousTraversal *anonymousTraversal) AsGeography(args ...interface{}) *GraphTraversal {
+	return anonymousTraversal.graphTraversal().AsGeography(args...)
+}
+
+// AsGeometry adds the AsGeometry step to the GraphTraversal.
+func (anonymousTraversal *anonymousTraversal) AsGeometry(args ...interface{}) *GraphTraversal {
+	return anonymousTraversal.graphTraversal().AsGeometry(args...)
+}
+
 // AsDate adds the AsNumber step to the GraphTraversal.
 func (anonymousTraversal *anonymousTraversal) AsNumber(args ...interface{}) *GraphTraversal {
 	return anonymousTraversal.graphTraversal().AsNumber(args...)
@@ -447,6 +467,11 @@ func (anonymousTraversal *anonymousTraversal) BothV(args ...interface{}) *GraphT
 // Branch adds the branch step to the GraphTraversal.
 func (anonymousTraversal *anonymousTraversal) Branch(args ...interface{}) *GraphTraversal {
 	return anonymousTraversal.graphTraversal().Branch(args...)
+}
+
+// Buffer adds the buffer step to the GraphTraversal.
+func (anonymousTraversal *anonymousTraversal) Buffer(args ...interface{}) *GraphTraversal {
+	return anonymousTraversal.graphTraversal().Buffer(args...)
 }
 
 // By adds the by step to the GraphTraversal.
@@ -544,6 +569,11 @@ func (anonymousTraversal *anonymousTraversal) Disjunct(args ...interface{}) *Gra
 	return anonymousTraversal.graphTraversal().Disjunct(args...)
 }
 
+// Distance adds the distance step to the GraphTraversal.
+func (anonymousTraversal *anonymousTraversal) Distance(args ...interface{}) *GraphTraversal {
+	return anonymousTraversal.graphTraversal().Distance(args...)
+}
+
 // Drop adds the drop step to the GraphTraversal.
 func (anonymousTraversal *anonymousTraversal) Drop(args ...interface{}) *GraphTraversal {
 	return anonymousTraversal.graphTraversal().Drop(args...)
@@ -572,6 +602,11 @@ func (anonymousTraversal *anonymousTraversal) ElementMap(args ...interface{}) *G
 // Emit adds the emit step to the GraphTraversal.
 func (anonymousTraversal *anonymousTraversal) Emit(args ...interface{}) *GraphTraversal {
 	return anonymousTraversal.graphTraversal().Emit(args...)
+}
+
+// Envelope adds the envelope step to the GraphTraversal.
+func (anonymousTraversal *anonymousTraversal) Envelope(args ...interface{}) *GraphTraversal {
+	return anonymousTraversal.graphTraversal().Envelope(args...)
 }
 
 // Fail adds the fail step to the GraphTraversal.

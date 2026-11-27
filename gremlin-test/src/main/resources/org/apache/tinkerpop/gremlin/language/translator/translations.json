@@ -19079,6 +19079,534 @@
         ]
     },
     {
+        "scenario": "g_V_hasXname_EliX_valuesXcoordsX_asGeography",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeography()",
+                "language": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeography()",
+                "canonical": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeography()",
+                "anonymized": "g.V().has(string0, string1).values(string2).asGeography()",
+                "dotnet": "g.V().Has(\"name\", \"Eli\").Values<object>(\"coords\").AsGeography()",
+                "go": "g.V().Has(\"name\", \"Eli\").Values(\"coords\").AsGeography()",
+                "groovy": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeography()",
+                "java": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeography()",
+                "javascript": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeography()",
+                "python": "g.V().has('name', 'Eli').values('coords').as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_HanaX_valuesXrawX_asGeography",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeography()",
+                "language": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeography()",
+                "canonical": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeography()",
+                "anonymized": "g.V().has(string0, string1).values(string2).asGeography()",
+                "dotnet": "g.V().Has(\"name\", \"Hana\").Values<object>(\"raw\").AsGeography()",
+                "go": "g.V().Has(\"name\", \"Hana\").Values(\"raw\").AsGeography()",
+                "groovy": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeography()",
+                "java": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeography()",
+                "javascript": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeography()",
+                "python": "g.V().has('name', 'Hana').values('raw').as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_asGeography",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").asGeography()",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").asGeography()",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").asGeography()",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).asGeography()",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"loc\").AsGeography()",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"loc\").AsGeography()",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").asGeography()",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").asGeography()",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").asGeography()",
+                "python": "g.V().has('picker', 'name', 'Pat').values('loc').as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_ChilledX_valuesXlocX_asGeography",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Chilled\").values(\"loc\").asGeography()",
+                "language": "g.V().has(\"name\", \"Chilled\").values(\"loc\").asGeography()",
+                "canonical": "g.V().has(\"name\", \"Chilled\").values(\"loc\").asGeography()",
+                "anonymized": "g.V().has(string0, string1).values(string2).asGeography()",
+                "dotnet": "g.V().Has(\"name\", \"Chilled\").Values<object>(\"loc\").AsGeography()",
+                "go": "g.V().Has(\"name\", \"Chilled\").Values(\"loc\").AsGeography()",
+                "groovy": "g.V().has(\"name\", \"Chilled\").values(\"loc\").asGeography()",
+                "java": "g.V().has(\"name\", \"Chilled\").values(\"loc\").asGeography()",
+                "javascript": "g.V().has(\"name\", \"Chilled\").values(\"loc\").asGeography()",
+                "python": "g.V().has('name', 'Chilled').values('loc').as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_AnaX_valuesXlocX_asGeography",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeography()",
+                "language": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeography()",
+                "canonical": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeography()",
+                "anonymized": "g.V().has(string0, string1).values(string2).asGeography()",
+                "dotnet": "g.V().Has(\"name\", \"Ana\").Values<object>(\"loc\").AsGeography()",
+                "go": "g.V().Has(\"name\", \"Ana\").Values(\"loc\").AsGeography()",
+                "groovy": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeography()",
+                "java": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeography()",
+                "javascript": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeography()",
+                "python": "g.V().has('name', 'Ana').values('loc').as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXx_yXX_asGeography",
+        "traversals": [
+            {
+                "original": "g.inject([x: 1, y: 2]).asGeography()",
+                "language": "g.inject([x:1, y:2]).asGeography()",
+                "canonical": "g.inject([x:1, y:2]).asGeography()",
+                "anonymized": "g.inject(map0).asGeography()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ \"x\", 1 }, { \"y\", 2 }}).AsGeography()",
+                "go": "g.Inject(map[interface{}]interface{}{\"x\": 1, \"y\": 2 }).AsGeography()",
+                "groovy": "g.inject([x:1, y:2]).asGeography()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(\"x\", 1); put(\"y\", 2); }}).asGeography()",
+                "javascript": "g.inject(new Map([[\"x\", 1], [\"y\", 2]])).asGeography()",
+                "python": "g.inject({ 'x': 1, 'y': 2 }).as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXnullX_asGeography",
+        "traversals": [
+            {
+                "original": "g.inject(null).asGeography()",
+                "language": "g.inject(null).asGeography()",
+                "canonical": "g.inject(null).asGeography()",
+                "anonymized": "g.inject(object0).asGeography()",
+                "dotnet": "g.Inject<object>(null).AsGeography()",
+                "go": "g.Inject(nil).AsGeography()",
+                "groovy": "g.inject(null).asGeography()",
+                "java": "g.inject(null).asGeography()",
+                "javascript": "g.inject(null).asGeography()",
+                "python": "g.inject(None).as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXwebMercatorPointX_asGeography",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(1 2)\", 3857)).asGeography()",
+                "language": "g.inject(Geometry(\"POINT(1 2)\", 3857)).asGeography()",
+                "canonical": "g.inject(Geometry(\"POINT(1 2)\", 3857)).asGeography()",
+                "anonymized": "g.inject(point0).asGeography()",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", 3857)).asGeography()",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", 3857)).asGeography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXwebMercatorEwktX_asGeography",
+        "traversals": [
+            {
+                "original": "g.inject(\"SRID=3857;POINT(1 2)\").asGeography()",
+                "language": "g.inject(\"SRID=3857;POINT(1 2)\").asGeography()",
+                "canonical": "g.inject(\"SRID=3857;POINT(1 2)\").asGeography()",
+                "anonymized": "g.inject(string0).asGeography()",
+                "dotnet": "g.Inject<object>(\"SRID=3857;POINT(1 2)\").AsGeography()",
+                "go": "g.Inject(\"SRID=3857;POINT(1 2)\").AsGeography()",
+                "groovy": "g.inject(\"SRID=3857;POINT(1 2)\").asGeography()",
+                "java": "g.inject(\"SRID=3857;POINT(1 2)\").asGeography()",
+                "javascript": "g.inject(\"SRID=3857;POINT(1 2)\").asGeography()",
+                "python": "g.inject('SRID=3857;POINT(1 2)').as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXbeyondLongitudeRangeX_asGeography",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(200 0)\")).asGeography()",
+                "language": "g.inject(Geometry(\"POINT(200 0)\")).asGeography()",
+                "canonical": "g.inject(Geometry(\"POINT(200 0)\")).asGeography()",
+                "anonymized": "g.inject(point0).asGeography()",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(200 0)\")).asGeography()",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(200 0)\")).asGeography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXlonBeyondRangeXX_asGeography",
+        "traversals": [
+            {
+                "original": "g.inject([lon: 200, lat: 0]).asGeography()",
+                "language": "g.inject([lon:200, lat:0]).asGeography()",
+                "canonical": "g.inject([lon:200, lat:0]).asGeography()",
+                "anonymized": "g.inject(map0).asGeography()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ \"lon\", 200 }, { \"lat\", 0 }}).AsGeography()",
+                "go": "g.Inject(map[interface{}]interface{}{\"lon\": 200, \"lat\": 0 }).AsGeography()",
+                "groovy": "g.inject([lon:200, lat:0]).asGeography()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(\"lon\", 200); put(\"lat\", 0); }}).asGeography()",
+                "javascript": "g.inject(new Map([[\"lon\", 200], [\"lat\", 0]])).asGeography()",
+                "python": "g.inject({ 'lon': 200, 'lat': 0 }).as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXlatBeyondRangeXX_asGeography",
+        "traversals": [
+            {
+                "original": "g.inject([lon: 0, lat: 100]).asGeography()",
+                "language": "g.inject([lon:0, lat:100]).asGeography()",
+                "canonical": "g.inject([lon:0, lat:100]).asGeography()",
+                "anonymized": "g.inject(map0).asGeography()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ \"lon\", 0 }, { \"lat\", 100 }}).AsGeography()",
+                "go": "g.Inject(map[interface{}]interface{}{\"lon\": 0, \"lat\": 100 }).AsGeography()",
+                "groovy": "g.inject([lon:0, lat:100]).asGeography()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(\"lon\", 0); put(\"lat\", 100); }}).asGeography()",
+                "javascript": "g.inject(new Map([[\"lon\", 0], [\"lat\", 100]])).asGeography()",
+                "python": "g.inject({ 'lon': 0, 'lat': 100 }).as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXnameX_asGeography",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeography()",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeography()",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeography()",
+                "anonymized": "g.V().has(string0, string1, string2).values(string1).asGeography()",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"name\").AsGeography()",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"name\").AsGeography()",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeography()",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeography()",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeography()",
+                "python": "g.V().has('picker', 'name', 'Pat').values('name').as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_asGeography",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").asGeography()",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").asGeography()",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").asGeography()",
+                "anonymized": "g.V().has(string0, string1, string2).asGeography()",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").AsGeography()",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").AsGeography()",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").asGeography()",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").asGeography()",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").asGeography()",
+                "python": "g.V().has('picker', 'name', 'Pat').as_geography()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_HanaX_valuesXrawX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeometry()",
+                "language": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeometry()",
+                "canonical": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeometry()",
+                "anonymized": "g.V().has(string0, string1).values(string2).asGeometry()",
+                "dotnet": "g.V().Has(\"name\", \"Hana\").Values<object>(\"raw\").AsGeometry()",
+                "go": "g.V().Has(\"name\", \"Hana\").Values(\"raw\").AsGeometry()",
+                "groovy": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeometry()",
+                "java": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeometry()",
+                "javascript": "g.V().has(\"name\", \"Hana\").values(\"raw\").asGeometry()",
+                "python": "g.V().has('name', 'Hana').values('raw').as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_EliX_valuesXcoordsX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeometry()",
+                "language": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeometry()",
+                "canonical": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeometry()",
+                "anonymized": "g.V().has(string0, string1).values(string2).asGeometry()",
+                "dotnet": "g.V().Has(\"name\", \"Eli\").Values<object>(\"coords\").AsGeometry()",
+                "go": "g.V().Has(\"name\", \"Eli\").Values(\"coords\").AsGeometry()",
+                "groovy": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeometry()",
+                "java": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeometry()",
+                "javascript": "g.V().has(\"name\", \"Eli\").values(\"coords\").asGeometry()",
+                "python": "g.V().has('name', 'Eli').values('coords').as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_GreenwichX_valuesXlocX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Greenwich\").values(\"loc\").asGeometry()",
+                "language": "g.V().has(\"name\", \"Greenwich\").values(\"loc\").asGeometry()",
+                "canonical": "g.V().has(\"name\", \"Greenwich\").values(\"loc\").asGeometry()",
+                "anonymized": "g.V().has(string0, string1).values(string2).asGeometry()",
+                "dotnet": "g.V().Has(\"name\", \"Greenwich\").Values<object>(\"loc\").AsGeometry()",
+                "go": "g.V().Has(\"name\", \"Greenwich\").Values(\"loc\").AsGeometry()",
+                "groovy": "g.V().has(\"name\", \"Greenwich\").values(\"loc\").asGeometry()",
+                "java": "g.V().has(\"name\", \"Greenwich\").values(\"loc\").asGeometry()",
+                "javascript": "g.V().has(\"name\", \"Greenwich\").values(\"loc\").asGeometry()",
+                "python": "g.V().has('name', 'Greenwich').values('loc').as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_AnaX_valuesXlocX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeometry()",
+                "language": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeometry()",
+                "canonical": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeometry()",
+                "anonymized": "g.V().has(string0, string1).values(string2).asGeometry()",
+                "dotnet": "g.V().Has(\"name\", \"Ana\").Values<object>(\"loc\").AsGeometry()",
+                "go": "g.V().Has(\"name\", \"Ana\").Values(\"loc\").AsGeometry()",
+                "groovy": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeometry()",
+                "java": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeometry()",
+                "javascript": "g.V().has(\"name\", \"Ana\").values(\"loc\").asGeometry()",
+                "python": "g.V().has('name', 'Ana').values('loc').as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXwebMercatorPointX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(1 2)\", 3857)).asGeometry()",
+                "language": "g.inject(Geometry(\"POINT(1 2)\", 3857)).asGeometry()",
+                "canonical": "g.inject(Geometry(\"POINT(1 2)\", 3857)).asGeometry()",
+                "anonymized": "g.inject(point0).asGeometry()",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", 3857)).asGeometry()",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(1 2)\", 3857)).asGeometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXwebMercatorPOINT_EMPTYX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT EMPTY\", 3857)).asGeometry()",
+                "language": "g.inject(Geometry(\"POINT EMPTY\", 3857)).asGeometry()",
+                "canonical": "g.inject(Geometry(\"POINT EMPTY\", 3857)).asGeometry()",
+                "anonymized": "g.inject(point0).asGeometry()",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT EMPTY\", 3857)).asGeometry()",
+                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\", 3857)).asGeometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXwebMercatorEwktX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject(\"SRID=3857;POINT(1 2)\").asGeometry()",
+                "language": "g.inject(\"SRID=3857;POINT(1 2)\").asGeometry()",
+                "canonical": "g.inject(\"SRID=3857;POINT(1 2)\").asGeometry()",
+                "anonymized": "g.inject(string0).asGeometry()",
+                "dotnet": "g.Inject<object>(\"SRID=3857;POINT(1 2)\").AsGeometry()",
+                "go": "g.Inject(\"SRID=3857;POINT(1 2)\").AsGeometry()",
+                "groovy": "g.inject(\"SRID=3857;POINT(1 2)\").asGeometry()",
+                "java": "g.inject(\"SRID=3857;POINT(1 2)\").asGeometry()",
+                "javascript": "g.inject(\"SRID=3857;POINT(1 2)\").asGeometry()",
+                "python": "g.inject('SRID=3857;POINT(1 2)').as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXx_y_zXX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject([x: 1, y: 2, z: 3]).asGeometry()",
+                "language": "g.inject([x:1, y:2, z:3]).asGeometry()",
+                "canonical": "g.inject([x:1, y:2, z:3]).asGeometry()",
+                "anonymized": "g.inject(map0).asGeometry()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ \"x\", 1 }, { \"y\", 2 }, { \"z\", 3 }}).AsGeometry()",
+                "go": "g.Inject(map[interface{}]interface{}{\"x\": 1, \"y\": 2, \"z\": 3 }).AsGeometry()",
+                "groovy": "g.inject([x:1, y:2, z:3]).asGeometry()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(\"x\", 1); put(\"y\", 2); put(\"z\", 3); }}).asGeometry()",
+                "javascript": "g.inject(new Map([[\"x\", 1], [\"y\", 2], [\"z\", 3]])).asGeometry()",
+                "python": "g.inject({ 'x': 1, 'y': 2, 'z': 3 }).as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXnullX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject(null).asGeometry()",
+                "language": "g.inject(null).asGeometry()",
+                "canonical": "g.inject(null).asGeometry()",
+                "anonymized": "g.inject(object0).asGeometry()",
+                "dotnet": "g.Inject<object>(null).AsGeometry()",
+                "go": "g.Inject(nil).AsGeometry()",
+                "groovy": "g.inject(null).asGeometry()",
+                "java": "g.inject(null).asGeometry()",
+                "javascript": "g.inject(null).asGeometry()",
+                "python": "g.inject(None).as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXlistX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject([1, 2]).asGeometry()",
+                "language": "g.inject([1, 2]).asGeometry()",
+                "canonical": "g.inject([1, 2]).asGeometry()",
+                "anonymized": "g.inject(list0).asGeometry()",
+                "dotnet": "g.Inject<object>(new List<object> { 1, 2 }).AsGeometry()",
+                "go": "g.Inject([]interface{}{1, 2}).AsGeometry()",
+                "groovy": "g.inject([1, 2]).asGeometry()",
+                "java": "g.inject(new ArrayList<Object>() {{ add(1); add(2); }}).asGeometry()",
+                "javascript": "g.inject([1, 2]).asGeometry()",
+                "python": "g.inject([1, 2]).as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXx_NaNXX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject([x: NaN, y: 2]).asGeometry()",
+                "language": "g.inject([x:NaN, y:2]).asGeometry()",
+                "canonical": "g.inject([x:NaN, y:2]).asGeometry()",
+                "anonymized": "g.inject(map0).asGeometry()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ \"x\", Double.NaN }, { \"y\", 2 }}).AsGeometry()",
+                "go": "g.Inject(map[interface{}]interface{}{\"x\": math.NaN(), \"y\": 2 }).AsGeometry()",
+                "groovy": "g.inject([x:NaN, y:2]).asGeometry()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(\"x\", Double.NaN); put(\"y\", 2); }}).asGeometry()",
+                "javascript": "g.inject(new Map([[\"x\", Number.NaN], [\"y\", 2]])).asGeometry()",
+                "python": "g.inject({ 'x': float('nan'), 'y': 2 }).as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXlon_xXX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject([lon: 1, x: 2]).asGeometry()",
+                "language": "g.inject([lon:1, x:2]).asGeometry()",
+                "canonical": "g.inject([lon:1, x:2]).asGeometry()",
+                "anonymized": "g.inject(map0).asGeometry()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ \"lon\", 1 }, { \"x\", 2 }}).AsGeometry()",
+                "go": "g.Inject(map[interface{}]interface{}{\"lon\": 1, \"x\": 2 }).AsGeometry()",
+                "groovy": "g.inject([lon:1, x:2]).asGeometry()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(\"lon\", 1); put(\"x\", 2); }}).asGeometry()",
+                "javascript": "g.inject(new Map([[\"lon\", 1], [\"x\", 2]])).asGeometry()",
+                "python": "g.inject({ 'lon': 1, 'x': 2 }).as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXlongitude_latitudeXX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject([longitude: 1, latitude: 2]).asGeometry()",
+                "language": "g.inject([longitude:1, latitude:2]).asGeometry()",
+                "canonical": "g.inject([longitude:1, latitude:2]).asGeometry()",
+                "anonymized": "g.inject(map0).asGeometry()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ \"longitude\", 1 }, { \"latitude\", 2 }}).AsGeometry()",
+                "go": "g.Inject(map[interface{}]interface{}{\"longitude\": 1, \"latitude\": 2 }).AsGeometry()",
+                "groovy": "g.inject([longitude:1, latitude:2]).asGeometry()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(\"longitude\", 1); put(\"latitude\", 2); }}).asGeometry()",
+                "javascript": "g.inject(new Map([[\"longitude\", 1], [\"latitude\", 2]])).asGeometry()",
+                "python": "g.inject({ 'longitude': 1, 'latitude': 2 }).as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXLon_latXX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject([Lon: 1, lat: 2]).asGeometry()",
+                "language": "g.inject([Lon:1, lat:2]).asGeometry()",
+                "canonical": "g.inject([Lon:1, lat:2]).asGeometry()",
+                "anonymized": "g.inject(map0).asGeometry()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ \"Lon\", 1 }, { \"lat\", 2 }}).AsGeometry()",
+                "go": "g.Inject(map[interface{}]interface{}{\"Lon\": 1, \"lat\": 2 }).AsGeometry()",
+                "groovy": "g.inject([Lon:1, lat:2]).asGeometry()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(\"Lon\", 1); put(\"lat\", 2); }}).asGeometry()",
+                "javascript": "g.inject(new Map([[\"Lon\", 1], [\"lat\", 2]])).asGeometry()",
+                "python": "g.inject({ 'Lon': 1, 'lat': 2 }).as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXlonXX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject([lon: 1]).asGeometry()",
+                "language": "g.inject([lon:1]).asGeometry()",
+                "canonical": "g.inject([lon:1]).asGeometry()",
+                "anonymized": "g.inject(map0).asGeometry()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ \"lon\", 1 }}).AsGeometry()",
+                "go": "g.Inject(map[interface{}]interface{}{\"lon\": 1 }).AsGeometry()",
+                "groovy": "g.inject([lon:1]).asGeometry()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(\"lon\", 1); }}).asGeometry()",
+                "javascript": "g.inject(new Map([[\"lon\", 1]])).asGeometry()",
+                "python": "g.inject({ 'lon': 1 }).as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXlon_lat_of_listsXX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject([lon: [1.0], lat: [2.0]]).asGeometry()",
+                "language": "g.inject([lon:[1.0], lat:[2.0]]).asGeometry()",
+                "canonical": "g.inject([lon:[1.0], lat:[2.0]]).asGeometry()",
+                "anonymized": "g.inject(map0).asGeometry()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ \"lon\", new List<object> { 1.0 } }, { \"lat\", new List<object> { 2.0 } }}).AsGeometry()",
+                "go": "g.Inject(map[interface{}]interface{}{\"lon\": []interface{}{1.0}, \"lat\": []interface{}{2.0} }).AsGeometry()",
+                "groovy": "g.inject([lon:[1.0], lat:[2.0]]).asGeometry()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(\"lon\", new ArrayList<Object>() {{ add(1.0); }}); put(\"lat\", new ArrayList<Object>() {{ add(2.0); }}); }}).asGeometry()",
+                "javascript": "g.inject(new Map([[\"lon\", [1.0]], [\"lat\", [2.0]]])).asGeometry()",
+                "python": "g.inject({ 'lon': [1.0], 'lat': [2.0] }).as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXmapXnumericKeyXX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.inject([(1): 2]).asGeometry()",
+                "language": "g.inject([(1):2]).asGeometry()",
+                "canonical": "g.inject([(1):2]).asGeometry()",
+                "anonymized": "g.inject(map0).asGeometry()",
+                "dotnet": "g.Inject<object>(new Dictionary<object, object> {{ 1, 2 }}).AsGeometry()",
+                "go": "g.Inject(map[interface{}]interface{}{1: 2 }).AsGeometry()",
+                "groovy": "g.inject([(1):2]).asGeometry()",
+                "java": "g.inject(new LinkedHashMap<Object, Object>() {{ put(1, 2); }}).asGeometry()",
+                "javascript": "g.inject(new Map([[1, 2]])).asGeometry()",
+                "python": "g.inject({ 1: 2 }).as_geometry()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXnameX_asGeometry",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeometry()",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeometry()",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeometry()",
+                "anonymized": "g.V().has(string0, string1, string2).values(string1).asGeometry()",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"name\").AsGeometry()",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"name\").AsGeometry()",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeometry()",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeometry()",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").asGeometry()",
+                "python": "g.V().has('picker', 'name', 'Pat').values('name').as_geometry()"
+            }
+        ]
+    },
+    {
         "scenario": "g_injectX5bX_asNumber",
         "traversals": [
             {
@@ -19830,6 +20358,290 @@
                 "java": "g.V().outE(\"knows\").subgraph(\"sg\").cap(\"sg\").asString()",
                 "javascript": "g.V().outE(\"knows\").subgraph(\"sg\").cap(\"sg\").asString()",
                 "python": "g.V().out_e('knows').subgraph('sg').cap('sg').as_string()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_bufferX1_0X_projectXnear_farX_byXisXnearPatX_countX_byXisXfarPatX_countX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(1.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(3.9 4)\"))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(4.1 4)\"))).count())",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(1.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(3.9 4)\"))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(4.1 4)\"))).count())",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(1.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(3.9 4)\"))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(4.1 4)\"))).count())",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).buffer(number0).project(string4, string5).by(__.is(GeoP.geoContains(point0)).count()).by(__.is(GeoP.geoContains(point1)).count())",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(1.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(3.9 4)\"))).count()).by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(4.1 4)\"))).count())",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(1.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(3.9 4)\"))).count()).by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(4.1 4)\"))).count())"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_ChilledX_valuesXlocX_bufferXminus1_0X",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Chilled\").values(\"loc\").buffer(-1.0)",
+                "language": "g.V().has(\"name\", \"Chilled\").values(\"loc\").buffer(-1.0)",
+                "canonical": "g.V().has(\"name\", \"Chilled\").values(\"loc\").buffer(-1.0)",
+                "anonymized": "g.V().has(string0, string1).values(string2).buffer(number0)",
+                "dotnet": "g.V().Has(\"name\", \"Chilled\").Values<object>(\"loc\").Buffer(-1.0)",
+                "go": "g.V().Has(\"name\", \"Chilled\").Values(\"loc\").Buffer(-1.0)",
+                "groovy": "g.V().has(\"name\", \"Chilled\").values(\"loc\").buffer(-1.0)",
+                "java": "g.V().has(\"name\", \"Chilled\").values(\"loc\").buffer(-1.0)",
+                "javascript": "g.V().has(\"name\", \"Chilled\").values(\"loc\").buffer(-1.0)",
+                "python": "g.V().has('name', 'Chilled').values('loc').buffer(-1.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_bufferXminus1_0X",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(-1.0)",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(-1.0)",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(-1.0)",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).buffer(number0)",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"loc\").Buffer(-1.0)",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"loc\").Buffer(-1.0)",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(-1.0)",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(-1.0)",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(-1.0)",
+                "python": "g.V().has('picker', 'name', 'Pat').values('loc').buffer(-1.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_bufferX0_0X",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(0.0)",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(0.0)",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(0.0)",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).buffer(number0)",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"loc\").Buffer(0.0)",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"loc\").Buffer(0.0)",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(0.0)",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(0.0)",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").buffer(0.0)",
+                "python": "g.V().has('picker', 'name', 'Pat').values('loc').buffer(0.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXcartesianLineX_bufferXminus1_0X",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"LINESTRING(0 0, 8 0)\")).buffer(-1.0)",
+                "language": "g.inject(Geometry(\"LINESTRING(0 0, 8 0)\")).buffer(-1.0)",
+                "canonical": "g.inject(Geometry(\"LINESTRING(0 0, 8 0)\")).buffer(-1.0)",
+                "anonymized": "g.inject(linestring0).buffer(number0)",
+                "groovy": "g.inject(Geometry.fromWkt(\"LINESTRING(0 0, 8 0)\")).buffer(-1.0)",
+                "java": "g.inject(Geometry.fromWkt(\"LINESTRING(0 0, 8 0)\")).buffer(-1.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXgeographicPointX_bufferX0_0X",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(0 51.48)\", GEOGRAPHIC)).buffer(0.0)",
+                "language": "g.inject(Geometry(\"POINT(0 51.48)\", GEOGRAPHIC)).buffer(0.0)",
+                "canonical": "g.inject(Geometry(\"POINT(0 51.48)\", GEOGRAPHIC)).buffer(0.0)",
+                "anonymized": "g.inject(point0).buffer(number0)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(0 51.48)\", Model.GEOGRAPHIC)).buffer(0.0)",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(0 51.48)\", Model.GEOGRAPHIC)).buffer(0.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXhub_name_GreenwichX_valuesXlocX_bufferX1000_0X_projectXnear_farX_byXisXnearGreenwichX_countX_byXisXfarGreenwichX_countX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(1000.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(0 51.488)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(0 51.4894)\", GEOGRAPHIC))).count())",
+                "language": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(1000.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(0 51.488)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(0 51.4894)\", GEOGRAPHIC))).count())",
+                "canonical": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(1000.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(0 51.488)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(0 51.4894)\", GEOGRAPHIC))).count())",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).buffer(number0).project(string4, string5).by(__.is(GeoP.geoContains(point0)).count()).by(__.is(GeoP.geoContains(point1)).count())",
+                "groovy": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(1000.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(0 51.488)\", Model.GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(0 51.4894)\", Model.GEOGRAPHIC))).count())",
+                "java": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(1000.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(0 51.488)\", Model.GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(0 51.4894)\", Model.GEOGRAPHIC))).count())"
+            }
+        ]
+    },
+    {
+        "scenario": "g_E_hasLabelXdeliveredX_valuesXpathX_bufferX500_0X_projectXnear_farX_byXisXnearPathX_countX_byXisXfarPathX_countX",
+        "traversals": [
+            {
+                "original": "g.E().hasLabel(\"delivered\").values(\"path\").buffer(500.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.968402 40.732956)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.966154 40.734048)\", GEOGRAPHIC))).count())",
+                "language": "g.E().hasLabel(\"delivered\").values(\"path\").buffer(500.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.968402 40.732956)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.966154 40.734048)\", GEOGRAPHIC))).count())",
+                "canonical": "g.E().hasLabel(\"delivered\").values(\"path\").buffer(500.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.968402 40.732956)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.966154 40.734048)\", GEOGRAPHIC))).count())",
+                "anonymized": "g.E().hasLabel(string0).values(string1).buffer(number0).project(string2, string3).by(__.is(GeoP.geoContains(point0)).count()).by(__.is(GeoP.geoContains(point1)).count())",
+                "groovy": "g.E().hasLabel(\"delivered\").values(\"path\").buffer(500.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.968402 40.732956)\", Model.GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.966154 40.734048)\", Model.GEOGRAPHIC))).count())",
+                "java": "g.E().hasLabel(\"delivered\").values(\"path\").buffer(500.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.968402 40.732956)\", Model.GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.966154 40.734048)\", Model.GEOGRAPHIC))).count())"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_MidtownX_valuesXlocX_bufferX300_0X_projectXnear_farX_byXisXnearHoleRimX_countX_byXisXholeCentreX_countX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Midtown\").values(\"loc\").buffer(300.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.962966 40.781243)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.9654 40.7829)\", GEOGRAPHIC))).count())",
+                "language": "g.V().has(\"name\", \"Midtown\").values(\"loc\").buffer(300.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.962966 40.781243)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.9654 40.7829)\", GEOGRAPHIC))).count())",
+                "canonical": "g.V().has(\"name\", \"Midtown\").values(\"loc\").buffer(300.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.962966 40.781243)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.9654 40.7829)\", GEOGRAPHIC))).count())",
+                "anonymized": "g.V().has(string0, string1).values(string2).buffer(number0).project(string3, string4).by(__.is(GeoP.geoContains(point0)).count()).by(__.is(GeoP.geoContains(point1)).count())",
+                "groovy": "g.V().has(\"name\", \"Midtown\").values(\"loc\").buffer(300.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.962966 40.781243)\", Model.GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.9654 40.7829)\", Model.GEOGRAPHIC))).count())",
+                "java": "g.V().has(\"name\", \"Midtown\").values(\"loc\").buffer(300.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.962966 40.781243)\", Model.GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.9654 40.7829)\", Model.GEOGRAPHIC))).count())"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_AnaX_valuesXlocX_bufferX1000_0X_projectXnear_farX_byXisXnearAnaX_countX_byXisXfarAnaX_countX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Ana\").values(\"loc\").buffer(1000.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.981503 40.75158)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.976885 40.755077)\", GEOGRAPHIC))).count())",
+                "language": "g.V().has(\"name\", \"Ana\").values(\"loc\").buffer(1000.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.981503 40.75158)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.976885 40.755077)\", GEOGRAPHIC))).count())",
+                "canonical": "g.V().has(\"name\", \"Ana\").values(\"loc\").buffer(1000.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.981503 40.75158)\", GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry(\"POINT(-73.976885 40.755077)\", GEOGRAPHIC))).count())",
+                "anonymized": "g.V().has(string0, string1).values(string2).buffer(number0).project(string3, string4).by(__.is(GeoP.geoContains(point0)).count()).by(__.is(GeoP.geoContains(point1)).count())",
+                "groovy": "g.V().has(\"name\", \"Ana\").values(\"loc\").buffer(1000.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.981503 40.75158)\", Model.GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.976885 40.755077)\", Model.GEOGRAPHIC))).count())",
+                "java": "g.V().has(\"name\", \"Ana\").values(\"loc\").buffer(1000.0).project(\"near\", \"far\").by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.981503 40.75158)\", Model.GEOGRAPHIC))).count()).by(__.is(GeoP.geoContains(Geometry.fromWkt(\"POINT(-73.976885 40.755077)\", Model.GEOGRAPHIC))).count())"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXhub_name_GreenwichX_valuesXlocX_bufferXminus1000_0X",
+        "traversals": [
+            {
+                "original": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(-1000.0)",
+                "language": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(-1000.0)",
+                "canonical": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(-1000.0)",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).buffer(number0)",
+                "dotnet": "g.V().Has(\"hub\", \"name\", \"Greenwich\").Values<object>(\"loc\").Buffer(-1000.0)",
+                "go": "g.V().Has(\"hub\", \"name\", \"Greenwich\").Values(\"loc\").Buffer(-1000.0)",
+                "groovy": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(-1000.0)",
+                "java": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(-1000.0)",
+                "javascript": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").buffer(-1000.0)",
+                "python": "g.V().has('hub', 'name', 'Greenwich').values('loc').buffer(-1000.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXPOINT_EMPTYX_bufferX5_0X",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT EMPTY\")).buffer(5.0)",
+                "language": "g.inject(Geometry(\"POINT EMPTY\")).buffer(5.0)",
+                "canonical": "g.inject(Geometry(\"POINT EMPTY\")).buffer(5.0)",
+                "anonymized": "g.inject(point0).buffer(number0)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT EMPTY\")).buffer(5.0)",
+                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\")).buffer(5.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXgeographicPOLYGON_EMPTYX_bufferXminus1000_0X",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POLYGON EMPTY\", GEOGRAPHIC)).buffer(-1000.0)",
+                "language": "g.inject(Geometry(\"POLYGON EMPTY\", GEOGRAPHIC)).buffer(-1000.0)",
+                "canonical": "g.inject(Geometry(\"POLYGON EMPTY\", GEOGRAPHIC)).buffer(-1000.0)",
+                "anonymized": "g.inject(polygon0).buffer(number0)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POLYGON EMPTY\", Model.GEOGRAPHIC)).buffer(-1000.0)",
+                "java": "g.inject(Geometry.fromWkt(\"POLYGON EMPTY\", Model.GEOGRAPHIC)).buffer(-1000.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXnullX_bufferX1_0X",
+        "traversals": [
+            {
+                "original": "g.inject(null).buffer(1.0)",
+                "language": "g.inject(null).buffer(1.0)",
+                "canonical": "g.inject(null).buffer(1.0)",
+                "anonymized": "g.inject(object0).buffer(number0)",
+                "dotnet": "g.Inject<object>(null).Buffer(1.0)",
+                "go": "g.Inject(nil).Buffer(1.0)",
+                "groovy": "g.inject(null).buffer(1.0)",
+                "java": "g.inject(null).buffer(1.0)",
+                "javascript": "g.inject(null).buffer(1.0)",
+                "python": "g.inject(None).buffer(1.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXcartesianOriginX_bufferXNaNX",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(0 0)\")).buffer(NaN)",
+                "language": "g.inject(Geometry(\"POINT(0 0)\")).buffer(NaN)",
+                "canonical": "g.inject(Geometry(\"POINT(0 0)\")).buffer(NaN)",
+                "anonymized": "g.inject(point0).buffer(number0)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(0 0)\")).buffer(NaN)",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(0 0)\")).buffer(Double.NaN)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXcartesianOriginX_bufferXInfinityX",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(0 0)\")).buffer(Infinity)",
+                "language": "g.inject(Geometry(\"POINT(0 0)\")).buffer(Infinity)",
+                "canonical": "g.inject(Geometry(\"POINT(0 0)\")).buffer(Infinity)",
+                "anonymized": "g.inject(point0).buffer(number0)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(0 0)\")).buffer(Double.POSITIVE_INFINITY)",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(0 0)\")).buffer(Double.POSITIVE_INFINITY)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXwebMercatorPointX_bufferX1_0X",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(0 0)\", 3857)).buffer(1.0)",
+                "language": "g.inject(Geometry(\"POINT(0 0)\", 3857)).buffer(1.0)",
+                "canonical": "g.inject(Geometry(\"POINT(0 0)\", 3857)).buffer(1.0)",
+                "anonymized": "g.inject(point0).buffer(number0)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(0 0)\", 3857)).buffer(1.0)",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(0 0)\", 3857)).buffer(1.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXpoleNeighbourX_bufferX5000_0X",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(0 89.99)\", GEOGRAPHIC)).buffer(5000.0)",
+                "language": "g.inject(Geometry(\"POINT(0 89.99)\", GEOGRAPHIC)).buffer(5000.0)",
+                "canonical": "g.inject(Geometry(\"POINT(0 89.99)\", GEOGRAPHIC)).buffer(5000.0)",
+                "anonymized": "g.inject(point0).buffer(number0)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(0 89.99)\", Model.GEOGRAPHIC)).buffer(5000.0)",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(0 89.99)\", Model.GEOGRAPHIC)).buffer(5000.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXantimeridianNeighbourX_bufferX5000_0X",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(179.99 0)\", GEOGRAPHIC)).buffer(5000.0)",
+                "language": "g.inject(Geometry(\"POINT(179.99 0)\", GEOGRAPHIC)).buffer(5000.0)",
+                "canonical": "g.inject(Geometry(\"POINT(179.99 0)\", GEOGRAPHIC)).buffer(5000.0)",
+                "anonymized": "g.inject(point0).buffer(number0)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(179.99 0)\", Model.GEOGRAPHIC)).buffer(5000.0)",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(179.99 0)\", Model.GEOGRAPHIC)).buffer(5000.0)"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXnameX_bufferX1_0X",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").buffer(1.0)",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").buffer(1.0)",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").buffer(1.0)",
+                "anonymized": "g.V().has(string0, string1, string2).values(string1).buffer(number0)",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"name\").Buffer(1.0)",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"name\").Buffer(1.0)",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").buffer(1.0)",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").buffer(1.0)",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").buffer(1.0)",
+                "python": "g.V().has('picker', 'name', 'Pat').values('name').buffer(1.0)"
             }
         ]
     },
@@ -22393,6 +23205,286 @@
         ]
     },
     {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_distanceXcartesianOriginX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry(\"POINT(0 0)\"))",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry(\"POINT(0 0)\"))",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry(\"POINT(0 0)\"))",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).distance(point0)",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry.fromWkt(\"POINT(0 0)\"))",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry.fromWkt(\"POINT(0 0)\"))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_distanceXchilledRoomX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry(\"POLYGON((0 0, 8 0, 8 10, 0 10, 0 0))\"))",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry(\"POLYGON((0 0, 8 0, 8 10, 0 10, 0 0))\"))",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry(\"POLYGON((0 0, 8 0, 8 10, 0 10, 0 0))\"))",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).distance(polygon0)",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry.fromWkt(\"POLYGON((0 0, 8 0, 8 10, 0 10, 0 0))\"))",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry.fromWkt(\"POLYGON((0 0, 8 0, 8 10, 0 10, 0 0))\"))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_asXpX_valuesXlocX_distanceXselectXpX_outXworksInX_inXhasRoomX_outXhasRoomX_hasXname_AmbientX_valuesXlocXX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").as(\"p\").values(\"loc\").distance(__.select(\"p\").out(\"worksIn\").in(\"hasRoom\").out(\"hasRoom\").has(\"name\", \"Ambient\").values(\"loc\"))",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").as(\"p\").values(\"loc\").distance(__.select(\"p\").out(\"worksIn\").in(\"hasRoom\").out(\"hasRoom\").has(\"name\", \"Ambient\").values(\"loc\"))",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").as(\"p\").values(\"loc\").distance(__.select(\"p\").out(\"worksIn\").in(\"hasRoom\").out(\"hasRoom\").has(\"name\", \"Ambient\").values(\"loc\"))",
+                "anonymized": "g.V().has(string0, string1, string2).as(string3).values(string4).distance(__.select(string3).out(string5).in(string6).out(string6).has(string1, string7).values(string4))",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").As(\"p\").Values<object>(\"loc\").Distance(__.Select<object>(\"p\").Out(\"worksIn\").In(\"hasRoom\").Out(\"hasRoom\").Has(\"name\", \"Ambient\").Values<object>(\"loc\"))",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").As(\"p\").Values(\"loc\").Distance(gremlingo.T__.Select(\"p\").Out(\"worksIn\").In(\"hasRoom\").Out(\"hasRoom\").Has(\"name\", \"Ambient\").Values(\"loc\"))",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").as(\"p\").values(\"loc\").distance(__.select(\"p\").out(\"worksIn\").in(\"hasRoom\").out(\"hasRoom\").has(\"name\", \"Ambient\").values(\"loc\"))",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").as(\"p\").values(\"loc\").distance(__.select(\"p\").out(\"worksIn\").in(\"hasRoom\").out(\"hasRoom\").has(\"name\", \"Ambient\").values(\"loc\"))",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").as(\"p\").values(\"loc\").distance(__.select(\"p\").out(\"worksIn\").in_(\"hasRoom\").out(\"hasRoom\").has(\"name\", \"Ambient\").values(\"loc\"))",
+                "python": "g.V().has('picker', 'name', 'Pat').as_('p').values('loc').distance(__.select('p').out('worksIn').in_('hasRoom').out('hasRoom').has('name', 'Ambient').values('loc'))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXhub_name_HellsKitchenX_valuesXlocX_distanceXgreenwichX_mathXdivX1000X_isXinsideX_count",
+        "traversals": [
+            {
+                "original": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").values(\"loc\").distance(Geometry(\"POINT(0 51.48)\", GEOGRAPHIC)).math(\"_ / 1000\").is(P.inside(5519.5, 5631.1)).count()",
+                "language": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").values(\"loc\").distance(Geometry(\"POINT(0 51.48)\", GEOGRAPHIC)).math(\"_ / 1000\").is(P.inside(5519.5, 5631.1)).count()",
+                "canonical": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").values(\"loc\").distance(Geometry(\"POINT(0 51.48)\", GEOGRAPHIC)).math(\"_ / 1000\").is(P.inside(5519.5, 5631.1)).count()",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).distance(point0).math(string4).is(P.inside(number0, number1)).count()",
+                "groovy": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").values(\"loc\").distance(Geometry.fromWkt(\"POINT(0 51.48)\", Model.GEOGRAPHIC)).math(\"_ / 1000\").is(P.inside(5519.5, 5631.1)).count()",
+                "java": "g.V().has(\"hub\", \"name\", \"Hell's Kitchen\").values(\"loc\").distance(Geometry.fromWkt(\"POINT(0 51.48)\", Model.GEOGRAPHIC)).math(\"_ / 1000\").is(P.inside(5519.5, 5631.1)).count()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_E_hasLabelXshipsToX_asXsX_outV_valuesXlocX_distanceXselectXsX_inV_valuesXlocXX_mathXdivXkmX_isXinsideX_count",
+        "traversals": [
+            {
+                "original": "g.E().hasLabel(\"shipsTo\").as(\"s\").outV().values(\"loc\").distance(__.select(\"s\").inV().values(\"loc\")).as(\"measured\").select(\"s\").values(\"km\").as(\"recorded\").math(\"measured / recorded\").is(P.inside(990.0, 1010.0)).count()",
+                "language": "g.E().hasLabel(\"shipsTo\").as(\"s\").outV().values(\"loc\").distance(__.select(\"s\").inV().values(\"loc\")).as(\"measured\").select(\"s\").values(\"km\").as(\"recorded\").math(\"measured / recorded\").is(P.inside(990.0, 1010.0)).count()",
+                "canonical": "g.E().hasLabel(\"shipsTo\").as(\"s\").outV().values(\"loc\").distance(__.select(\"s\").inV().values(\"loc\")).as(\"measured\").select(\"s\").values(\"km\").as(\"recorded\").math(\"measured / recorded\").is(P.inside(990.0, 1010.0)).count()",
+                "anonymized": "g.E().hasLabel(string0).as(string1).outV().values(string2).distance(__.select(string1).inV().values(string2)).as(string3).select(string1).values(string4).as(string5).math(string6).is(P.inside(number0, number1)).count()",
+                "dotnet": "g.E().HasLabel(\"shipsTo\").As(\"s\").OutV().Values<object>(\"loc\").Distance(__.Select<object>(\"s\").InV().Values<object>(\"loc\")).As(\"measured\").Select<object>(\"s\").Values<object>(\"km\").As(\"recorded\").Math(\"measured / recorded\").Is(P.Inside(990.0, 1010.0)).Count()",
+                "go": "g.E().HasLabel(\"shipsTo\").As(\"s\").OutV().Values(\"loc\").Distance(gremlingo.T__.Select(\"s\").InV().Values(\"loc\")).As(\"measured\").Select(\"s\").Values(\"km\").As(\"recorded\").Math(\"measured / recorded\").Is(gremlingo.P.Inside(990.0, 1010.0)).Count()",
+                "groovy": "g.E().hasLabel(\"shipsTo\").as(\"s\").outV().values(\"loc\").distance(__.select(\"s\").inV().values(\"loc\")).as(\"measured\").select(\"s\").values(\"km\").as(\"recorded\").math(\"measured / recorded\").is(P.inside(990.0, 1010.0)).count()",
+                "java": "g.E().hasLabel(\"shipsTo\").as(\"s\").outV().values(\"loc\").distance(__.select(\"s\").inV().values(\"loc\")).as(\"measured\").select(\"s\").values(\"km\").as(\"recorded\").math(\"measured / recorded\").is(P.inside(990.0, 1010.0)).count()",
+                "javascript": "g.E().hasLabel(\"shipsTo\").as(\"s\").outV().values(\"loc\").distance(__.select(\"s\").inV().values(\"loc\")).as(\"measured\").select(\"s\").values(\"km\").as(\"recorded\").math(\"measured / recorded\").is(P.inside(990.0, 1010.0)).count()",
+                "python": "g.E().has_label('shipsTo').as_('s').out_v().values('loc').distance(__.select('s').in_v().values('loc')).as_('measured').select('s').values('km').as_('recorded').math('measured / recorded').is_(P.inside(990.0, 1010.0)).count()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasLabelXhubX_order_byXvaluesXlocX_distanceXmidtownPointXX_limitX3X_valuesXnameX",
+        "traversals": [
+            {
+                "original": "g.V().hasLabel(\"hub\").order().by(__.values(\"loc\").distance(Geometry(\"POINT(-73.98 40.75)\", GEOGRAPHIC))).limit(3).values(\"name\")",
+                "language": "g.V().hasLabel(\"hub\").order().by(__.values(\"loc\").distance(Geometry(\"POINT(-73.98 40.75)\", GEOGRAPHIC))).limit(3).values(\"name\")",
+                "canonical": "g.V().hasLabel(\"hub\").order().by(__.values(\"loc\").distance(Geometry(\"POINT(-73.98 40.75)\", GEOGRAPHIC))).limit(3).values(\"name\")",
+                "anonymized": "g.V().hasLabel(string0).order().by(__.values(string1).distance(point0)).limit(number0).values(string2)",
+                "groovy": "g.V().hasLabel(\"hub\").order().by(__.values(\"loc\").distance(Geometry.fromWkt(\"POINT(-73.98 40.75)\", Model.GEOGRAPHIC))).limit(3).values(\"name\")",
+                "java": "g.V().hasLabel(\"hub\").order().by(__.values(\"loc\").distance(Geometry.fromWkt(\"POINT(-73.98 40.75)\", Model.GEOGRAPHIC))).limit(3).values(\"name\")"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXcustomer_name_DeeX_valuesXlocX_distanceXcongestionZoneX_isXinsideX_count",
+        "traversals": [
+            {
+                "original": "g.V().has(\"customer\", \"name\", \"Dee\").values(\"loc\").distance(Geometry(\"POLYGON((-74.02 40.7, -73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7))\", GEOGRAPHIC)).is(P.inside(3802.0, 3879.0)).count()",
+                "language": "g.V().has(\"customer\", \"name\", \"Dee\").values(\"loc\").distance(Geometry(\"POLYGON((-74.02 40.7, -73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7))\", GEOGRAPHIC)).is(P.inside(3802.0, 3879.0)).count()",
+                "canonical": "g.V().has(\"customer\", \"name\", \"Dee\").values(\"loc\").distance(Geometry(\"POLYGON((-74.02 40.7, -73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7))\", GEOGRAPHIC)).is(P.inside(3802.0, 3879.0)).count()",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).distance(polygon0).is(P.inside(number0, number1)).count()",
+                "groovy": "g.V().has(\"customer\", \"name\", \"Dee\").values(\"loc\").distance(Geometry.fromWkt(\"POLYGON((-74.02 40.7, -73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7))\", Model.GEOGRAPHIC)).is(P.inside(3802.0, 3879.0)).count()",
+                "java": "g.V().has(\"customer\", \"name\", \"Dee\").values(\"loc\").distance(Geometry.fromWkt(\"POLYGON((-74.02 40.7, -73.975 40.7, -73.975 40.7644, -74.02 40.7644, -74.02 40.7))\", Model.GEOGRAPHIC)).is(P.inside(3802.0, 3879.0)).count()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXcustomer_name_BenX_valuesXlocX_distanceXmidtownX_isXinsideX_count",
+        "traversals": [
+            {
+                "original": "g.V().has(\"customer\", \"name\", \"Ben\").values(\"loc\").distance(Geometry(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", GEOGRAPHIC)).is(P.inside(409.0, 417.3)).count()",
+                "language": "g.V().has(\"customer\", \"name\", \"Ben\").values(\"loc\").distance(Geometry(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", GEOGRAPHIC)).is(P.inside(409.0, 417.3)).count()",
+                "canonical": "g.V().has(\"customer\", \"name\", \"Ben\").values(\"loc\").distance(Geometry(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", GEOGRAPHIC)).is(P.inside(409.0, 417.3)).count()",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).distance(polygon0).is(P.inside(number0, number1)).count()",
+                "groovy": "g.V().has(\"customer\", \"name\", \"Ben\").values(\"loc\").distance(Geometry.fromWkt(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", Model.GEOGRAPHIC)).is(P.inside(409.0, 417.3)).count()",
+                "java": "g.V().has(\"customer\", \"name\", \"Ben\").values(\"loc\").distance(Geometry.fromWkt(\"POLYGON((-74.02 40.74, -73.93 40.74, -73.93 40.81, -74.02 40.81, -74.02 40.74), (-73.9819 40.7681, -73.973 40.7644, -73.9498 40.7968, -73.958 40.8006, -73.9819 40.7681))\", Model.GEOGRAPHIC)).is(P.inside(409.0, 417.3)).count()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXhub_name_GreenwichX_valuesXlocX_distanceXgreenwichTownX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").distance(Geometry(\"POLYGON((-0.03 51.46, 0.03 51.46, 0.03 51.5, -0.03 51.5, -0.03 51.46))\", GEOGRAPHIC))",
+                "language": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").distance(Geometry(\"POLYGON((-0.03 51.46, 0.03 51.46, 0.03 51.5, -0.03 51.5, -0.03 51.46))\", GEOGRAPHIC))",
+                "canonical": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").distance(Geometry(\"POLYGON((-0.03 51.46, 0.03 51.46, 0.03 51.5, -0.03 51.5, -0.03 51.46))\", GEOGRAPHIC))",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).distance(polygon0)",
+                "groovy": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").distance(Geometry.fromWkt(\"POLYGON((-0.03 51.46, 0.03 51.46, 0.03 51.5, -0.03 51.5, -0.03 51.46))\", Model.GEOGRAPHIC))",
+                "java": "g.V().has(\"hub\", \"name\", \"Greenwich\").values(\"loc\").distance(Geometry.fromWkt(\"POLYGON((-0.03 51.46, 0.03 51.46, 0.03 51.5, -0.03 51.5, -0.03 51.46))\", Model.GEOGRAPHIC))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_AnaX_valuesXlocX_distanceXanaPositionX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Ana\").values(\"loc\").distance(Geometry(\"POINT(-73.9857 40.7484)\", GEOGRAPHIC))",
+                "language": "g.V().has(\"name\", \"Ana\").values(\"loc\").distance(Geometry(\"POINT(-73.9857 40.7484)\", GEOGRAPHIC))",
+                "canonical": "g.V().has(\"name\", \"Ana\").values(\"loc\").distance(Geometry(\"POINT(-73.9857 40.7484)\", GEOGRAPHIC))",
+                "anonymized": "g.V().has(string0, string1).values(string2).distance(point0)",
+                "groovy": "g.V().has(\"name\", \"Ana\").values(\"loc\").distance(Geometry.fromWkt(\"POINT(-73.9857 40.7484)\", Model.GEOGRAPHIC))",
+                "java": "g.V().has(\"name\", \"Ana\").values(\"loc\").distance(Geometry.fromWkt(\"POINT(-73.9857 40.7484)\", Model.GEOGRAPHIC))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXnullX_distanceXcartesianOriginX",
+        "traversals": [
+            {
+                "original": "g.inject(null).distance(Geometry(\"POINT(0 0)\"))",
+                "language": "g.inject(null).distance(Geometry(\"POINT(0 0)\"))",
+                "canonical": "g.inject(null).distance(Geometry(\"POINT(0 0)\"))",
+                "anonymized": "g.inject(object0).distance(point0)",
+                "groovy": "g.inject(null).distance(Geometry.fromWkt(\"POINT(0 0)\"))",
+                "java": "g.inject(null).distance(Geometry.fromWkt(\"POINT(0 0)\"))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_distanceXgeographicHubX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry(\"POINT(-73.9925 40.7614)\", GEOGRAPHIC))",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry(\"POINT(-73.9925 40.7614)\", GEOGRAPHIC))",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry(\"POINT(-73.9925 40.7614)\", GEOGRAPHIC))",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).distance(point0)",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry.fromWkt(\"POINT(-73.9925 40.7614)\", Model.GEOGRAPHIC))",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(Geometry.fromWkt(\"POINT(-73.9925 40.7614)\", Model.GEOGRAPHIC))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXwebMercatorPointX_distanceXwebMercatorPointX",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(0 0)\", 3857)).distance(Geometry(\"POINT(3 4)\", 3857))",
+                "language": "g.inject(Geometry(\"POINT(0 0)\", 3857)).distance(Geometry(\"POINT(3 4)\", 3857))",
+                "canonical": "g.inject(Geometry(\"POINT(0 0)\", 3857)).distance(Geometry(\"POINT(3 4)\", 3857))",
+                "anonymized": "g.inject(point0).distance(point1)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(0 0)\", 3857)).distance(Geometry.fromWkt(\"POINT(3 4)\", 3857))",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(0 0)\", 3857)).distance(Geometry.fromWkt(\"POINT(3 4)\", 3857))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXwebMercatorPointX_distanceXcartesianPointX",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(0 0)\", 3857)).distance(Geometry(\"POINT(3 4)\"))",
+                "language": "g.inject(Geometry(\"POINT(0 0)\", 3857)).distance(Geometry(\"POINT(3 4)\"))",
+                "canonical": "g.inject(Geometry(\"POINT(0 0)\", 3857)).distance(Geometry(\"POINT(3 4)\"))",
+                "anonymized": "g.inject(point0).distance(point1)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(0 0)\", 3857)).distance(Geometry.fromWkt(\"POINT(3 4)\"))",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(0 0)\", 3857)).distance(Geometry.fromWkt(\"POINT(3 4)\"))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXPOINT_EMPTYX_distanceXcartesianPointX",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT EMPTY\")).distance(Geometry(\"POINT(3 4)\"))",
+                "language": "g.inject(Geometry(\"POINT EMPTY\")).distance(Geometry(\"POINT(3 4)\"))",
+                "canonical": "g.inject(Geometry(\"POINT EMPTY\")).distance(Geometry(\"POINT(3 4)\"))",
+                "anonymized": "g.inject(point0).distance(point1)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT EMPTY\")).distance(Geometry.fromWkt(\"POINT(3 4)\"))",
+                "java": "g.inject(Geometry.fromWkt(\"POINT EMPTY\")).distance(Geometry.fromWkt(\"POINT(3 4)\"))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXcartesianOriginX_distanceXPOINT_EMPTYX",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POINT(0 0)\")).distance(Geometry(\"POINT EMPTY\"))",
+                "language": "g.inject(Geometry(\"POINT(0 0)\")).distance(Geometry(\"POINT EMPTY\"))",
+                "canonical": "g.inject(Geometry(\"POINT(0 0)\")).distance(Geometry(\"POINT EMPTY\"))",
+                "anonymized": "g.inject(point0).distance(point1)",
+                "groovy": "g.inject(Geometry.fromWkt(\"POINT(0 0)\")).distance(Geometry.fromWkt(\"POINT EMPTY\"))",
+                "java": "g.inject(Geometry.fromWkt(\"POINT(0 0)\")).distance(Geometry.fromWkt(\"POINT EMPTY\"))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_distanceXlimitX0XX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.limit(0))",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.limit(0))",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.limit(0))",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).distance(__.limit(number0))",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"loc\").Distance(__.Limit<object>(0))",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"loc\").Distance(gremlingo.T__.Limit(0))",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.limit(0))",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.limit(0))",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.limit(0))",
+                "python": "g.V().has('picker', 'name', 'Pat').values('loc').distance(__.limit(0))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_distanceXconstantXnullXX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(null))",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(null))",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(null))",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).distance(__.constant(object0))",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"loc\").Distance(__.Constant<object>(null))",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"loc\").Distance(gremlingo.T__.Constant(nil))",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(null))",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(null))",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(null))",
+                "python": "g.V().has('picker', 'name', 'Pat').values('loc').distance(__.constant(None))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_distanceXconstantXstringXX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(\"POINT(0 0)\"))",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(\"POINT(0 0)\"))",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(\"POINT(0 0)\"))",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).distance(__.constant(string4))",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"loc\").Distance(__.Constant<object>(\"POINT(0 0)\"))",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"loc\").Distance(gremlingo.T__.Constant(\"POINT(0 0)\"))",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(\"POINT(0 0)\"))",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(\"POINT(0 0)\"))",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").distance(__.constant(\"POINT(0 0)\"))",
+                "python": "g.V().has('picker', 'name', 'Pat').values('loc').distance(__.constant('POINT(0 0)'))"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXnameX_distanceXcartesianOriginX",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").distance(Geometry(\"POINT(0 0)\"))",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").distance(Geometry(\"POINT(0 0)\"))",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").distance(Geometry(\"POINT(0 0)\"))",
+                "anonymized": "g.V().has(string0, string1, string2).values(string1).distance(point0)",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").distance(Geometry.fromWkt(\"POINT(0 0)\"))",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").distance(Geometry.fromWkt(\"POINT(0 0)\"))"
+            }
+        ]
+    },
+    {
         "scenario": "g_E",
         "traversals": [
             {
@@ -23536,6 +24628,181 @@
                 "java": "g.V().has(\"person\", \"name\", \"marko\").outE(\"knows\").where(__.inV().has(\"name\", \"josh\")).elementMap()",
                 "javascript": "g.V().has(\"person\", \"name\", \"marko\").outE(\"knows\").where(__.inV().has(\"name\", \"josh\")).elementMap()",
                 "python": "g.V().has('person', 'name', 'marko').out_e('knows').where(__.in_v().has('name', 'josh')).element_map()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_ChilledX_valuesXlocX_envelope",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Chilled\").values(\"loc\").envelope()",
+                "language": "g.V().has(\"name\", \"Chilled\").values(\"loc\").envelope()",
+                "canonical": "g.V().has(\"name\", \"Chilled\").values(\"loc\").envelope()",
+                "anonymized": "g.V().has(string0, string1).values(string2).envelope()",
+                "dotnet": "g.V().Has(\"name\", \"Chilled\").Values<object>(\"loc\").Envelope()",
+                "go": "g.V().Has(\"name\", \"Chilled\").Values(\"loc\").Envelope()",
+                "groovy": "g.V().has(\"name\", \"Chilled\").values(\"loc\").envelope()",
+                "java": "g.V().has(\"name\", \"Chilled\").values(\"loc\").envelope()",
+                "javascript": "g.V().has(\"name\", \"Chilled\").values(\"loc\").envelope()",
+                "python": "g.V().has('name', 'Chilled').values('loc').envelope()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_AmbientX_valuesXlocX_envelope",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Ambient\").values(\"loc\").envelope()",
+                "language": "g.V().has(\"name\", \"Ambient\").values(\"loc\").envelope()",
+                "canonical": "g.V().has(\"name\", \"Ambient\").values(\"loc\").envelope()",
+                "anonymized": "g.V().has(string0, string1).values(string2).envelope()",
+                "dotnet": "g.V().Has(\"name\", \"Ambient\").Values<object>(\"loc\").Envelope()",
+                "go": "g.V().Has(\"name\", \"Ambient\").Values(\"loc\").Envelope()",
+                "groovy": "g.V().has(\"name\", \"Ambient\").values(\"loc\").envelope()",
+                "java": "g.V().has(\"name\", \"Ambient\").values(\"loc\").envelope()",
+                "javascript": "g.V().has(\"name\", \"Ambient\").values(\"loc\").envelope()",
+                "python": "g.V().has('name', 'Ambient').values('loc').envelope()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXlocX_envelope",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").envelope()",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").envelope()",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").envelope()",
+                "anonymized": "g.V().has(string0, string1, string2).values(string3).envelope()",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"loc\").Envelope()",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"loc\").Envelope()",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").envelope()",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").envelope()",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"loc\").envelope()",
+                "python": "g.V().has('picker', 'name', 'Pat').values('loc').envelope()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_AnaX_valuesXlocX_envelope",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Ana\").values(\"loc\").envelope()",
+                "language": "g.V().has(\"name\", \"Ana\").values(\"loc\").envelope()",
+                "canonical": "g.V().has(\"name\", \"Ana\").values(\"loc\").envelope()",
+                "anonymized": "g.V().has(string0, string1).values(string2).envelope()",
+                "dotnet": "g.V().Has(\"name\", \"Ana\").Values<object>(\"loc\").Envelope()",
+                "go": "g.V().Has(\"name\", \"Ana\").Values(\"loc\").Envelope()",
+                "groovy": "g.V().has(\"name\", \"Ana\").values(\"loc\").envelope()",
+                "java": "g.V().has(\"name\", \"Ana\").values(\"loc\").envelope()",
+                "javascript": "g.V().has(\"name\", \"Ana\").values(\"loc\").envelope()",
+                "python": "g.V().has('name', 'Ana').values('loc').envelope()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXname_MidtownX_valuesXlocX_envelope",
+        "traversals": [
+            {
+                "original": "g.V().has(\"name\", \"Midtown\").values(\"loc\").envelope()",
+                "language": "g.V().has(\"name\", \"Midtown\").values(\"loc\").envelope()",
+                "canonical": "g.V().has(\"name\", \"Midtown\").values(\"loc\").envelope()",
+                "anonymized": "g.V().has(string0, string1).values(string2).envelope()",
+                "dotnet": "g.V().Has(\"name\", \"Midtown\").Values<object>(\"loc\").Envelope()",
+                "go": "g.V().Has(\"name\", \"Midtown\").Values(\"loc\").Envelope()",
+                "groovy": "g.V().has(\"name\", \"Midtown\").values(\"loc\").envelope()",
+                "java": "g.V().has(\"name\", \"Midtown\").values(\"loc\").envelope()",
+                "javascript": "g.V().has(\"name\", \"Midtown\").values(\"loc\").envelope()",
+                "python": "g.V().has('name', 'Midtown').values('loc').envelope()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXhub_name_LosAngelesX_outEXshipsToX_valuesXpathX_envelope",
+        "traversals": [
+            {
+                "original": "g.V().has(\"hub\", \"name\", \"Los Angeles\").outE(\"shipsTo\").values(\"path\").envelope()",
+                "language": "g.V().has(\"hub\", \"name\", \"Los Angeles\").outE(\"shipsTo\").values(\"path\").envelope()",
+                "canonical": "g.V().has(\"hub\", \"name\", \"Los Angeles\").outE(\"shipsTo\").values(\"path\").envelope()",
+                "anonymized": "g.V().has(string0, string1, string2).outE(string3).values(string4).envelope()",
+                "dotnet": "g.V().Has(\"hub\", \"name\", \"Los Angeles\").OutE(\"shipsTo\").Values<object>(\"path\").Envelope()",
+                "go": "g.V().Has(\"hub\", \"name\", \"Los Angeles\").OutE(\"shipsTo\").Values(\"path\").Envelope()",
+                "groovy": "g.V().has(\"hub\", \"name\", \"Los Angeles\").outE(\"shipsTo\").values(\"path\").envelope()",
+                "java": "g.V().has(\"hub\", \"name\", \"Los Angeles\").outE(\"shipsTo\").values(\"path\").envelope()",
+                "javascript": "g.V().has(\"hub\", \"name\", \"Los Angeles\").outE(\"shipsTo\").values(\"path\").envelope()",
+                "python": "g.V().has('hub', 'name', 'Los Angeles').out_e('shipsTo').values('path').envelope()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXwebMercatorLineStringX_envelope",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"LINESTRING(0 0, 2 1)\", 3857)).envelope()",
+                "language": "g.inject(Geometry(\"LINESTRING(0 0, 2 1)\", 3857)).envelope()",
+                "canonical": "g.inject(Geometry(\"LINESTRING(0 0, 2 1)\", 3857)).envelope()",
+                "anonymized": "g.inject(linestring0).envelope()",
+                "groovy": "g.inject(Geometry.fromWkt(\"LINESTRING(0 0, 2 1)\", 3857)).envelope()",
+                "java": "g.inject(Geometry.fromWkt(\"LINESTRING(0 0, 2 1)\", 3857)).envelope()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXverticalLineStringX_envelope",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"LINESTRING(1 1, 1 5)\")).envelope()",
+                "language": "g.inject(Geometry(\"LINESTRING(1 1, 1 5)\")).envelope()",
+                "canonical": "g.inject(Geometry(\"LINESTRING(1 1, 1 5)\")).envelope()",
+                "anonymized": "g.inject(linestring0).envelope()",
+                "groovy": "g.inject(Geometry.fromWkt(\"LINESTRING(1 1, 1 5)\")).envelope()",
+                "java": "g.inject(Geometry.fromWkt(\"LINESTRING(1 1, 1 5)\")).envelope()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXPOLYGON_EMPTYX_envelope",
+        "traversals": [
+            {
+                "original": "g.inject(Geometry(\"POLYGON EMPTY\")).envelope()",
+                "language": "g.inject(Geometry(\"POLYGON EMPTY\")).envelope()",
+                "canonical": "g.inject(Geometry(\"POLYGON EMPTY\")).envelope()",
+                "anonymized": "g.inject(polygon0).envelope()",
+                "groovy": "g.inject(Geometry.fromWkt(\"POLYGON EMPTY\")).envelope()",
+                "java": "g.inject(Geometry.fromWkt(\"POLYGON EMPTY\")).envelope()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_injectXnullX_envelope",
+        "traversals": [
+            {
+                "original": "g.inject(null).envelope()",
+                "language": "g.inject(null).envelope()",
+                "canonical": "g.inject(null).envelope()",
+                "anonymized": "g.inject(object0).envelope()",
+                "dotnet": "g.Inject<object>(null).Envelope()",
+                "go": "g.Inject(nil).Envelope()",
+                "groovy": "g.inject(null).envelope()",
+                "java": "g.inject(null).envelope()",
+                "javascript": "g.inject(null).envelope()",
+                "python": "g.inject(None).envelope()"
+            }
+        ]
+    },
+    {
+        "scenario": "g_V_hasXpicker_name_PatX_valuesXnameX_envelope",
+        "traversals": [
+            {
+                "original": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").envelope()",
+                "language": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").envelope()",
+                "canonical": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").envelope()",
+                "anonymized": "g.V().has(string0, string1, string2).values(string1).envelope()",
+                "dotnet": "g.V().Has(\"picker\", \"name\", \"Pat\").Values<object>(\"name\").Envelope()",
+                "go": "g.V().Has(\"picker\", \"name\", \"Pat\").Values(\"name\").Envelope()",
+                "groovy": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").envelope()",
+                "java": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").envelope()",
+                "javascript": "g.V().has(\"picker\", \"name\", \"Pat\").values(\"name\").envelope()",
+                "python": "g.V().has('picker', 'name', 'Pat').values('name').envelope()"
             }
         ]
     },

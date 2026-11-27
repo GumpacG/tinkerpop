@@ -70,6 +70,7 @@ final class GraphCatalog {
         m.put("grateful", new Entry("graph = TinkerFactory.createGratefulDead()", "Grateful Dead", "grateful-dead"));
         m.put("airroutes", new Entry("graph = TinkerFactory.createAirRoutes()", "Air Routes", "air-routes"));
         m.put("theZoo", new Entry("graph = TinkerFactory.createTheZoo()", "Zoo", "the-zoo"));
+        m.put("theDelivery", new Entry("graph = TinkerFactory.createTheDelivery()", "Delivery", "the-delivery"));
         m.put("sink", new Entry("graph = TinkerFactory.createKitchenSink()", "kitchen sink", null));
         BY_TOKEN = Collections.unmodifiableMap(m);
     }

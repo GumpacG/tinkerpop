@@ -38,6 +38,7 @@ import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.geo.Geometry;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -1021,6 +1022,48 @@ public class __ {
      */
     public static <A> GraphTraversal<A, Number> asNumber(final GType typeToken) {
         return __.<A>start().asNumber(typeToken);
+    }
+
+    /**
+     * @see GraphTraversal#asGeometry()
+     */
+    public static <A> GraphTraversal<A, Geometry> asGeometry() {
+        return __.<A>start().asGeometry();
+    }
+
+    /**
+     * @see GraphTraversal#asGeography()
+     */
+    public static <A> GraphTraversal<A, Geometry> asGeography() {
+        return __.<A>start().asGeography();
+    }
+
+    /**
+     * @see GraphTraversal#distance(Geometry)
+     */
+    public static <A> GraphTraversal<A, Double> distance(final Geometry geometry) {
+        return __.<A>start().distance(geometry);
+    }
+
+    /**
+     * @see GraphTraversal#distance(Traversal)
+     */
+    public static <A> GraphTraversal<A, Double> distance(final Traversal<?, ?> geometryTraversal) {
+        return __.<A>start().distance(geometryTraversal);
+    }
+
+    /**
+     * @see GraphTraversal#buffer(double)
+     */
+    public static <A> GraphTraversal<A, Geometry> buffer(final double distance) {
+        return __.<A>start().buffer(distance);
+    }
+
+    /**
+     * @see GraphTraversal#envelope()
+     */
+    public static <A> GraphTraversal<A, Geometry> envelope() {
+        return __.<A>start().envelope();
     }
 
     /**

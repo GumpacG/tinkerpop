@@ -35,6 +35,14 @@ public class GraphCatalogTest {
     }
 
     @Test
+    public void shouldExposeInitStatementDisplayAndAnchorForTheDeliveryGraph() {
+        final GraphCatalog.Entry delivery = GraphCatalog.entry("theDelivery");
+        assertThat(delivery.initStatement, is("graph = TinkerFactory.createTheDelivery()"));
+        assertThat(delivery.displayName, is("Delivery"));
+        assertThat(delivery.docAnchor, is("the-delivery"));
+    }
+
+    @Test
     public void shouldTreatCrewAndTheCrewAsTheSameDataset() {
         final GraphCatalog.Entry crew = GraphCatalog.entry("crew");
         final GraphCatalog.Entry theCrew = GraphCatalog.entry("theCrew");

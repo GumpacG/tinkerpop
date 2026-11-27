@@ -27,6 +27,8 @@ image::https://raw.githubusercontent.com/apache/tinkerpop/master/docs/static/ima
 
 * Added a `Geometry` value type for geospatial data, which adds a dependency on the JTS Topology Suite to `gremlin-core`.
 * Added the `geoWithin` and `geoContains` predicates, which filter `Geometry` values by spatial relationship.
+* Added the `asGeometry()`, `asGeography()`, `distance()`, `buffer()` and `envelope()` steps for `Geometry` values.
+* Added a dependency on Spatial4j 0.8 to `gremlin-core`, which the geospatial steps use to measure on a sphere.
 * Added an `activate` mode to `gremlin-server.sh` that returns after the server is ready.
 * Added JPMS support to eight Java artifacts, with API visibility corrections to `Channelizer`, `chooseConnection()` and `TinkerMessenger`, package moves for the Gremlin parser, `MessageSerializer` and `Tokens`, and replacement of `netty-all`.
 * Fixed the `gremlin-driver` `-shaded` and `gremlin-shaded` jars by stripping incompatible signature and module metadata and correctly relocating JDK 21 multi-release classes.

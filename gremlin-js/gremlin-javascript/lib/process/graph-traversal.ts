@@ -584,6 +584,26 @@ export class GraphTraversal extends Traversal {
   }
 
   /**
+   * Graph traversal asGeography method.
+   * @param {...Object} args
+   * @returns {GraphTraversal}
+   */
+  asGeography(...args: any[]): this {
+    this.gremlinLang.addStep('asGeography', args);
+    return this;
+  }
+
+  /**
+   * Graph traversal asGeometry method.
+   * @param {...Object} args
+   * @returns {GraphTraversal}
+   */
+  asGeometry(...args: any[]): this {
+    this.gremlinLang.addStep('asGeometry', args);
+    return this;
+  }
+
+  /**
    * Graph traversal asNumber method.
    * @param {...Object} args
    * @returns {GraphTraversal}
@@ -650,6 +670,16 @@ export class GraphTraversal extends Traversal {
    */
   branch(...args: any[]): this {
     this.gremlinLang.addStep('branch', args);
+    return this;
+  }
+
+  /**
+   * Graph traversal buffer method.
+   * @param {...Object} args
+   * @returns {GraphTraversal}
+   */
+  buffer(...args: any[]): this {
+    this.gremlinLang.addStep('buffer', args);
     return this;
   }
 
@@ -843,6 +873,16 @@ export class GraphTraversal extends Traversal {
   }
 
   /**
+   * Graph traversal distance method.
+   * @param {...Object} args
+   * @returns {GraphTraversal}
+   */
+  distance(...args: any[]): this {
+    this.gremlinLang.addStep('distance', args);
+    return this;
+  }
+
+  /**
    * Graph traversal drop method.
    * @param {...Object} args
    * @returns {GraphTraversal}
@@ -898,6 +938,16 @@ export class GraphTraversal extends Traversal {
    */
   emit(...args: any[]): this {
     this.gremlinLang.addStep('emit', args);
+    return this;
+  }
+
+  /**
+   * Graph traversal envelope method.
+   * @param {...Object} args
+   * @returns {GraphTraversal}
+   */
+  envelope(...args: any[]): this {
+    this.gremlinLang.addStep('envelope', args);
     return this;
   }
 
@@ -1946,6 +1996,8 @@ export const __ = {
   as: (...args: any[]) => callOnEmptyTraversal('as', args),
   asDate: (...args: any[]) => callOnEmptyTraversal('asDate', args),
   asBool: (...args: any[]) => callOnEmptyTraversal('asBool', args),
+  asGeography: (...args: any[]) => callOnEmptyTraversal('asGeography', args),
+  asGeometry: (...args: any[]) => callOnEmptyTraversal('asGeometry', args),
   asNumber: (...args: any[]) => callOnEmptyTraversal('asNumber', args),
   asString: (...args: any[]) => callOnEmptyTraversal('asString', args),
   barrier: (...args: any[]) => callOnEmptyTraversal('barrier', args),
@@ -1953,6 +2005,7 @@ export const __ = {
   bothE: (...args: any[]) => callOnEmptyTraversal('bothE', args),
   bothV: (...args: any[]) => callOnEmptyTraversal('bothV', args),
   branch: (...args: any[]) => callOnEmptyTraversal('branch', args),
+  buffer: (...args: any[]) => callOnEmptyTraversal('buffer', args),
   call: (...args: any[]) => callOnEmptyTraversal('call', args),
   cap: (...args: any[]) => callOnEmptyTraversal('cap', args),
   choose: (...args: any[]) => callOnEmptyTraversal('choose', args),
@@ -1970,12 +2023,14 @@ export const __ = {
   difference: (...args: any[]) => callOnEmptyTraversal('difference', args),
   discard: (...args: any[]) => callOnEmptyTraversal('discard', args),
   disjunct: (...args: any[]) => callOnEmptyTraversal('disjunct', args),
+  distance: (...args: any[]) => callOnEmptyTraversal('distance', args),
   drop: (...args: any[]) => callOnEmptyTraversal('drop', args),
   dropLabel: (...args: any[]) => callOnEmptyTraversal('dropLabel', args),
   dropLabels: (...args: any[]) => callOnEmptyTraversal('dropLabels', args),
   element: (...args: any[]) => callOnEmptyTraversal('element', args),
   elementMap: (...args: any[]) => callOnEmptyTraversal('elementMap', args),
   emit: (...args: any[]) => callOnEmptyTraversal('emit', args),
+  envelope: (...args: any[]) => callOnEmptyTraversal('envelope', args),
   fail: (...args: any[]) => callOnEmptyTraversal('fail', args),
   filter: (...args: any[]) => callOnEmptyTraversal('filter', args),
   flatMap: (...args: any[]) => callOnEmptyTraversal('flatMap', args),

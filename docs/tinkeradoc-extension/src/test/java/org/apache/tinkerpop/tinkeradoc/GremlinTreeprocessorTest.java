@@ -387,6 +387,20 @@ public class GremlinTreeprocessorTest {
     }
 
     @Test
+    public void shouldHandleTheDeliveryGraph() {
+        final RecordingExecutor executor = new RecordingExecutor("==>result");
+        final GremlinTreeprocessor processor = new GremlinTreeprocessor(executor);
+
+        try (final Asciidoctor asciidoctor = Asciidoctor.Factory.create()) {
+            asciidoctor.unregisterAllExtensions();
+            asciidoctor.javaExtensionRegistry().treeprocessor(processor);
+            final String input = "= Test\n\n[gremlin-groovy,theDelivery]\n----\ng.V()\n----\n";
+            asciidoctor.convert(input, Options.builder().build());
+            assertThat(executor.statements.contains("graph = TinkerFactory.createTheDelivery()"), is(true));
+        }
+    }
+
+    @Test
     public void shouldFormatDryRunWithPromptsOnly() {
         final GremlinTreeprocessor processor = new GremlinTreeprocessor();
 

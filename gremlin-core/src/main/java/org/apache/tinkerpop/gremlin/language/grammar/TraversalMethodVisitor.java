@@ -41,6 +41,7 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality;
+import org.apache.tinkerpop.gremlin.structure.geo.Geometry;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -2396,6 +2397,55 @@ public class TraversalMethodVisitor extends TraversalRootVisitor<GraphTraversal>
     public GraphTraversal visitTraversalMethod_asNumber_traversalGType(final GremlinParser.TraversalMethod_asNumber_traversalGTypeContext ctx) {
         return graphTraversal.asNumber(
                 TraversalEnumParser.parseTraversalGTypeFromContext(ctx.traversalGType()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GraphTraversal visitTraversalMethod_asGeometry(final GremlinParser.TraversalMethod_asGeometryContext ctx) {
+        return graphTraversal.asGeometry();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GraphTraversal visitTraversalMethod_asGeography(final GremlinParser.TraversalMethod_asGeographyContext ctx) {
+        return graphTraversal.asGeography();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GraphTraversal visitTraversalMethod_distance_Geometry(final GremlinParser.TraversalMethod_distance_GeometryContext ctx) {
+        return graphTraversal.distance((Geometry) antlr.genericVisitor.visitGeometryLiteral(ctx.geometryLiteral()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GraphTraversal visitTraversalMethod_distance_Traversal(final GremlinParser.TraversalMethod_distance_TraversalContext ctx) {
+        return graphTraversal.distance(antlr.tvisitor.visitNestedTraversal(ctx.nestedTraversal()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GraphTraversal visitTraversalMethod_buffer(final GremlinParser.TraversalMethod_bufferContext ctx) {
+        return graphTraversal.buffer(
+                ((Number) antlr.genericVisitor.visitNumericLiteral(ctx.numericLiteral())).doubleValue());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GraphTraversal visitTraversalMethod_envelope(final GremlinParser.TraversalMethod_envelopeContext ctx) {
+        return graphTraversal.envelope();
     }
 
     public GraphTraversal[] getNestedTraversalList(final GremlinParser.NestedTraversalListContext ctx) {

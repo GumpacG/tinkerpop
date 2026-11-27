@@ -131,6 +131,18 @@ func (g *GraphTraversal) AsDate(args ...interface{}) *GraphTraversal {
 	return g
 }
 
+// AsGeography adds the asGeography step to the GraphTraversal.
+func (g *GraphTraversal) AsGeography(args ...interface{}) *GraphTraversal {
+	g.GremlinLang.AddStep("asGeography", args...)
+	return g
+}
+
+// AsGeometry adds the asGeometry step to the GraphTraversal.
+func (g *GraphTraversal) AsGeometry(args ...interface{}) *GraphTraversal {
+	g.GremlinLang.AddStep("asGeometry", args...)
+	return g
+}
+
 // AsNumber adds the asNumber step to the GraphTraversal.
 func (g *GraphTraversal) AsNumber(args ...interface{}) *GraphTraversal {
 	g.GremlinLang.AddStep("asNumber", args...)
@@ -171,6 +183,12 @@ func (g *GraphTraversal) BothV(args ...interface{}) *GraphTraversal {
 // Branch adds the branch step to the GraphTraversal.
 func (g *GraphTraversal) Branch(args ...interface{}) *GraphTraversal {
 	g.GremlinLang.AddStep("branch", args...)
+	return g
+}
+
+// Buffer adds the buffer step to the GraphTraversal.
+func (g *GraphTraversal) Buffer(args ...interface{}) *GraphTraversal {
+	g.GremlinLang.AddStep("buffer", args...)
 	return g
 }
 
@@ -289,6 +307,12 @@ func (g *GraphTraversal) Disjunct(args ...interface{}) *GraphTraversal {
 	return g
 }
 
+// Distance adds the distance step to the GraphTraversal.
+func (g *GraphTraversal) Distance(args ...interface{}) *GraphTraversal {
+	g.GremlinLang.AddStep("distance", args...)
+	return g
+}
+
 // Drop adds the drop step to the GraphTraversal.
 func (g *GraphTraversal) Drop(args ...interface{}) *GraphTraversal {
 	g.GremlinLang.AddStep("drop", args...)
@@ -322,6 +346,12 @@ func (g *GraphTraversal) ElementMap(args ...interface{}) *GraphTraversal {
 // Emit adds the emit step to the GraphTraversal.
 func (g *GraphTraversal) Emit(args ...interface{}) *GraphTraversal {
 	g.GremlinLang.AddStep("emit", args...)
+	return g
+}
+
+// Envelope adds the envelope step to the GraphTraversal.
+func (g *GraphTraversal) Envelope(args ...interface{}) *GraphTraversal {
+	g.GremlinLang.AddStep("envelope", args...)
 	return g
 }
 

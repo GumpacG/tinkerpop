@@ -667,6 +667,54 @@ func Test_GremlinLang(t *testing.T) {
 		},
 		{
 			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Values("loc").AsGeometry()
+			},
+			equals: "g.V().values(\"loc\").asGeometry()",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Values("loc").AsGeography()
+			},
+			equals: "g.V().values(\"loc\").asGeography()",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Values("loc").AsGeometry().Distance(T__.Select("a").Values("loc"))
+			},
+			equals: "g.V().values(\"loc\").asGeometry().distance(__.select(\"a\").values(\"loc\"))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Values("loc").AsGeography().Buffer(1000.0)
+			},
+			equals: "g.V().values(\"loc\").asGeography().buffer(1000D)",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Values("loc").AsGeometry().Buffer(-1.5)
+			},
+			equals: "g.V().values(\"loc\").asGeometry().buffer(-1.5D)",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Values("loc").AsGeometry().Envelope()
+			},
+			equals: "g.V().values(\"loc\").asGeometry().envelope()",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Values("loc").Map(T__.AsGeometry().Buffer(1))
+			},
+			equals: "g.V().values(\"loc\").map(__.asGeometry().buffer(1))",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
+				return g.V().Values("loc").Map(T__.Envelope())
+			},
+			equals: "g.V().values(\"loc\").map(__.envelope())",
+		},
+		{
+			assert: func(g *GraphTraversalSource) *GraphTraversal {
 				return g.Inject(uuid.MustParse("f47af10b-58cc-4372-a567-0f02b2f3d479"))
 			},
 			equals: "g.inject(UUID(\"f47af10b-58cc-4372-a567-0f02b2f3d479\"))",
@@ -884,6 +932,27 @@ func Test_UnsupportedType(t *testing.T) {
 		}()
 		gl := NewGremlinLang(nil)
 		gl.argAsString([]interface{}{1, struct{}{}})
+	})
+
+	// GremlinLang has no rendering for geometry types, so a geometry passed to Distance()
+	// panics as a type that cannot be represented as text
+	t.Run("should panic on geometry argument", func(t *testing.T) {
+		defer func() {
+			r := recover()
+			if r == nil {
+				t.Error("expected panic for geometry argument")
+			}
+			msg := fmt.Sprintf("%v", r)
+			if !strings.Contains(msg, "cannot be represented as text") {
+				t.Errorf("unexpected panic message: %v", msg)
+			}
+		}()
+		point, err := NewPoint(3, 4, Model.Cartesian)
+		if err != nil {
+			t.Fatalf("unexpected error creating point: %v", err)
+		}
+		g := NewGraphTraversalSource(nil, nil)
+		g.V().Values("loc").AsGeometry().Distance(point).GremlinLang.GetGremlin()
 	})
 }
 

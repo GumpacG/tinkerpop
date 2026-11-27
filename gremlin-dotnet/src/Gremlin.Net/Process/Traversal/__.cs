@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using Gremlin.Net.Structure;
+using Gremlin.Net.Structure.Geo;
 
 namespace Gremlin.Net.Process.Traversal
 {
@@ -203,6 +204,22 @@ namespace Gremlin.Net.Process.Traversal
         }
 
         /// <summary>
+        ///     Spawns a <see cref="GraphTraversal{SType, EType}" /> and adds the asGeometry step to that traversal.
+        /// </summary>
+        public static GraphTraversal<object, Geometry> AsGeometry()
+        {
+            return new GraphTraversal<object, Geometry>().AsGeometry();
+        }
+
+        /// <summary>
+        ///     Spawns a <see cref="GraphTraversal{SType, EType}" /> and adds the asGeography step to that traversal.
+        /// </summary>
+        public static GraphTraversal<object, Geometry> AsGeography()
+        {
+            return new GraphTraversal<object, Geometry>().AsGeography();
+        }
+
+        /// <summary>
         ///     Spawns a <see cref="GraphTraversal{SType, EType}" /> and adds the barrier step to that traversal.
         /// </summary>
         public static GraphTraversal<object, object> Barrier()
@@ -284,6 +301,14 @@ namespace Gremlin.Net.Process.Traversal
         public static GraphTraversal<object, E2> Branch<E2>(ITraversal traversalFunction)
         {
             return new GraphTraversal<object, E2>().Branch<E2>(traversalFunction);            
+        }
+
+        /// <summary>
+        ///     Spawns a <see cref="GraphTraversal{SType, EType}" /> and adds the buffer step to that traversal.
+        /// </summary>
+        public static GraphTraversal<object, Geometry> Buffer(double distance)
+        {
+            return new GraphTraversal<object, Geometry>().Buffer(distance);
         }
 
         /// <summary>
@@ -577,6 +602,22 @@ namespace Gremlin.Net.Process.Traversal
         }
 
         /// <summary>
+        ///     Spawns a <see cref="GraphTraversal{SType, EType}" /> and adds the distance step to that traversal.
+        /// </summary>
+        public static GraphTraversal<object, double> Distance(Geometry geometry)
+        {
+            return new GraphTraversal<object, double>().Distance(geometry);
+        }
+
+        /// <summary>
+        ///     Spawns a <see cref="GraphTraversal{SType, EType}" /> and adds the distance step to that traversal.
+        /// </summary>
+        public static GraphTraversal<object, double> Distance(ITraversal geometryTraversal)
+        {
+            return new GraphTraversal<object, double>().Distance(geometryTraversal);
+        }
+
+        /// <summary>
         ///     Spawns a <see cref="GraphTraversal{SType, EType}" /> and adds the drop step to that traversal.
         /// </summary>
         public static GraphTraversal<object, object> Drop()
@@ -624,6 +665,14 @@ namespace Gremlin.Net.Process.Traversal
         public static GraphTraversal<object, object> Emit(ITraversal emitTraversal)
         {
             return new GraphTraversal<object, object>().Emit(emitTraversal);            
+        }
+
+        /// <summary>
+        ///     Spawns a <see cref="GraphTraversal{SType, EType}" /> and adds the envelope step to that traversal.
+        /// </summary>
+        public static GraphTraversal<object, Geometry> Envelope()
+        {
+            return new GraphTraversal<object, Geometry>().Envelope();
         }
 
         /// <summary>

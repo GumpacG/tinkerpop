@@ -2110,13 +2110,14 @@ modules do not open, so Gryo reading and writing (`GryoMapper`, `GryoReader`, `G
 `TinkerFactory.createGratefulDead()` and `TinkerFactory.createAirRoutes()`, which load their data from Gryo files. The
 Gryo packages remain exported, but an application that needs Gryo runs on the classpath.
 
-Three libraries in the module graph have no module name of their own and are resolved as automatic modules named
+Four libraries in the module graph have no module name of their own and are resolved as automatic modules named
 after their jar files. `gremlin-core` requires `javatuples` transitively, because javatuples types appear in its API,
-and requires `exp4j`, which backs the `math()`-step. `gremlin-language` also requires `javatuples`, for a package it
-does not export. `commons-beanutils` requires `commons.collections`, from the
-`commons-collections` 3.2.2 jar. A build that renames those jars, for example `maven-dependency-plugin`
-`copy-dependencies` with `prependGroupId=true`, changes the derived names, and the application then fails at startup
-with a "module not found" error. Keeping the original jar file names avoids the problem.
+requires `exp4j`, which backs the `math()`-step, and requires `spatial4j`, which the geospatial steps use for
+measurements on a sphere. `gremlin-language` also requires `javatuples`, for a package it does not export.
+`commons-beanutils` requires `commons.collections`, from the `commons-collections` 3.2.2 jar. A build that renames
+those jars, for example `maven-dependency-plugin` `copy-dependencies` with `prependGroupId=true`, changes the derived
+names, and the application then fails at startup with a "module not found" error. Keeping the original jar file names
+avoids the problem.
 
 [[gremlin-javascript]]
 [llms-summary="Using Gremlin from JavaScript/Node.js: installing the gremlin package, building traversals, and connecting to a remote Gremlin Server."]

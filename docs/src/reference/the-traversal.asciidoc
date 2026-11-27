@@ -995,6 +995,88 @@ g.inject(datetime("2023-08-24T00:00:00Z")).asDate() <3>
 
 link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#asDate()++[`asDate()`]
 
+[llms-summary="The asGeography()-step (map) converts a geometry, a WKT or EWKT string, or a map of named coordinates to a GEOGRAPHIC Geometry whose coordinates are longitude and latitude."]
+[[asGeography-step]]
+=== AsGeography Step
+
+The `asGeography()`-step (*map*) converts the incoming value to a `GEOGRAPHIC` `Geometry`, whose SRID is `4326` and
+whose coordinates are longitude and latitude in degrees. It takes the same three kinds of input as
+<<asGeometry-step,`asGeometry()`>>: a `Geometry`, which keeps its coordinates and is relabeled, a Well-Known Text or
+Extended Well-Known Text string, which is parsed and then relabeled, and a map of the keys `lon` and `lat`, or `x` and
+`y`, with an optional `z`, which becomes a point.
+
+Because the coordinates of the result are longitude and latitude, every coordinate must lie within longitude `-180` to
+`180` and latitude `-90` to `90`, and a coordinate outside those ranges raises an `IllegalArgumentException`. A geometry
+in a reference system Gremlin defines no spatial math for, the `OTHER` model, is also refused, since reading its
+coordinates as longitude and latitude would call for a reprojection, which this step does not perform. The same
+refusal applies to a string whose `SRID=` prefix names such a reference system, since parsing it gives a geometry in
+the `OTHER` model. A `CARTESIAN` value is relabeled, as its coordinates are already read in the plane.
+
+A `null` input passes through as `null`. Any other input type, a string that is not valid Well-Known Text, and a map
+that does not hold exactly one pair of coordinate keys with finite number values raise an `IllegalArgumentException`,
+as described under <<asGeometry-step,`asGeometry()`>>.
+
+The map form builds a point from values the data already holds, so a graph that stores longitude and latitude as two
+number properties can produce a point without storing one. The point can also be written back to the element with
+`property('loc', project('lon','lat').by('lon').by('lat').asGeography())`.
+
+[gremlin-groovy,theDelivery]
+----
+g.V().has('name','Hana').values('raw').asGeography() <1>
+g.V().has('name','Eli').values('coords').asGeography() <2>
+g.V().has('name','Pat').values('loc').asGeography() <3>
+----
+
+<1> Hana's address arrived as a Well-Known Text string, which becomes a geographic point.
+<2> Eli's `coords` map of `lon` and `lat` becomes a geographic point.
+<3> Pat's position in the warehouse is `CARTESIAN` and is relabeled as `GEOGRAPHIC`, with its coordinates unchanged.
+
+*Additional References*
+
+link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#asGeography()++[`asGeography()`]
+
+[llms-summary="The asGeometry()-step (map) converts a geometry, a WKT or EWKT string, or a map of named coordinates to a CARTESIAN Geometry."]
+[[asGeometry-step]]
+=== AsGeometry Step
+
+The `asGeometry()`-step (*map*) converts the incoming value to a `CARTESIAN` `Geometry`, whose SRID is `0` and whose
+coordinates are read in the plane. Three kinds of input are accepted:
+
+* A `Geometry` keeps its coordinates, including z, and is relabeled as `CARTESIAN`. Any model is accepted, including
+`OTHER`, since the coordinates of a projected reference system are already planar. The step relabels rather than
+reprojects, so the coordinates themselves do not change.
+* A string is parsed as Well-Known Text, or as Extended Well-Known Text when it carries an `SRID=` prefix, and the
+geometry it describes is then relabeled.
+* A map of named coordinates becomes a point. The keys are exactly `lon` and `lat`, or `x` and `y`, with an optional
+`z`, and each value is any finite number.
+
+The map keys are read exactly as written, so an unknown key, another spelling or case such as `longitude` or `Lon`, a
+missing half of a pair, the two pairs mixed in one map, a key that is not a string, or a value that is not a finite
+number raises an `IllegalArgumentException`. A <<valuemap-step,`valueMap()`>> result holds a list under each key rather
+than a number and is refused for that reason, while <<project-step,`project()`>> and <<elementmap-step,`elementMap()`>>
+produce a map this step accepts. A list such as `[1, 2]` is refused as well, since nothing in a list says which number
+is which coordinate.
+
+A `null` input passes through as `null`. Any other input type, and a string that is not valid Well-Known Text, raise an
+`IllegalArgumentException`.
+
+[gremlin-groovy,theDelivery]
+----
+g.V().has('name','Hana').values('raw').asGeometry() <1>
+g.inject("SRID=3857;POINT(1 2)").asGeometry() <2>
+g.V().has('name','Eli').values('coords').asGeometry() <3>
+g.V().has('name','Ana').values('loc').asGeometry() <4>
+----
+
+<1> Hana's address string is parsed as Well-Known Text, and the point it describes is read in the plane.
+<2> An Extended Well-Known Text string is parsed and then relabeled as `CARTESIAN`, with its coordinates unchanged.
+<3> Eli's map of `lon` and `lat` becomes a point, and its coordinates are read in the plane.
+<4> Ana's `GEOGRAPHIC` position is relabeled as `CARTESIAN` and keeps its z.
+
+*Additional References*
+
+link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#asGeometry()++[`asGeometry()`]
+
 [llms-summary="The asNumber()-step (map) converts the incoming traverser to the nearest parsable numerical type, or to the numerical type named by a GType token."]
 [[asNumber-step]]
 === AsNumber Step
@@ -1137,6 +1219,60 @@ other person falls through to the `none` branch.
 *Additional References*
 
 link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#branch(org.apache.tinkerpop.gremlin.process.traversal.Traversal)++[`branch(Traversal)`]
+
+[llms-summary="The buffer()-step (map) returns the region within a given distance of the incoming Geometry, in coordinate units for a CARTESIAN value and in meters for a GEOGRAPHIC one."]
+[[buffer-step]]
+=== Buffer Step
+
+The `buffer()`-step (*map*) returns the region within a given distance of the incoming `Geometry`, in the model and the
+SRID of that geometry. The distance is in coordinate units for a `CARTESIAN` value and in meters for a `GEOGRAPHIC`
+one, and it is written as a number literal. The region is a `Polygon`, or a `MultiPolygon` when it falls into separate
+pieces, and its rounded parts are drawn as short straight edges, so it approximates the true region rather than
+describing it exactly.
+
+A negative distance means different things in the two models. A `CARTESIAN` geometry is shrunk, so a polygon comes back
+smaller and may vanish to `POLYGON EMPTY`, and a point or a line string gives `POLYGON EMPTY`, neither having an
+interior to shrink. A non-empty `GEOGRAPHIC` value raises an `IllegalArgumentException`, since a buffer measured on the
+sphere only grows a shape. An empty `GEOGRAPHIC` geometry gives `POLYGON EMPTY` even for a negative distance, since the
+step answers an empty geometry before it looks at the sign of the distance. A distance of zero follows the `CARTESIAN`
+rule in both models, so a point or a line string gives `POLYGON EMPTY`.
+
+An empty geometry gives `POLYGON EMPTY` under its own SRID, and a `null` input passes through as `null`. A distance
+that is `NaN` or infinite raises an `IllegalArgumentException` when the step is built. A geometry in the `OTHER` model
+raises an `IllegalArgumentException`, even when it is empty, since Gremlin defines no distance for such a reference
+system.
+
+Buffering a large geometry is costly, so the incoming geometry may hold at most 10,000 points in the `GEOGRAPHIC` model
+and at most 100,000 points in the `CARTESIAN` model. The points are counted before any region is drawn, and a larger
+geometry raises an `IllegalArgumentException`. JTS may also fail to draw the region for an invalid geometry such as a
+self-intersecting polygon, which raises an `IllegalArgumentException` carrying the reason JTS gave.
+
+A `GEOGRAPHIC` buffer is drawn in longitude and latitude with no antimeridian handling. A buffer that would cross the
+antimeridian or reach a pole raises an `IllegalArgumentException`, because a ring drawn in longitude and latitude
+describes neither. A geometry that itself crosses the antimeridian is buffered the long way round, so the buffer of
+`LINESTRING(179 0, -179 0)` is a band spanning the rest of the globe, which holds `POINT(0 0)`. These results are
+provider defined, as described in the
+link:https://tinkerpop.apache.org/docs/x.y.z/dev/provider/#buffer-step[Gremlin Semantics], so a provider may draw a
+more precise region.
+
+[gremlin-groovy,theDelivery]
+----
+nearPat = Geometry.fromWkt("POINT(3 3.5)")
+g.V().has('name','Pat').values('loc').buffer(1.0).is(geoContains(nearPat)).count() <1>
+g.V().has('name','Chilled').values('loc').buffer(1.0).envelope() <2>
+g.V().has('name','Chilled').values('loc').buffer(-1.0) <3>
+g.V().has('name','Greenwich Town').values('loc').buffer(1000.0).envelope() <4>
+----
+
+<1> A position half a meter from Pat lies within one meter of him, in the coordinate units of the warehouse.
+<2> The box around the region within one meter of the Chilled room reaches one meter beyond the room on each side.
+<3> A negative distance shrinks the room by one meter.
+<4> The box around the region within one kilometer of the Greenwich Town zone, measured in meters.
+
+*Additional References*
+
+link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#buffer(double)++[`buffer(double)`],
+link:++https://tinkerpop.apache.org/docs/x.y.z/dev/provider/#buffer-step++[`Semantics`]
 
 [llms-summary="The by()-step is not an actual step, but instead is a \"step-modulator\" similar to as() and option()."]
 [[by-step]]
@@ -1958,6 +2094,64 @@ g.V().values("name").fold().disjunct(__.V().limit(3).values("name").fold())
 link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#disjunct(java.lang.Object)++[`disjunct(Object)`]
 link:++https://tinkerpop.apache.org/docs/x.y.z/dev/provider/#disjunct-step++[`Semantics`]
 
+[llms-summary="The distance()-step (map) returns the minimum distance between the incoming Geometry and another geometry, in coordinate units for CARTESIAN values and in meters for GEOGRAPHIC ones."]
+[[distance-step]]
+=== Distance Step
+
+The `distance()`-step (*map*) returns the minimum distance between the incoming `Geometry` and another geometry, which
+is `0` when the two intersect. The distance is in coordinate units when both are `CARTESIAN` and in meters when both
+are `GEOGRAPHIC`. The other geometry is either a constant or a child traversal, in which case the first result the
+child produces for the incoming value is the geometry measured to. In a `gremlin-lang` script the constant is written
+as the `Geometry()` literal described in <<canonical-gremlin-literal-types,Canonical Gremlin Literal Types>>, as in
+`distance(Geometry("POINT(3 4)"))`, while in Java and in `gremlin-groovy` it is a `Geometry` object, as produced by
+`Geometry.fromWkt()`.
+
+NOTE: The Python, .NET, Go and JavaScript variants cannot yet send a geometry constant, so the child traversal is the
+form to use there, as in `distance(__.V().has('name','Greenwich').values('loc'))`.
+
+Both geometries must be in the same spatial reference system, so measuring a `CARTESIAN` value against a `GEOGRAPHIC`
+one raises an `IllegalArgumentException`. So does a geometry in the `OTHER` model, for which Gremlin defines no
+distance, and an empty geometry on either side, between which no distance exists. A child traversal that produces no
+result, or that produces `null` or a value that is not a geometry, also raises an `IllegalArgumentException`.
+
+A `null` input passes through as `null`, and an input that is not a geometry raises an `IllegalArgumentException`.
+
+Since `distance()` is an ordinary map step, it can be used inside <<order-step,`order()`>> to answer a
+nearest-neighbor question, as in `order().by(values('loc').distance(here)).limit(3)`, where `here` is the position to
+measure from.
+
+A `GEOGRAPHIC` distance is measured on a sphere of radius 6,371,008.8 meters. Between two points it is the haversine
+distance. Between other shapes the nearest pair of positions is found in longitude and latitude, so an edge is treated
+as straight in those coordinates rather than as a geodesic. The nearest pair is then found a second time with longitude
+scaled by the cosine of the mean latitude of the first pair, so that a degree of longitude is weighed against a degree
+of latitude as it is on the ground, and the nearer of the two pairs is the one measured. The result is within about 1%
+of the true value for edges shorter than about 100 km. Longer edges may fall outside that bar. The antimeridian is not
+handled, so a shape that crosses it is measured the long way round. These results are provider defined, as described in
+the link:https://tinkerpop.apache.org/docs/x.y.z/dev/provider/#distance-step[Gremlin Semantics], so a provider may
+measure more precisely.
+
+[gremlin-groovy,theDelivery]
+----
+g.V().has('name','Pat').values('loc').distance(__.V().has('name','Ambient').values('loc')) <1>
+g.V().has("name","Hell's Kitchen").values('loc').distance(__.V().has('name','Greenwich').values('loc')) <2>
+g.V().has("name","Hell's Kitchen").outE('shipsTo').where(__.inV().has('name','Greenwich')).values('km') <3>
+g.V().hasLabel('hub').order().
+  by(__.values('loc').distance(__.V().has('name','Dee').values('loc'))).
+  limit(2).values('name') <4>
+----
+
+<1> Pat and the Ambient room are both `CARTESIAN`, so the distance is in coordinate units, here meters across the
+warehouse floor.
+<2> The two hubs are `GEOGRAPHIC`, so the distance is in meters.
+<3> The `km` property on the shipping lane between those hubs holds the same distance, rounded to 0.1 km.
+<4> The two hubs nearest the customer Dee, nearest first.
+
+*Additional References*
+
+link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#distance(org.apache.tinkerpop.gremlin.structure.geo.Geometry)++[`distance(Geometry)`],
+link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#distance(org.apache.tinkerpop.gremlin.process.traversal.Traversal)++[`distance(Traversal)`],
+link:++https://tinkerpop.apache.org/docs/x.y.z/dev/provider/#distance-step++[`Semantics`]
+
 [llms-summary="The drop()-step (filter/sideEffect) is used to remove element and properties from the graph (i.e. remove)."]
 [[drop-step]]
 === Drop Step
@@ -2175,6 +2369,47 @@ g.V(1).repeat(out()).emit(has('name','lop')).values('name')
 link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#emit()++[`emit()`],
 link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#emit(java.util.function.Predicate)++[`emit(Predicate)`],
 link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#emit(org.apache.tinkerpop.gremlin.process.traversal.Traversal)++[`emit(Traversal)`]
+
+[llms-summary="The envelope()-step (map) returns the smallest axis-aligned bounding box around the incoming Geometry."]
+[[envelope-step]]
+=== Envelope Step
+
+The `envelope()`-step (*map*) returns the smallest axis-aligned box around the incoming `Geometry`, in the model and the
+SRID of that geometry. The box is a `Polygon`, or a `Point` when the geometry is a single position and a `LineString`
+when the box has no width or no height. Its ring begins at the corner with the smallest x and the smallest y and runs
+to the corner with the smallest x and the largest y, the order in which JTS and the PostGIS `ST++_++Envelope` function
+write it, so the box of `LINESTRING(0 0, 2 1)` is `POLYGON((0 0, 0 1, 2 1, 2 0, 0 0))`.
+
+The box is always two dimensional, so a z coordinate is dropped. An empty geometry gives `POINT EMPTY` under its own
+SRID, and a `null` input passes through as `null`. Any model is accepted, including `OTHER`, since the box is read from
+the coordinates and asks nothing of the reference system they are given in. An input that is not a geometry raises an
+`IllegalArgumentException`.
+
+A `GEOGRAPHIC` box is computed in longitude and latitude with no antimeridian handling, so a geometry that crosses the
+antimeridian gives a box spanning the rest of the globe. The box of `LINESTRING(179 0, -179 0)` reaches from `-179` to
+`179`. These results are provider defined, as described in the
+link:https://tinkerpop.apache.org/docs/x.y.z/dev/provider/#envelope-step[Gremlin Semantics], so a provider may compute
+a more precise box.
+
+[gremlin-groovy,theDelivery]
+----
+g.V().has('name','Ana').values('loc').envelope() <1>
+g.V().has('name','East River').values('loc').envelope() <2>
+g.V().has('name','Midtown').values('loc').envelope() <3>
+g.V().has('name','Los Angeles').outE('shipsTo').values('path').envelope() <4>
+----
+
+<1> Ana's location is a single position, so the box is a point, and her z is dropped.
+<2> The box around the two branches of the East River, written from its minimum corner.
+<3> The box around the Midtown zone, in the `GEOGRAPHIC` model and the SRID of the zone. The hole the zone has for
+the park does not reach its edge, so the box is the same as it would be without the hole.
+<4> The lane from Los Angeles to Auckland crosses the antimeridian, so its box spans the globe in longitude rather
+than the Pacific.
+
+*Additional References*
+
+link:++https://tinkerpop.apache.org/javadocs/x.y.z/core/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.html#envelope()++[`envelope()`],
+link:++https://tinkerpop.apache.org/docs/x.y.z/dev/provider/#envelope-step++[`Semantics`]
 
 [llms-summary="The explain()-step (terminal) will return a TraversalExplanation."]
 [[explain-step]]

@@ -81,6 +81,24 @@ const jvmGeometryTranslations = [
     'g.V().has("loc", geoWithin(Geometry("POINT(1 2)")).or(geoContains(Geometry("POINT(1 2)"))))',
     'g.V().has("loc", GeoP.geoWithin(Geometry.fromWkt("POINT(1 2)")).or(GeoP.geoContains(Geometry.fromWkt("POINT(1 2)"))))',
   ],
+  // the geometry steps, whose geometry argument becomes the WKT reader call the JVM languages have
+  ['g.V().values("loc").asGeometry()', 'g.V().values("loc").asGeometry()'],
+  ['g.V().values("loc").asGeography()', 'g.V().values("loc").asGeography()'],
+  [
+    'g.V().values("loc").asGeometry().distance(Geometry("POINT(3 4)"))',
+    'g.V().values("loc").asGeometry().distance(Geometry.fromWkt("POINT(3 4)"))',
+  ],
+  [
+    'g.V().values("loc").asGeometry().distance(__.select("a").values("loc"))',
+    'g.V().values("loc").asGeometry().distance(__.select("a").values("loc"))',
+  ],
+  ['g.V().values("loc").asGeometry().buffer(-1.5)', 'g.V().values("loc").asGeometry().buffer(-1.5)'],
+  // a suffixed buffer distance keeps its type, which the JVM languages write lower case
+  ['g.V().values("loc").asGeometry().buffer(2.0D)', 'g.V().values("loc").asGeometry().buffer(2.0d)'],
+  ['g.V().values("loc").asGeometry().envelope()', 'g.V().values("loc").asGeometry().envelope()'],
+  // the steps also appear inside an anonymous traversal
+  ['g.V().values("loc").map(__.asGeometry().buffer(1))', 'g.V().values("loc").map(__.asGeometry().buffer(1))'],
+  ['g.V().values("loc").map(__.envelope())', 'g.V().values("loc").map(__.envelope())'],
 ];
 
 // The geometry inputs the Python, .NET, Go and JavaScript translators reject, with what each names in its message.
@@ -90,6 +108,7 @@ const unsupportedGeometry = [
   ['g.V().has("loc", geoContains(x))', 'geo predicates'],
   ['g.inject(123).is(P.typeOf(GType.POINT))', 'geometry types'],
   ['g.inject(Model.OTHER)', 'geometry models'],
+  ['g.V().values("loc").asGeometry().distance(Geometry("POINT(3 4)"))', 'geometry literals'],
 ];
 
 // Geometry literals the Java translator rejects.
@@ -172,6 +191,18 @@ describe('GremlinTranslator', function () {
       ['g.tx().begin()', 'g.tx().begin()'],
       ['g.tx().commit()', 'g.tx().commit()'],
       ['g.tx().rollback()', 'g.tx().rollback()'],
+      // the geometry steps, whose names and arguments are carried as written
+      ['g.V().values("loc").asGeometry()', 'g.V().values("loc").asGeometry()'],
+      ['g.V().values("loc").asGeography()', 'g.V().values("loc").asGeography()'],
+      [
+        'g.V().values("loc").asGeometry().distance(__.select("a").values("loc"))',
+        'g.V().values("loc").asGeometry().distance(__.select("a").values("loc"))',
+      ],
+      ['g.V().values("loc").asGeometry().buffer(-1.5)', 'g.V().values("loc").asGeometry().buffer(-1.5)'],
+      ['g.V().values("loc").asGeometry().buffer(2.0D)', 'g.V().values("loc").asGeometry().buffer(2.0)'],
+      ['g.V().values("loc").asGeometry().envelope()', 'g.V().values("loc").asGeometry().envelope()'],
+      ['g.V().values("loc").map(__.asGeometry().buffer(1))', 'g.V().values("loc").map(__.asGeometry().buffer(1))'],
+      ['g.V().values("loc").map(__.envelope())', 'g.V().values("loc").map(__.envelope())'],
     ];
 
     tests.forEach(function ([input, expected]) {
@@ -329,6 +360,18 @@ describe('PythonTranslateVisitor', function () {
       ['g.tx().rollback()', 'g.tx().rollback()'],
       // a GType name is written upper case
       ['g.inject(1).is(P.typeOf(GType.bigDecimal))', 'g.inject(1).is_(P.type_of(GType.BIGDECIMAL))'],
+      // the geometry steps, whose names become snake_case
+      ['g.V().values("loc").asGeometry()', "g.V().values('loc').as_geometry()"],
+      ['g.V().values("loc").asGeography()', "g.V().values('loc').as_geography()"],
+      [
+        'g.V().values("loc").asGeometry().distance(__.select("a").values("loc"))',
+        "g.V().values('loc').as_geometry().distance(__.select('a').values('loc'))",
+      ],
+      ['g.V().values("loc").asGeometry().buffer(-1.5)', "g.V().values('loc').as_geometry().buffer(-1.5)"],
+      ['g.V().values("loc").asGeometry().buffer(2.0D)', "g.V().values('loc').as_geometry().buffer(2.0)"],
+      ['g.V().values("loc").asGeometry().envelope()', "g.V().values('loc').as_geometry().envelope()"],
+      ['g.V().values("loc").map(__.asGeometry().buffer(1))', "g.V().values('loc').map(__.as_geometry().buffer(1))"],
+      ['g.V().values("loc").map(__.envelope())', "g.V().values('loc').map(__.envelope())"],
     ];
 
     tests.forEach(function ([input, expected]) {
@@ -429,6 +472,21 @@ describe('GoTranslateVisitor', function () {
       ['g.tx().begin()', 'g.Tx().Begin()'],
       ['g.tx().commit()', 'g.Tx().Commit()'],
       ['g.tx().rollback()', 'g.Tx().Rollback()'],
+      // the geometry steps, whose names are written Pascal case
+      ['g.V().values("loc").asGeometry()', 'g.V().Values("loc").AsGeometry()'],
+      ['g.V().values("loc").asGeography()', 'g.V().Values("loc").AsGeography()'],
+      [
+        'g.V().values("loc").asGeometry().distance(__.select("a").values("loc"))',
+        'g.V().Values("loc").AsGeometry().Distance(gremlingo.T__.Select("a").Values("loc"))',
+      ],
+      ['g.V().values("loc").asGeometry().buffer(-1.5)', 'g.V().Values("loc").AsGeometry().Buffer(-1.5)'],
+      ['g.V().values("loc").asGeometry().buffer(2.0D)', 'g.V().Values("loc").AsGeometry().Buffer(2.0)'],
+      ['g.V().values("loc").asGeometry().envelope()', 'g.V().Values("loc").AsGeometry().Envelope()'],
+      [
+        'g.V().values("loc").map(__.asGeometry().buffer(1))',
+        'g.V().Values("loc").Map(gremlingo.T__.AsGeometry().Buffer(1))',
+      ],
+      ['g.V().values("loc").map(__.envelope())', 'g.V().Values("loc").Map(gremlingo.T__.Envelope())'],
     ];
 
     tests.forEach(function ([input, expected]) {
@@ -530,6 +588,21 @@ describe('DotNetTranslateVisitor', function () {
       ['g.tx().begin()', 'g.Tx().Begin()'],
       ['g.tx().commit()', 'g.Tx().Commit()'],
       ['g.tx().rollback()', 'g.Tx().Rollback()'],
+      // the geometry steps, whose names are written Pascal case
+      ['g.V().values("loc").asGeometry()', 'g.V().Values<object>("loc").AsGeometry()'],
+      ['g.V().values("loc").asGeography()', 'g.V().Values<object>("loc").AsGeography()'],
+      [
+        'g.V().values("loc").asGeometry().distance(__.select("a").values("loc"))',
+        'g.V().Values<object>("loc").AsGeometry().Distance(__.Select<object>("a").Values<object>("loc"))',
+      ],
+      ['g.V().values("loc").asGeometry().buffer(-1.5)', 'g.V().Values<object>("loc").AsGeometry().Buffer(-1.5)'],
+      ['g.V().values("loc").asGeometry().buffer(2.0D)', 'g.V().Values<object>("loc").AsGeometry().Buffer(2.0d)'],
+      ['g.V().values("loc").asGeometry().envelope()', 'g.V().Values<object>("loc").AsGeometry().Envelope()'],
+      [
+        'g.V().values("loc").map(__.asGeometry().buffer(1))',
+        'g.V().Values<object>("loc").Map<object>(__.AsGeometry().Buffer(1))',
+      ],
+      ['g.V().values("loc").map(__.envelope())', 'g.V().Values<object>("loc").Map<object>(__.Envelope())'],
     ];
 
     tests.forEach(function ([input, expected]) {
@@ -849,6 +922,22 @@ describe('AnonymizedTranslateVisitor', function () {
       ['g.V().order().by(Order.asc)', 'g.V().order().by(Order.asc)'],
       // variables pass through unchanged
       ['g.V(vid1)', 'g.V(vid1)'],
+      // the geometry steps pass through, with their arguments anonymized
+      ['g.V().values("loc").asGeometry()', 'g.V().values(string0).asGeometry()'],
+      ['g.V().values("loc").asGeography()', 'g.V().values(string0).asGeography()'],
+      [
+        'g.V().values("loc").asGeometry().distance(Geometry("POINT(3 4)"))',
+        'g.V().values(string0).asGeometry().distance(point0)',
+      ],
+      [
+        'g.V().values("loc").asGeometry().distance(__.select("a").values("loc"))',
+        'g.V().values(string0).asGeometry().distance(__.select(string1).values(string0))',
+      ],
+      ['g.V().values("loc").asGeometry().buffer(-1.5)', 'g.V().values(string0).asGeometry().buffer(number0)'],
+      ['g.V().values("loc").asGeometry().buffer(2.0D)', 'g.V().values(string0).asGeometry().buffer(double0)'],
+      ['g.V().values("loc").asGeometry().envelope()', 'g.V().values(string0).asGeometry().envelope()'],
+      ['g.V().values("loc").map(__.asGeometry().buffer(1))', 'g.V().values(string0).map(__.asGeometry().buffer(number0))'],
+      ['g.V().values("loc").map(__.envelope())', 'g.V().values(string0).map(__.envelope())'],
     ];
 
     tests

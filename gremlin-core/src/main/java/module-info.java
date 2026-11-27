@@ -22,7 +22,8 @@
  * exported except three that are entirely internal: {@code jsr223.console},
  * {@code process.computer.traversal.lambda} and {@code process.traversal.strategy.util}.
  * <p/>
- * javatuples has no stable module name and is required as an automatic module under its filename-derived name.
+ * javatuples and spatial4j have no stable module name and are required as automatic modules under their
+ * filename-derived names.
  */
 module org.apache.tinkerpop.gremlin.core {
     requires transitive org.apache.tinkerpop.gremlin.language;
@@ -48,6 +49,7 @@ module org.apache.tinkerpop.gremlin.core {
     requires org.apache.commons.text;
     requires exp4j;
     requires org.locationtech.jts;
+    requires spatial4j;
     requires java.sql;
 
     exports org.apache.tinkerpop.core.annotation;

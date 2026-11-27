@@ -217,6 +217,21 @@ public class GremlinLangTest {
                 // a variable argument is written as the value it holds, as it is for the other predicates
                 {g.V().has("loc", GeoP.geoWithin(GValue.of("xx1", (Geometry) Point.of(1, 2)))),
                         "g.V().has(\"loc\",GeoP.geoWithin(Geometry(\"POINT(1 2)\",0)))"},
+                // the geometry steps, where distance() takes either a geometry or a traversal
+                {g.V().values("loc").asGeometry(), "g.V().values(\"loc\").asGeometry()"},
+                {g.V().values("loc").asGeography(), "g.V().values(\"loc\").asGeography()"},
+                {g.inject(Point.of(1, 2)).distance(Point.of(3, 4)),
+                        "g.inject(Geometry(\"POINT(1 2)\",0)).distance(Geometry(\"POINT(3 4)\",0))"},
+                {g.V().values("loc").asGeometry().distance(__.constant(Geometry.fromWkt("POINT(3 4)"))),
+                        "g.V().values(\"loc\").asGeometry().distance(__.constant(Geometry(\"POINT(3 4)\",0)))"},
+                {g.inject(Point.of(1, 2)).buffer(1.0), "g.inject(Geometry(\"POINT(1 2)\",0)).buffer(1.0D)"},
+                {g.inject(Point.of(1, 2)).buffer(-1.0), "g.inject(Geometry(\"POINT(1 2)\",0)).buffer(-1.0D)"},
+                {g.inject(Geometry.fromWkt("LINESTRING(0 0, 2 1)")).envelope(),
+                        "g.inject(Geometry(\"LINESTRING(0 0, 2 1)\",0)).envelope()"},
+                // the steps also appear inside an anonymous traversal
+                {g.V().values("loc").map(__.asGeometry().buffer(1.0)),
+                        "g.V().values(\"loc\").map(__.asGeometry().buffer(1.0D))"},
+                {g.V().values("loc").map(__.envelope()), "g.V().values(\"loc\").map(__.envelope())"},
         });
     }
 

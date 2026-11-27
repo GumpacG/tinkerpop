@@ -26,15 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Builds the JTS value that the geometry predicates are evaluated with, from the coordinates of a
- * TinkerPop geometry. The two models hold the same coordinates, so a geographic value is built in
- * longitude and latitude and the model is applied by the caller.
+ * Converts between a TinkerPop geometry and the JTS value that geometry operations are evaluated
+ * with, such as {@link GeoPredicates} and {@link GeoOperations}. The two models hold the same
+ * coordinates, so a geographic value is built in longitude and latitude and the model is applied
+ * by the caller.
  * <p>
- * Only x and y are carried over: all geometry math is 2D, so z is dropped.
+ * Only x and y are carried over in either direction: all geometry math is 2D, so z is dropped.
  * <p>
- * An empty component of a multi kind or of a collection is skipped, so it contributes nothing to
- * the value the predicates are evaluated with. A geometry that is empty throughout never reaches
- * here, because the predicates answer false for it before converting.
+ * On the way to JTS an empty component of a multi kind or of a collection is skipped, so it
+ * contributes nothing to the value the operation is evaluated with. A geometry that is empty
+ * throughout never reaches here, because callers reject it or answer before converting.
  */
 final class JtsAdapter {
 
@@ -138,5 +139,99 @@ final class JtsAdapter {
 
     private static Coordinate coordinateOf(final Point point) {
         return new Coordinate(point.x(), point.y());
+    }
+
+    // ------------------------------------------------------------------------
+    // JTS to TinkerPop
+    // ------------------------------------------------------------------------
+
+    /**
+     * Converts a JTS value of any kind back to a TinkerPop geometry under {@code srid},
+     * recursing into the parts of a collection. The result is 2D, since a z a JTS coordinate may
+     * carry is not read.
+     *
+     * @param srid the spatial reference ID the result carries, the caller's because a JTS value
+     *         built by an operation carries no reference system of its own, so the coordinate
+     *         checks of that SRID are applied here to the result of the operation
+     * @return the geometry holding the same 2D coordinates
+     * @throws IllegalArgumentException if {@code jts} is of a kind TinkerPop has no geometry for,
+     *         or if a coordinate is outside the range {@code srid} allows
+     */
+    static Geometry fromJts(final org.locationtech.jts.geom.Geometry jts, final int srid) {
+        if (jts instanceof org.locationtech.jts.geom.Point) {
+            return pointFromJts((org.locationtech.jts.geom.Point) jts, srid);
+        }
+        // a linear ring is a line string, so this branch takes a polygon ring handed in on its own
+        if (jts instanceof org.locationtech.jts.geom.LineString) {
+            return lineStringFromJts((org.locationtech.jts.geom.LineString) jts, srid);
+        }
+        if (jts instanceof org.locationtech.jts.geom.Polygon) {
+            return polygonFromJts((org.locationtech.jts.geom.Polygon) jts, srid);
+        }
+        // the three multi kinds are themselves collections, so each is matched before the general
+        // collection it extends
+        if (jts instanceof org.locationtech.jts.geom.MultiPoint) {
+            final List<Point> points = new ArrayList<>(jts.getNumGeometries());
+            for (int part = 0; part < jts.getNumGeometries(); part++) {
+                points.add(pointFromJts((org.locationtech.jts.geom.Point) jts.getGeometryN(part), srid));
+            }
+            return MultiPoint.ofWithSrid(points, srid, false);
+        }
+        if (jts instanceof org.locationtech.jts.geom.MultiLineString) {
+            final List<LineString> lineStrings = new ArrayList<>(jts.getNumGeometries());
+            for (int part = 0; part < jts.getNumGeometries(); part++) {
+                lineStrings.add(lineStringFromJts(
+                        (org.locationtech.jts.geom.LineString) jts.getGeometryN(part), srid));
+            }
+            return MultiLineString.ofWithSrid(lineStrings, srid, false);
+        }
+        if (jts instanceof org.locationtech.jts.geom.MultiPolygon) {
+            final List<Polygon> polygons = new ArrayList<>(jts.getNumGeometries());
+            for (int part = 0; part < jts.getNumGeometries(); part++) {
+                polygons.add(polygonFromJts((org.locationtech.jts.geom.Polygon) jts.getGeometryN(part), srid));
+            }
+            return MultiPolygon.ofWithSrid(polygons, srid, false);
+        }
+        if (jts instanceof org.locationtech.jts.geom.GeometryCollection) {
+            final List<Geometry> parts = new ArrayList<>(jts.getNumGeometries());
+            for (int part = 0; part < jts.getNumGeometries(); part++) {
+                parts.add(fromJts(jts.getGeometryN(part), srid));
+            }
+            return GeometryCollection.createWithSrid(parts, srid, false);
+        }
+        throw new IllegalArgumentException("Unknown JTS geometry kind " + jts.getGeometryType());
+    }
+
+    private static Point pointFromJts(final org.locationtech.jts.geom.Point point, final int srid) {
+        return point.isEmpty()
+                ? Point.emptyWithZ(srid, false)
+                : Point.ofWithSrid(point.getX(), point.getY(), srid);
+    }
+
+    private static LineString lineStringFromJts(final org.locationtech.jts.geom.LineString lineString,
+                                                final int srid) {
+        if (lineString.isEmpty()) {
+            return LineString.emptyWithSrid(srid, false);
+        }
+        return LineString.ofWithSrid(pointsOf(lineString.getCoordinates(), srid), srid, false);
+    }
+
+    private static Polygon polygonFromJts(final org.locationtech.jts.geom.Polygon polygon, final int srid) {
+        if (polygon.isEmpty()) {
+            return Polygon.emptyWithSrid(srid, false);
+        }
+        final List<LineString> holes = new ArrayList<>(polygon.getNumInteriorRing());
+        for (int ring = 0; ring < polygon.getNumInteriorRing(); ring++) {
+            holes.add(lineStringFromJts(polygon.getInteriorRingN(ring), srid));
+        }
+        return Polygon.ofWithSrid(lineStringFromJts(polygon.getExteriorRing(), srid), holes, srid, false);
+    }
+
+    private static List<Point> pointsOf(final Coordinate[] coordinates, final int srid) {
+        final List<Point> points = new ArrayList<>(coordinates.length);
+        for (final Coordinate coordinate : coordinates) {
+            points.add(Point.ofWithSrid(coordinate.x, coordinate.y, srid));
+        }
+        return points;
     }
 }

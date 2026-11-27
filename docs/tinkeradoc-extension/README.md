@@ -63,7 +63,8 @@ before the block runs:
     g.V().has('name','marko').out('knows').values('name')
     ----
 
-Recognized graph names are `modern`, `classic`, `crew`/`theCrew`, `grateful`, `sink`, and `theZoo`. Use `existing` to
+Recognized graph names are `modern`, `classic`, `crew`/`theCrew`, `grateful`, `airroutes`, `sink`, `theZoo`, and
+`theDelivery`. Use `existing` to
 continue against whatever state the previous block left behind instead of re-initializing.
 
 ## Configuration

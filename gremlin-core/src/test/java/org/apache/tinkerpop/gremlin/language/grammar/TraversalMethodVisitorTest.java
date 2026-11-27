@@ -165,6 +165,48 @@ public class TraversalMethodVisitorTest {
     }
 
     @Test
+    public void shouldParseTraversalMethod_asGeometry() throws Exception {
+        compare(g.V().values("loc").asGeometry(), eval("g.V().values('loc').asGeometry()"));
+    }
+
+    @Test
+    public void shouldParseTraversalMethod_asGeography() throws Exception {
+        compare(g.V().values("loc").asGeography(), eval("g.V().values('loc').asGeography()"));
+    }
+
+    @Test
+    public void shouldParseTraversalMethod_distance_Geometry() throws Exception {
+        compare(g.V().values("loc").asGeometry().distance(Geometry.fromWkt("POINT(3 4)")),
+                eval("g.V().values('loc').asGeometry().distance(Geometry(\"POINT(3 4)\"))"));
+        compare(g.V().values("loc").asGeography().distance(Geometry.fromWkt("POINT(3 4)", Model.GEOGRAPHIC)),
+                eval("g.V().values('loc').asGeography().distance(Geometry(\"POINT(3 4)\", GEOGRAPHIC))"));
+    }
+
+    @Test
+    public void shouldParseTraversalMethod_distance_Traversal() throws Exception {
+        compare(g.V().values("loc").asGeometry().distance(select("a").values("loc")),
+                eval("g.V().values('loc').asGeometry().distance(__.select('a').values('loc'))"));
+    }
+
+    @Test
+    public void shouldParseTraversalMethod_buffer() throws Exception {
+        // an integer literal reaches the step as the double the step takes
+        compare(g.V().values("loc").asGeography().buffer(1000.0),
+                eval("g.V().values('loc').asGeography().buffer(1000)"));
+        compare(g.V().values("loc").asGeometry().buffer(1.5),
+                eval("g.V().values('loc').asGeometry().buffer(1.5)"));
+        compare(g.V().values("loc").asGeometry().buffer(-1.5),
+                eval("g.V().values('loc').asGeometry().buffer(-1.5)"));
+        compare(g.V().values("loc").asGeometry().buffer(2.0),
+                eval("g.V().values('loc').asGeometry().buffer(2.0D)"));
+    }
+
+    @Test
+    public void shouldParseTraversalMethod_envelope() throws Exception {
+        compare(g.V().values("loc").asGeometry().envelope(), eval("g.V().values('loc').asGeometry().envelope()"));
+    }
+
+    @Test
     public void shouldParseChainedTraversal() throws Exception {
         // a random chain traversal.
         compare(g.V().addE("person"), eval("g.V().addE('person')"));

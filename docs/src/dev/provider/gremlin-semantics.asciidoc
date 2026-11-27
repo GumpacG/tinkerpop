@@ -658,10 +658,34 @@ In the `CARTESIAN` model the relationships are planar and exactly defined. In th
 are evaluated in longitude and latitude, which treats an edge as straight in those coordinates rather than as a
 geodesic.
 
-This is the reference approximation and it is held to an accuracy bar rather than to an exact geodetic result. Within
-the bar, a relationship is correct for an edge shorter than about 100 km that crosses neither the antimeridian nor a
-pole. A provider may compute a more precise geodetic result through its own strategies, and results outside the bar,
-such as a relationship across the antimeridian, are permitted to differ between providers.
+This is the reference approximation and it is held to an <<gremlin-semantics-geographic-accuracy,accuracy bar>> rather
+than to an exact geodetic result. Within the bar, a relationship is correct for an edge shorter than about 100 km that
+crosses neither the antimeridian nor a pole. A provider may compute a more precise geodetic result through its own
+strategies, and results outside the bar, such as a relationship across the antimeridian, are permitted to differ
+between providers.
+
+[[gremlin-semantics-geographic-accuracy]]
+===== Geographic Accuracy
+
+A provider may replace the reference `GEOGRAPHIC` math with its own, including an exact geodetic computation, provided
+it meets the bar below. An ordinary shape is one whose edges are shorter than about 100 km and which crosses neither
+the antimeridian nor a pole.
+
+* *Measures.* A measure is in meters and within about 1% of the true WGS84 value for an ordinary shape. `distance()`
+is the measure defined today, and `GeoP.geoWithinDistance()` is held to the same bar when it is added.
+* *Predicates.* A relationship is correct for an ordinary shape, as described under Coordinate Models above.
+* *Construction steps.* `buffer()` holds its region within the same bar for an ordinary shape, and `envelope()` is
+exact in longitude and latitude.
+* *Coverage.* Every predicate and step that the reference implementation supports for `GEOGRAPHIC` values is
+supported.
+* *Documentation.* The provider documents its model: a sphere and its radius, or the WGS84 ellipsoid, and whether an
+edge is a great circle or a straight line in longitude and latitude.
+
+Results outside the bar are permitted to differ between providers. The Gherkin features test ordinary shapes, and
+cases outside them are provider defined.
+
+The reference implementation uses a sphere of radius 6,371,008.8 meters with edges straight in longitude and latitude.
+That sphere differs from WGS84 by about 0.3 to 0.5 percent, which fits inside the bar.
 
 ==== Examples
 
@@ -1121,6 +1145,85 @@ A `DATETIME` input passes through unchanged. A `STRING` input is parsed as an IS
 See: link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/step/map/AsDateStep.java[source],
 link:https://tinkerpop.apache.org/docs/x.y.z/reference/#asDate-step[reference]
 
+[llms-summary="The formal semantics of the asGeography() step: converts the incoming traverser to a GEOGRAPHIC geometry whose coordinates are longitude and latitude."]
+[[asGeography-step]]
+=== asGeography()
+
+*Description:* Converts the incoming traverser to a `GEOMETRY` in the `GEOGRAPHIC` model, whose SRID is `4326` and whose coordinates are longitude and latitude in degrees.
+
+*Syntax:* `asGeography()`
+
+[width="100%",options="header"]
+|=========================================================
+|Start Step |Mid Step |Modulated |Domain |Range
+|N |Y |N |`GEOMETRY`/`STRING`/`MAP` |`GEOMETRY`
+|=========================================================
+
+*Arguments:*
+
+None
+
+*Modulation:*
+
+None
+
+*Considerations:*
+
+The step accepts the same three kinds of input as <<asGeometry-step,`asGeometry()`>> and reads their coordinates as longitude and latitude. A `GEOMETRY` keeps its coordinates, including z, and is relabeled as `GEOGRAPHIC`. A `STRING` is parsed as Well-Known Text, or as Extended Well-Known Text when it carries an `SRID=` prefix, and the result is then relabeled. A `MAP` of the keys `lon` and `lat`, or `x` and `y`, with an optional `z`, becomes a point. The step relabels rather than reprojects, so the coordinates themselves do not change. A `null` input passes through as `null`.
+
+Every coordinate of the result must lie within longitude `-180` to `180` and latitude `-90` to `90`. A geometry in the `OTHER` model is refused, since reading its coordinates as longitude and latitude would call for a reprojection the step does not perform. The same refusal applies to a `STRING` whose `SRID=` prefix names such a reference system, since parsing it gives a geometry in the `OTHER` model.
+
+*Exceptions:*
+
+* If the incoming traverser is a non-`GEOMETRY`/`STRING`/`MAP` value then an `Argument Error` is raised.
+* If a coordinate lies outside the longitude range `-180` to `180` or the latitude range `-90` to `90` then an `Argument Error` is raised.
+* If the incoming traverser is a `GEOMETRY` in the `OTHER` model then an `Argument Error` is raised.
+* If the incoming traverser is a `STRING` whose `SRID=` prefix names a reference system that is neither `CARTESIAN` nor `GEOGRAPHIC` then an `Argument Error` is raised, since it parses to a geometry in the `OTHER` model.
+* If a `STRING` is not valid Well-Known Text or Extended Well-Known Text then an `Argument Error` is raised.
+* If a `MAP` does not hold exactly one pair of coordinate keys under `STRING` keys, with a finite `NUMBER` under each, then an `Argument Error` is raised, as described for `asGeometry()`.
+
+See: link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/step/map/AsGeographyStep.java[source],
+link:https://tinkerpop.apache.org/docs/x.y.z/reference/#asGeography-step[reference]
+
+[llms-summary="The formal semantics of the asGeometry() step: converts the incoming traverser to a CARTESIAN geometry."]
+[[asGeometry-step]]
+=== asGeometry()
+
+*Description:* Converts the incoming traverser to a `GEOMETRY` in the `CARTESIAN` model, whose SRID is `0` and whose coordinates are read in the plane.
+
+*Syntax:* `asGeometry()`
+
+[width="100%",options="header"]
+|=========================================================
+|Start Step |Mid Step |Modulated |Domain |Range
+|N |Y |N |`GEOMETRY`/`STRING`/`MAP` |`GEOMETRY`
+|=========================================================
+
+*Arguments:*
+
+None
+
+*Modulation:*
+
+None
+
+*Considerations:*
+
+A `GEOMETRY` keeps its coordinates, including z, and is relabeled as `CARTESIAN`. Any model is accepted, including `OTHER`, since the coordinates of a projected reference system are already planar. A `STRING` is parsed as Well-Known Text, or as Extended Well-Known Text when it carries an `SRID=` prefix, and the result is then relabeled. The step relabels rather than reprojects, so the coordinates themselves do not change. A `null` input passes through as `null`.
+
+A `MAP` becomes a point. Its keys are exactly `lon` and `lat`, or `x` and `y`, with an optional `z`, and each value is any finite `NUMBER`. The keys are read exactly as written, so another spelling or case such as `longitude` or `Lon` is not understood, the two pairs cannot be mixed in one map, and neither half of a pair may be missing. A `LIST` value, which is what `valueMap()` yields for a property, is not a `NUMBER` and is refused, while `project()` and `elementMap()` produce a map the step accepts. A `LIST` input such as `[1, 2]` is refused as well, since nothing in a list says which number is which coordinate.
+
+*Exceptions:*
+
+* If the incoming traverser is a non-`GEOMETRY`/`STRING`/`MAP` value then an `Argument Error` is raised.
+* If a `STRING` is not valid Well-Known Text or Extended Well-Known Text then an `Argument Error` is raised.
+* If a `MAP` holds a key other than `lon`, `lat`, `x`, `y` and `z`, or a key that is not a `STRING`, then an `Argument Error` is raised.
+* If a `MAP` mixes the `lon`/`lat` and `x`/`y` pairs, or holds only one half of a pair, then an `Argument Error` is raised.
+* If a `MAP` value is not a `NUMBER`, or is not finite, then an `Argument Error` is raised.
+
+See: link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/step/map/AsGeometryStep.java[source],
+link:https://tinkerpop.apache.org/docs/x.y.z/reference/#asGeometry-step[reference]
+
 [llms-summary="The formal semantics of the asNumber() step: converts the incoming traverser to the nearest parsable type, or to the desired numerical type based on the GType type token provided."]
 [[asNumber-step]]
 === asNumber()
@@ -1406,6 +1509,51 @@ None
 
 See: link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/step/branch/BranchStep.java[source],
 link:https://tinkerpop.apache.org/docs/x.y.z/reference/#branch-step[reference]
+
+[llms-summary="The formal semantics of the buffer() step: returns the region within a given distance of the incoming geometry."]
+[[buffer-step]]
+=== buffer()
+
+*Description:* Returns the region within `distance` of the incoming `GEOMETRY`, in the model and the SRID of that geometry.
+
+*Syntax:* `buffer(distance: NUMBER)`
+
+[width="100%",options="header"]
+|=========================================================
+|Start Step |Mid Step |Modulated |Domain |Range
+|N |Y |N |`GEOMETRY` |`GEOMETRY`
+|=========================================================
+
+*Arguments:*
+
+* `distance` - The buffer distance, as a number literal. It is in coordinate units for a `CARTESIAN` geometry and in meters for a `GEOGRAPHIC` one. A traversal is not accepted.
+
+*Modulation:*
+
+None
+
+*Considerations:*
+
+The region is a polygon, or a multi-polygon when it falls into separate pieces, and its rounded parts are drawn as short straight edges, so it approximates the true region rather than describing it exactly. A `null` input passes through as `null`, and an empty geometry gives an empty polygon under its own SRID.
+
+A negative `distance` differs between the two models. A `CARTESIAN` geometry is shrunk, so a polygon comes back smaller and may vanish to an empty polygon, and a point or a line string gives an empty polygon, neither having an interior to shrink. A `GEOGRAPHIC` geometry raises an error, since a buffer measured on the sphere only grows a shape, except when it is empty: an empty geometry gives an empty polygon under any `distance`, because emptiness is answered before the sign of `distance` is considered. A `distance` of zero follows the `CARTESIAN` rule in both models, so a point or a line string gives an empty polygon.
+
+The rings of a `CARTESIAN` region are the ones JTS 1.20 writes, in its starting vertex and its clockwise direction, and the reference features expect that form, so a provider that returns the same shape with another ring order does not match them.
+
+A `GEOGRAPHIC` buffer is provider defined, held to the bar in <<gremlin-semantics-geographic-accuracy,Geographic Accuracy>>. The reference implementation draws it in meters on a sphere of radius 6,371,008.8 meters and unions the pieces in longitude and latitude. The antimeridian is not handled, so a geometry that crosses it is buffered the long way round: the buffer of `LINESTRING(179 0, -179 0)` is a band spanning the rest of the globe, which holds `POINT(0 0)`.
+
+*Exceptions:*
+
+* If the incoming traverser is a non-`GEOMETRY` value then an `Argument Error` is raised.
+* If `distance` is `NaN` or infinite then an `Argument Error` is raised when the step is built.
+* If the incoming traverser is a `GEOMETRY` in the `OTHER` model then an `Argument Error` is raised, since no distance is defined for such a reference system. This holds for an empty geometry as well.
+* If the incoming traverser holds more than 10,000 points in the `GEOGRAPHIC` model, or more than 100,000 points in the `CARTESIAN` model, then the reference implementation raises an `Argument Error`. The points are counted on the input before any region is drawn, so this limit is reported ahead of anything the region itself would refuse. These limits are reference-implementation behavior rather than a requirement.
+* If the incoming traverser is a `GEOGRAPHIC` geometry that is not empty and `distance` is negative then an `Argument Error` is raised. An empty geometry gives an empty polygon instead, since emptiness is answered before the sign of `distance` is considered.
+* If a `GEOGRAPHIC` buffer would cross the antimeridian or reach a pole then an `Argument Error` is raised, since a ring drawn in longitude and latitude describes neither.
+* If JTS cannot draw the region, which an invalid geometry such as a self-intersecting polygon can cause, then the reference implementation raises an `Argument Error`. This holds for a `CARTESIAN` buffer and for the union of the pieces of a `GEOGRAPHIC` buffer alike, and is reference-implementation behavior rather than a requirement.
+
+See: link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/step/map/BufferStep.java[source],
+link:https://tinkerpop.apache.org/docs/x.y.z/reference/#buffer-step[reference]
 
 [llms-summary="The formal semantics of the cap() step: iterates the traversal up to itself and emits the sideEffect referenced by the provided key."]
 [[cap-step]]
@@ -1994,6 +2142,48 @@ single result rather than as a stream of separate results.
 See: link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/step/map/DisjunctStep.java[source],
 link:https://tinkerpop.apache.org/docs/x.y.z/reference/#disjunct-step[reference]
 
+[llms-summary="The formal semantics of the distance() step: returns the minimum distance between the incoming geometry and another geometry."]
+[[distance-step]]
+=== distance()
+
+*Description:* Returns the minimum distance between the incoming `GEOMETRY` and another geometry, which is `0` when the two intersect.
+
+*Syntax:* `distance(value: GEOMETRY)` | `distance(geometryTraversal: Traversal<any, GEOMETRY>)`
+
+[width="100%",options="header"]
+|=========================================================
+|Start Step |Mid Step |Modulated |Domain |Range
+|N |Y |N |`GEOMETRY` |`DOUBLE`
+|=========================================================
+
+*Arguments:*
+
+* `value` - The `GEOMETRY` to measure to, written as a geometry literal. A parameter is not accepted.
+* `geometryTraversal` - The `Traversal` must resolve to a `GEOMETRY`. The first result it produces for the incoming value is the geometry measured to.
+
+*Modulation:*
+
+None
+
+*Considerations:*
+
+The distance is in coordinate units when both geometries are `CARTESIAN` and in meters when both are `GEOGRAPHIC`. All spatial math is two dimensional, so z is ignored. A `null` input passes through as `null`.
+
+Both geometries must be in the same spatial reference system, and neither may be empty, since no distance exists between a shape and nothing.
+
+A `GEOGRAPHIC` distance is provider defined, held to the bar in <<gremlin-semantics-geographic-accuracy,Geographic Accuracy>>. The reference implementation measures it on a sphere of radius 6,371,008.8 meters. Between two points it is the haversine distance. Between other shapes the nearest pair of positions is found in longitude and latitude, which treats an edge as straight in those coordinates rather than as a geodesic. The nearest pair is then found a second time with longitude scaled by the cosine of the mean latitude of the first pair, so that a degree of longitude is weighed against a degree of latitude as it is on the ground, and the nearer of the two pairs is the one measured. The antimeridian is not handled, so a shape that crosses it is measured the long way round.
+
+*Exceptions:*
+
+* If the incoming traverser is a non-`GEOMETRY` value then an `Argument Error` is raised.
+* If the two geometries are in different models, or have different SRIDs, then an `Argument Error` is raised.
+* If either geometry is in the `OTHER` model then an `Argument Error` is raised, since no distance is defined for such a reference system.
+* If either geometry is empty then an `Argument Error` is raised.
+* If `geometryTraversal` produces no result, or produces `null` or a non-`GEOMETRY` value, then an `Argument Error` is raised.
+
+See: link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/step/map/DistanceStep.java[source],
+link:https://tinkerpop.apache.org/docs/x.y.z/reference/#distance-step[reference]
+
 [llms-summary="The formal semantics of the element() step: traverse from Property to its Element."]
 [[element-step]]
 === element()
@@ -2124,6 +2314,43 @@ None
 
 See: link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/step/map/GraphStep.java[source],
 link:https://tinkerpop.apache.org/docs/x.y.z/reference/#graph-step[reference]
+
+[llms-summary="The formal semantics of the envelope() step: returns the smallest axis-aligned bounding box around the incoming geometry."]
+[[envelope-step]]
+=== envelope()
+
+*Description:* Returns the smallest axis-aligned box around the incoming `GEOMETRY`, in the model and the SRID of that geometry.
+
+*Syntax:* `envelope()`
+
+[width="100%",options="header"]
+|=========================================================
+|Start Step |Mid Step |Modulated |Domain |Range
+|N |Y |N |`GEOMETRY` |`GEOMETRY`
+|=========================================================
+
+*Arguments:*
+
+None
+
+*Modulation:*
+
+None
+
+*Considerations:*
+
+The box is a polygon, or a point when the geometry is a single position and a line string when the box has no width or no height. Its ring begins at the corner with the smallest x and the smallest y and runs to the corner with the smallest x and the largest y, so the box of `LINESTRING(0 0, 2 1)` is `POLYGON((0 0, 0 1, 2 1, 2 0, 0 0))`. That ring is the one the reference features expect, so a provider that returns the same box with another starting corner or direction does not match them.
+
+The box is always two dimensional, so z is dropped. An empty geometry gives an empty point under its own SRID, and a `null` input passes through as `null`. Any model is accepted, including `OTHER`, since the box is read from the coordinates and asks nothing of the reference system they are given in.
+
+A `GEOGRAPHIC` box is provider defined, held to the bar in <<gremlin-semantics-geographic-accuracy,Geographic Accuracy>>. The reference implementation computes it in longitude and latitude with no antimeridian handling, so a geometry that crosses the antimeridian gives a box spanning the rest of the globe: the box of `LINESTRING(179 0, -179 0)` reaches from `-179` to `179`. A provider may compute a more precise geodetic box, and results for such a geometry are permitted to differ between providers.
+
+*Exceptions:*
+
+* If the incoming traverser is a non-`GEOMETRY` value then an `Argument Error` is raised.
+
+See: link:https://github.com/apache/tinkerpop/tree/x.y.z/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/step/map/EnvelopeStep.java[source],
+link:https://tinkerpop.apache.org/docs/x.y.z/reference/#envelope-step[reference]
 
 [llms-summary="The formal semantics of the format() step: returns a string built by substituting variable references in a template with values from the incoming traverser."]
 [[format-step]]

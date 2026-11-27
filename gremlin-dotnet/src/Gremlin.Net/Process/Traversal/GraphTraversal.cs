@@ -26,6 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Gremlin.Net.Structure;
+using Gremlin.Net.Structure.Geo;
 
 namespace Gremlin.Net.Process.Traversal
 {
@@ -315,6 +316,24 @@ namespace Gremlin.Net.Process.Traversal
         }
 
         /// <summary>
+        ///     Adds the asGeometry step to this <see cref="GraphTraversal{SType, EType}" />.
+        /// </summary>
+        public GraphTraversal<TStart, Geometry> AsGeometry()
+        {
+            GremlinLang.AddStep("asGeometry");
+            return Wrap<TStart, Geometry>(this);
+        }
+
+        /// <summary>
+        ///     Adds the asGeography step to this <see cref="GraphTraversal{SType, EType}" />.
+        /// </summary>
+        public GraphTraversal<TStart, Geometry> AsGeography()
+        {
+            GremlinLang.AddStep("asGeography");
+            return Wrap<TStart, Geometry>(this);
+        }
+
+        /// <summary>
         ///     Adds the barrier step to this <see cref="GraphTraversal{SType, EType}" />.
         /// </summary>
         public GraphTraversal<TStart, TEnd> Barrier ()
@@ -418,6 +437,15 @@ namespace Gremlin.Net.Process.Traversal
         {
             GremlinLang.AddStep("branch", branchTraversal);
             return Wrap<TStart, TNewEnd>(this);
+        }
+
+        /// <summary>
+        ///     Adds the buffer step to this <see cref="GraphTraversal{SType, EType}" />.
+        /// </summary>
+        public GraphTraversal<TStart, Geometry> Buffer (double distance)
+        {
+            GremlinLang.AddStep("buffer", distance);
+            return Wrap<TStart, Geometry>(this);
         }
 
         /// <summary>
@@ -867,6 +895,24 @@ namespace Gremlin.Net.Process.Traversal
         }
 
         /// <summary>
+        ///     Adds the distance step to this <see cref="GraphTraversal{SType, EType}" />.
+        /// </summary>
+        public GraphTraversal<TStart, double> Distance (Geometry geometry)
+        {
+            GremlinLang.AddStep("distance", geometry);
+            return Wrap<TStart, double>(this);
+        }
+
+        /// <summary>
+        ///     Adds the distance step to this <see cref="GraphTraversal{SType, EType}" />.
+        /// </summary>
+        public GraphTraversal<TStart, double> Distance (ITraversal geometryTraversal)
+        {
+            GremlinLang.AddStep("distance", geometryTraversal);
+            return Wrap<TStart, double>(this);
+        }
+
+        /// <summary>
         ///     Adds the drop step to this <see cref="GraphTraversal{SType, EType}" />.
         /// </summary>
         public GraphTraversal<TStart, TEnd> Drop ()
@@ -922,6 +968,15 @@ namespace Gremlin.Net.Process.Traversal
         {
             GremlinLang.AddStep("emit", emitTraversal);
             return Wrap<TStart, TEnd>(this);
+        }
+
+        /// <summary>
+        ///     Adds the envelope step to this <see cref="GraphTraversal{SType, EType}" />.
+        /// </summary>
+        public GraphTraversal<TStart, Geometry> Envelope ()
+        {
+            GremlinLang.AddStep("envelope");
+            return Wrap<TStart, Geometry>(this);
         }
 
         /// <summary>

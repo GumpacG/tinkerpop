@@ -28,6 +28,7 @@ using Gremlin.Net.Process.Traversal;
 using Gremlin.Net.Process.Traversal.Strategy.Decoration;
 using Gremlin.Net.Process.Traversal.Strategy.Verification;
 using Gremlin.Net.Structure;
+using Gremlin.Net.Structure.Geo;
 using Xunit;
 
 namespace Gremlin.Net.UnitTest.Process.Traversal
@@ -963,6 +964,76 @@ namespace Gremlin.Net.UnitTest.Process.Traversal
         {
             Assert.Equal("g.inject(1).asNumber(GType.DOUBLE)",
                 _g.Inject(1).AsNumber(GType.Double).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Values_loc_AsGeometry()
+        {
+            Assert.Equal("g.V().values(\"loc\").asGeometry()",
+                _g.V().Values<object>("loc").AsGeometry().GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Values_loc_AsGeography()
+        {
+            Assert.Equal("g.V().values(\"loc\").asGeography()",
+                _g.V().Values<object>("loc").AsGeography().GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Values_loc_AsGeometry_Distance_Traversal()
+        {
+            Assert.Equal("g.V().values(\"loc\").asGeometry().distance(__.select(\"a\").values(\"loc\"))",
+                _g.V().Values<object>("loc").AsGeometry().Distance(__.Select<object>("a").Values<object>("loc"))
+                    .GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Values_loc_AsGeography_Buffer_1000()
+        {
+            Assert.Equal("g.V().values(\"loc\").asGeography().buffer(1000.0D)",
+                _g.V().Values<object>("loc").AsGeography().Buffer(1000).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Values_loc_AsGeometry_Buffer_negative()
+        {
+            Assert.Equal("g.V().values(\"loc\").asGeometry().buffer(-1.5D)",
+                _g.V().Values<object>("loc").AsGeometry().Buffer(-1.5).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Values_loc_AsGeometry_Envelope()
+        {
+            Assert.Equal("g.V().values(\"loc\").asGeometry().envelope()",
+                _g.V().Values<object>("loc").AsGeometry().Envelope().GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Values_loc_Map_AsGeometry_Buffer()
+        {
+            Assert.Equal("g.V().values(\"loc\").map(__.asGeometry().buffer(1.0D))",
+                _g.V().Values<object>("loc").Map<object>(__.AsGeometry().Buffer(1)).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Values_loc_Map_Envelope()
+        {
+            Assert.Equal("g.V().values(\"loc\").map(__.envelope())",
+                _g.V().Values<object>("loc").Map<object>(__.Envelope()).GremlinLang.GetGremlin());
+        }
+
+        [Fact]
+        public void g_V_Values_loc_AsGeometry_Distance_Geometry_Throws()
+        {
+            var point = new Point(3, 4);
+
+            // GremlinLang has no rendering for geometry types, so a geometry passed to distance()
+            // is reported by name as a type that cannot be represented as text
+            var ex = Assert.Throws<ArgumentException>(() =>
+                _g.V().Values<object>("loc").AsGeometry().Distance(point).GremlinLang.GetGremlin());
+            Assert.Contains("cannot be represented as text", ex.Message);
+            Assert.Contains("Point", ex.Message);
         }
 
         // --- GValue Validation Tests 124-130 ---

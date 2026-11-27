@@ -25,6 +25,7 @@ import { P, TextP, T, Order, Scope, Column, Operator, Pop, Cardinality,
 import { ReadOnlyStrategy, SubgraphStrategy, OptionsStrategy,
          PartitionStrategy, SeedStrategy } from '../../lib/process/traversal-strategy.js';
 import { Graph, Vertex, CompositePDT, PrimitivePDT } from '../../lib/structure/graph.js';
+import { Point } from '../../lib/structure/geo.js';
 import { TraversalStrategies } from '../../lib/process/traversal-strategy.js';
 import { Long, toFloat, toDouble, toShort, toByte, toInt, toLong } from '../../lib/utils.js';
 import GremlinLang from '../../lib/process/gremlin-lang.js';
@@ -297,6 +298,23 @@ describe('GremlinLang', function () {
       // #127 - mergeE with Vertex ID extraction in Map (mid-traversal)
       [g.inject('foo').mergeE(new Map([['label', 'knows'], [Direction.OUT, new Vertex(1, 'person')], [Direction.IN, new Vertex(2, 'person')]])),
        "g.inject('foo').mergeE(['label':'knows',(Direction.OUT):1,(Direction.IN):2])"],
+      // #128 - asGeometry
+      [g.V().values('loc').asGeometry(), "g.V().values('loc').asGeometry()"],
+      // #129 - asGeography
+      [g.V().values('loc').asGeography(), "g.V().values('loc').asGeography()"],
+      // #130 - the traversal form of distance
+      [g.V().values('loc').asGeometry().distance(__.select('a').values('loc')),
+       "g.V().values('loc').asGeometry().distance(__.select('a').values('loc'))"],
+      // #131 - a whole-number buffer distance keeps the double suffix, since the step reads it as a double
+      [g.V().values('loc').asGeography().buffer(toDouble(1000)), "g.V().values('loc').asGeography().buffer(1000.0D)"],
+      // #132 - buffer with a negative distance
+      [g.V().values('loc').asGeometry().buffer(-1.5), "g.V().values('loc').asGeometry().buffer(-1.5D)"],
+      // #133 - envelope
+      [g.V().values('loc').asGeometry().envelope(), "g.V().values('loc').asGeometry().envelope()"],
+      // #134 - the steps also appear inside an anonymous traversal
+      [g.V().values('loc').map(__.asGeometry().buffer(1)), "g.V().values('loc').map(__.asGeometry().buffer(1))"],
+      // #135
+      [g.V().values('loc').map(__.envelope()), "g.V().values('loc').map(__.envelope())"],
     ];
 
     tests.forEach(([traversal, expected], index) => {
@@ -589,6 +607,14 @@ describe('GremlinLang', function () {
       assert.throws(() => {
         g.inject(new MyCustomType()).getGremlinLang().getGremlin();
       }, /cannot be represented as text/);
+    });
+
+    // GremlinLang has no rendering for geometry types, so a geometry passed to distance()
+    // is reported by name as a type that cannot be represented as text
+    it('should throw TypeError for a geometry argument', function () {
+      assert.throws(() => {
+        g.V().values('loc').asGeometry().distance(Point.of(3, 4)).getGremlinLang().getGremlin();
+      }, /type \[Point\] that cannot be represented as text/);
     });
   });
 

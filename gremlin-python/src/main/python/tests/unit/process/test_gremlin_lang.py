@@ -512,6 +512,39 @@ class TestGremlinLang(object):
         # subgraph side-effect step
         assert g.E().subgraph('sg').gremlin_lang.get_gremlin() == "g.E().subgraph('sg')"
 
+    def test_geometry_step_rendering(self):
+        g = traversal().with_(None)
+
+        assert g.V().values('loc').as_geometry().gremlin_lang.get_gremlin() == \
+               "g.V().values('loc').asGeometry()"
+        assert g.V().values('loc').as_geography().gremlin_lang.get_gremlin() == \
+               "g.V().values('loc').asGeography()"
+        assert g.V().values('loc').as_geometry().distance(__.select('a').values('loc')).gremlin_lang.get_gremlin() == \
+               "g.V().values('loc').asGeometry().distance(__.select('a').values('loc'))"
+        # a whole-number buffer distance keeps the double suffix, since the step reads it as a double
+        assert g.V().values('loc').as_geography().buffer(1000.0).gremlin_lang.get_gremlin() == \
+               "g.V().values('loc').asGeography().buffer(1000.0D)"
+        assert g.V().values('loc').as_geometry().buffer(-1.5).gremlin_lang.get_gremlin() == \
+               "g.V().values('loc').asGeometry().buffer(-1.5D)"
+        assert g.V().values('loc').as_geometry().envelope().gremlin_lang.get_gremlin() == \
+               "g.V().values('loc').asGeometry().envelope()"
+        # the steps also appear inside an anonymous traversal
+        assert g.V().values('loc').map(__.as_geometry().buffer(1)).gremlin_lang.get_gremlin() == \
+               "g.V().values('loc').map(__.asGeometry().buffer(1))"
+        assert g.V().values('loc').map(__.envelope()).gremlin_lang.get_gremlin() == \
+               "g.V().values('loc').map(__.envelope())"
+
+    def test_geometry_argument_is_not_renderable(self):
+        import pytest
+        from gremlin_python.structure.geo import Point
+
+        g = traversal().with_(None)
+
+        # GremlinLang has no rendering for geometry types, so a geometry passed to distance()
+        # is reported by name as a type that cannot be represented as text
+        with pytest.raises(TypeError, match=r'type \[Point\] that cannot be represented as text'):
+            g.V().values('loc').as_geometry().distance(Point(3, 4)).gremlin_lang.get_gremlin()
+
     def test_gvalue_name_cannot_be_null(self):
         try:
             GValue(None, [1, 2, 3])

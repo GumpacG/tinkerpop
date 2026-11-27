@@ -535,6 +535,47 @@ link:https://tinkerpop.apache.org/docs/x.y.z/reference/#gremlin-groovy-differenc
 link:https://tinkerpop.apache.org/docs/x.y.z/reference/#gtype-enum[GType Enums],
 link:https://tinkerpop.apache.org/docs/x.y.z/dev/provider/#gremlin-semantics-geometry[Geometry Semantics]
 
+==== Geospatial Steps
+
+Five steps work on geometry values. `asGeometry()` and `asGeography()` convert a geometry, a Well-Known Text string or a
+map of named coordinates into a `CARTESIAN` or a `GEOGRAPHIC` value, so data stored as text or as a pair of number
+properties can become a geometry inside a traversal. `distance()` measures the shortest distance between two
+geometries, in coordinate units for `CARTESIAN` values and in meters for `GEOGRAPHIC` ones, which also answers
+nearest-neighbor questions through `order().by(values('loc').distance(here)).limit(3)`. `buffer()` returns the region
+within a given distance of a geometry and `envelope()` returns the box around it. The following Gremlin Console
+session, with `g` bound to an empty TinkerGraph, shows the three kinds of result:
+
+[source,groovy]
+----
+gremlin> g.inject([lon: -74.05d, lat: 40.72d]).asGeography()
+==>POINT(-74.05 40.72)
+gremlin> g.inject("POINT(3 4)").asGeometry().distance(Geometry.fromWkt("POINT(0 0)"))
+==>5.0
+gremlin> g.inject("LINESTRING(0 0, 2 1)").asGeometry().envelope()
+==>POLYGON((0 0, 0 1, 2 1, 2 0, 0 0))
+----
+
+A `GEOGRAPHIC` measure is taken on a sphere and is held to an accuracy bar rather than to an exact geodetic result: it
+is within about 1% of the true value for an edge shorter than about 100 km that crosses neither the antimeridian nor a
+pole. A provider may measure more precisely.
+
+All five steps are available in Python, .NET, Go and JavaScript, with one gap. Those language variants cannot yet write
+a geometry into the Gremlin they send, so the `distance(geometry)` form works only in Java and Groovy. Elsewhere the
+geometry comes from a child traversal, as in `distance(__.select('a').values('loc'))`, which every language variant
+supports.
+
+These additions make `asGeometry`, `asGeography`, `buffer` and `envelope` keywords of the Gremlin grammar, joining
+`distance`, which was already one. They can no longer be used as bare variable or parameter names in a `gremlin-lang`
+script and such a variable must be renamed. Quoted strings, property keys and naked map keys such as `[buffer:1]` are
+unaffected.
+
+See: link:https://tinkerpop.apache.org/docs/x.y.z/reference/#asGeometry-step[asGeometry Step],
+link:https://tinkerpop.apache.org/docs/x.y.z/reference/#asGeography-step[asGeography Step],
+link:https://tinkerpop.apache.org/docs/x.y.z/reference/#distance-step[distance Step],
+link:https://tinkerpop.apache.org/docs/x.y.z/reference/#buffer-step[buffer Step],
+link:https://tinkerpop.apache.org/docs/x.y.z/reference/#envelope-step[envelope Step],
+link:https://tinkerpop.apache.org/docs/x.y.z/dev/provider/#distance-step[distance Semantics]
+
 === Upgrading for Providers
 
 ==== Graph System Providers

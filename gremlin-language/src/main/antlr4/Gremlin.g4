@@ -317,6 +317,11 @@ traversalMethod
     | traversalMethod_dateAdd
     | traversalMethod_dateDiff
     | traversalMethod_asNumber
+    | traversalMethod_asGeography
+    | traversalMethod_asGeometry
+    | traversalMethod_distance
+    | traversalMethod_buffer
+    | traversalMethod_envelope
     | traversalMethod_labels
     | traversalMethod_addLabel
     | traversalMethod_dropLabels
@@ -372,6 +377,14 @@ traversalMethod_asDate
     : K_ASDATE LPAREN RPAREN
     ;
 
+traversalMethod_asGeography
+    : K_ASGEOGRAPHY LPAREN RPAREN
+    ;
+
+traversalMethod_asGeometry
+    : K_ASGEOMETRY LPAREN RPAREN
+    ;
+
  traversalMethod_asNumber
      : K_ASNUMBER LPAREN RPAREN #traversalMethod_asNumber_Empty
      | K_ASNUMBER LPAREN traversalGType RPAREN #traversalMethod_asNumber_traversalGType
@@ -402,6 +415,10 @@ traversalMethod_bothV
 
 traversalMethod_branch
     : K_BRANCH LPAREN nestedTraversal RPAREN
+    ;
+
+traversalMethod_buffer
+    : K_BUFFER LPAREN numericLiteral RPAREN
     ;
 
 traversalMethod_by
@@ -501,6 +518,11 @@ traversalMethod_disjunct
     : K_DISJUNCT LPAREN genericLiteral RPAREN #traversalMethod_disjunct_Object
     ;
 
+traversalMethod_distance
+    : K_DISTANCE LPAREN geometryLiteral RPAREN #traversalMethod_distance_Geometry
+    | K_DISTANCE LPAREN nestedTraversal RPAREN #traversalMethod_distance_Traversal
+    ;
+
 traversalMethod_drop
     : K_DROP LPAREN RPAREN
     ;
@@ -517,6 +539,10 @@ traversalMethod_emit
     : K_EMIT LPAREN RPAREN #traversalMethod_emit_Empty
     | K_EMIT LPAREN traversalPredicate RPAREN #traversalMethod_emit_Predicate
     | K_EMIT LPAREN nestedTraversal RPAREN #traversalMethod_emit_Traversal
+    ;
+
+traversalMethod_envelope
+    : K_ENVELOPE LPAREN RPAREN
     ;
 
 traversalMethod_fail
@@ -1892,6 +1918,8 @@ keyword
     | K_ASBOOL
     | K_ASC
     | K_ASDATE
+    | K_ASGEOGRAPHY
+    | K_ASGEOMETRY
     | K_ASNUMBER
     | K_ASSTRING
     | K_ASSIGN
@@ -1911,6 +1939,7 @@ keyword
     | K_BOTHE
     | K_BOTHV
     | K_BRANCH
+    | K_BUFFER
     | K_BY
     | K_BYTE
     | K_BYTEU
@@ -1970,6 +1999,7 @@ keyword
     | K_ELEMENT
     | K_EMIT
     | K_ENDINGWITH
+    | K_ENVELOPE
     | K_EQ
     | K_EXPLAIN
     | K_FAIL
@@ -2234,6 +2264,8 @@ K_AS: 'as';
 K_ASBOOL: 'asBool';
 K_ASC: 'asc';
 K_ASDATE: 'asDate';
+K_ASGEOGRAPHY: 'asGeography';
+K_ASGEOMETRY: 'asGeometry';
 K_ASNUMBER: 'asNumber';
 K_ASSTRING: 'asString';
 K_ASSIGN: 'assign';
@@ -2255,6 +2287,7 @@ K_BOTHU: 'BOTH';
 K_BOTHE: 'bothE';
 K_BOTHV: 'bothV';
 K_BRANCH: 'branch';
+K_BUFFER: 'buffer';
 K_BY: 'by';
 K_BYTE: 'byte';
 K_BYTEU: 'BYTE';
@@ -2312,6 +2345,7 @@ K_ELEMENTMAP: 'elementMap';
 K_ELEMENT: 'element';
 K_EMIT: 'emit';
 K_ENDINGWITH: 'endingWith';
+K_ENVELOPE: 'envelope';
 K_EQ: 'eq';
 K_EXPLAIN: 'explain';
 K_FAIL: 'fail';

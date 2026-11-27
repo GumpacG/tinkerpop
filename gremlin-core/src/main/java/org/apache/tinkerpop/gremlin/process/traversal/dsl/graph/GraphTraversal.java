@@ -104,9 +104,12 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.filter.WherePredicate
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.WhereTraversalStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.AsBoolStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.AsDateStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.AsGeographyStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.AsGeometryStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.AsNumberStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.AsStringGlobalStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.AsStringLocalStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.BufferStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.CallStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.CoalesceStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.CombineStep;
@@ -120,10 +123,12 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.map.DateDiffStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.DedupLocalStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.DifferenceStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.DisjunctStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.DistanceStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.EdgeOtherVertexStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.EdgeVertexStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.ElementMapStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.ElementStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.EnvelopeStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.FoldStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.FormatStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.GraphStep;
@@ -224,6 +229,8 @@ import org.apache.tinkerpop.gremlin.structure.PropertyType;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.geo.Geometry;
+import org.apache.tinkerpop.gremlin.structure.geo.Model;
 import org.apache.tinkerpop.gremlin.util.CollectionUtil;
 import org.apache.tinkerpop.gremlin.util.function.ConstantSupplier;
 
@@ -2410,6 +2417,97 @@ public interface GraphTraversal<S, E> extends Traversal<S, E> {
     public default GraphTraversal<S, Number> asNumber(final GType typeToken) {
         this.asAdmin().getGremlinLang().addStep(Symbols.asNumber, typeToken);
         return this.asAdmin().addStep(new AsNumberStep<>(this.asAdmin(), typeToken));
+    }
+
+    /**
+     * Converts the incoming value to a {@link Model#CARTESIAN} {@link Geometry}. A geometry keeps
+     * its coordinates and is relabelled, a string is parsed as WKT or EWKT, and a map of the keys
+     * {@code lon} and {@code lat}, or {@code x} and {@code y}, with an optional {@code z}, becomes
+     * a point.
+     *
+     * @return the traversal with an appended {@link AsGeometryStep}.
+     * @see <a href="http://tinkerpop.apache.org/docs/${project.version}/reference/#asGeometry-step" target="_blank">Reference Documentation - asGeometry Step</a>
+     * @since 4.0.0
+     */
+    public default GraphTraversal<S, Geometry> asGeometry() {
+        this.asAdmin().getGremlinLang().addStep(Symbols.asGeometry);
+        return this.asAdmin().addStep(new AsGeometryStep<>(this.asAdmin()));
+    }
+
+    /**
+     * Converts the incoming value to a {@link Model#GEOGRAPHIC} {@link Geometry}, taking the same
+     * input as {@link #asGeometry()} with the coordinates read as longitude and latitude.
+     *
+     * @return the traversal with an appended {@link AsGeographyStep}.
+     * @see <a href="http://tinkerpop.apache.org/docs/${project.version}/reference/#asGeography-step" target="_blank">Reference Documentation - asGeography Step</a>
+     * @since 4.0.0
+     */
+    public default GraphTraversal<S, Geometry> asGeography() {
+        this.asAdmin().getGremlinLang().addStep(Symbols.asGeography);
+        return this.asAdmin().addStep(new AsGeographyStep<>(this.asAdmin()));
+    }
+
+    /**
+     * Returns the distance from the incoming {@link Geometry} to another geometry, in coordinate
+     * units for {@link Model#CARTESIAN} and in meters for {@link Model#GEOGRAPHIC}.
+     *
+     * @param geometry the geometry to measure to.
+     * @return the traversal with an appended {@link DistanceStep}.
+     * @see <a href="http://tinkerpop.apache.org/docs/${project.version}/reference/#distance-step" target="_blank">Reference Documentation - distance Step</a>
+     * @since 4.0.0
+     */
+    public default GraphTraversal<S, Double> distance(final Geometry geometry) {
+        this.asAdmin().getGremlinLang().addStep(Symbols.distance, geometry);
+        return this.asAdmin().addStep(new DistanceStep<>(this.asAdmin(), geometry));
+    }
+
+    /**
+     * Returns the distance from the incoming {@link Geometry} to the geometry the given traversal
+     * supplies, in coordinate units for {@link Model#CARTESIAN} and in meters for
+     * {@link Model#GEOGRAPHIC}.
+     *
+     * @param geometryTraversal a traversal that supplies the {@link Geometry} to measure to.
+     * @return the traversal with an appended {@link DistanceStep}.
+     * @see <a href="http://tinkerpop.apache.org/docs/${project.version}/reference/#distance-step" target="_blank">Reference Documentation - distance Step</a>
+     * @since 4.0.0
+     */
+    public default GraphTraversal<S, Double> distance(final Traversal<?, ?> geometryTraversal) {
+        this.asAdmin().getGremlinLang().addStep(Symbols.distance, geometryTraversal);
+        return this.asAdmin().addStep(new DistanceStep<>(this.asAdmin(), geometryTraversal));
+    }
+
+    /**
+     * Returns the region within {@code distance} of the incoming {@link Geometry}, in the model
+     * and the SRID of that geometry. The distance is in coordinate units for
+     * {@link Model#CARTESIAN} and in meters for {@link Model#GEOGRAPHIC}.
+     * <p>
+     * A negative distance shrinks a {@link Model#CARTESIAN} geometry, which may leave an empty
+     * polygon, and is an error for {@link Model#GEOGRAPHIC}, where a buffer only grows a shape. A
+     * {@link Model#GEOGRAPHIC} buffer is built in longitude and latitude with no antimeridian
+     * handling, so a geometry that crosses the antimeridian is buffered the long way round.
+     *
+     * @param distance the buffer distance, in coordinate units for {@link Model#CARTESIAN} and in
+     *                 meters for {@link Model#GEOGRAPHIC}.
+     * @return the traversal with an appended {@link BufferStep}.
+     * @see <a href="http://tinkerpop.apache.org/docs/${project.version}/reference/#buffer-step" target="_blank">Reference Documentation - buffer Step</a>
+     * @since 4.0.0
+     */
+    public default GraphTraversal<S, Geometry> buffer(final double distance) {
+        this.asAdmin().getGremlinLang().addStep(Symbols.buffer, distance);
+        return this.asAdmin().addStep(new BufferStep<>(this.asAdmin(), distance));
+    }
+
+    /**
+     * Returns the 2D bounding box of the incoming {@link Geometry}, in the model and the SRID of
+     * that geometry. The box is a polygon, or a point or a line string when it has no area.
+     *
+     * @return the traversal with an appended {@link EnvelopeStep}.
+     * @see <a href="http://tinkerpop.apache.org/docs/${project.version}/reference/#envelope-step" target="_blank">Reference Documentation - envelope Step</a>
+     * @since 4.0.0
+     */
+    public default GraphTraversal<S, Geometry> envelope() {
+        this.asAdmin().getGremlinLang().addStep(Symbols.envelope);
+        return this.asAdmin().addStep(new EnvelopeStep<>(this.asAdmin()));
     }
 
     /**
@@ -5159,6 +5257,11 @@ public interface GraphTraversal<S, E> extends Traversal<S, E> {
         public static final String dateAdd = "dateAdd";
         public static final String dateDiff = "dateDiff";
         public static final String asNumber = "asNumber";
+        public static final String asGeometry = "asGeometry";
+        public static final String asGeography = "asGeography";
+        public static final String distance = "distance";
+        public static final String buffer = "buffer";
+        public static final String envelope = "envelope";
         public static final String all = "all";
         public static final String any = "any";
         public static final String none = "none";

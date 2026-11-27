@@ -402,6 +402,14 @@ class GraphTraversal(Traversal):
         self.gremlin_lang.add_step("asDate", *args)
         return self
 
+    def as_geography(self, *args):
+        self.gremlin_lang.add_step("asGeography", *args)
+        return self
+
+    def as_geometry(self, *args):
+        self.gremlin_lang.add_step("asGeometry", *args)
+        return self
+
     def as_number(self, *args):
         self.gremlin_lang.add_step("asNumber", *args)
         return self
@@ -442,6 +450,10 @@ class GraphTraversal(Traversal):
 
     def branch(self, *args):
         self.gremlin_lang.add_step("branch", *args)
+        return self
+
+    def buffer(self, *args):
+        self.gremlin_lang.add_step("buffer", *args)
         return self
 
     def by(self, *args):
@@ -534,6 +546,10 @@ class GraphTraversal(Traversal):
         self.gremlin_lang.add_step("disjunct", *args)
         return self
 
+    def distance(self, *args):
+        self.gremlin_lang.add_step("distance", *args)
+        return self
+
     def drop(self, *args):
         self.gremlin_lang.add_step("drop", *args)
         return self
@@ -577,6 +593,10 @@ class GraphTraversal(Traversal):
 
     def emit(self, *args):
         self.gremlin_lang.add_step("emit", *args)
+        return self
+
+    def envelope(self, *args):
+        self.gremlin_lang.add_step("envelope", *args)
         return self
 
     def fail(self, *args):
@@ -1238,6 +1258,14 @@ class __(object, metaclass=MagicType):
         return cls.graph_traversal(None, None, GremlinLang()).as_date(*args)
 
     @classmethod
+    def as_geography(cls, *args):
+        return cls.graph_traversal(None, None, GremlinLang()).as_geography(*args)
+
+    @classmethod
+    def as_geometry(cls, *args):
+        return cls.graph_traversal(None, None, GremlinLang()).as_geometry(*args)
+
+    @classmethod
     def as_number(cls, *args):
         return cls.graph_traversal(None, None, GremlinLang()).as_number(*args)
 
@@ -1280,6 +1308,10 @@ class __(object, metaclass=MagicType):
     @classmethod
     def branch(cls, *args):
         return cls.graph_traversal(None, None, GremlinLang()).branch(*args)
+
+    @classmethod
+    def buffer(cls, *args):
+        return cls.graph_traversal(None, None, GremlinLang()).buffer(*args)
 
     @classmethod
     def call(cls, *args):
@@ -1358,6 +1390,10 @@ class __(object, metaclass=MagicType):
         return cls.graph_traversal(None, None, GremlinLang()).disjunct(*args)
 
     @classmethod
+    def distance(cls, *args):
+        return cls.graph_traversal(None, None, GremlinLang()).distance(*args)
+
+    @classmethod
     def drop(cls, *args):
         return cls.graph_traversal(None, None, GremlinLang()).drop(*args)
 
@@ -1404,6 +1440,10 @@ class __(object, metaclass=MagicType):
     @classmethod
     def emit(cls, *args):
         return cls.graph_traversal(None, None, GremlinLang()).emit(*args)
+
+    @classmethod
+    def envelope(cls, *args):
+        return cls.graph_traversal(None, None, GremlinLang()).envelope(*args)
 
     @classmethod
     def fail(cls, *args):
@@ -1986,6 +2026,14 @@ def as_date(*args):
     return __.as_date(*args)
 
 
+def as_geography(*args):
+    return __.as_geography(*args)
+
+
+def as_geometry(*args):
+    return __.as_geometry(*args)
+
+
 def as_number(*args):
     return __.as_number(*args)
 
@@ -2020,6 +2068,10 @@ def both_v(*args):
 
 def branch(*args):
     return __.branch(*args)
+
+
+def buffer(*args):
+    return __.buffer(*args)
 
 
 def call(*args):
@@ -2094,6 +2146,10 @@ def disjunct(*args):
     return __.disjunct(*args)
 
 
+def distance(*args):
+    return __.distance(*args)
+
+
 def drop(*args):
     return __.drop(*args)
 
@@ -2128,6 +2184,10 @@ def element_map(*args):
 
 def emit(*args):
     return __.emit(*args)
+
+
+def envelope(*args):
+    return __.envelope(*args)
 
 
 def fail(*args):
@@ -2589,6 +2649,10 @@ statics.add_static('as_bool', as_bool)
 
 statics.add_static('as_date', as_date)
 
+statics.add_static('as_geography', as_geography)
+
+statics.add_static('as_geometry', as_geometry)
+
 statics.add_static('as_number', as_number)
 
 statics.add_static('as_string', as_string)
@@ -2606,6 +2670,8 @@ statics.add_static('bothV', bothV)
 statics.add_static('both_v', both_v)
 
 statics.add_static('branch', branch)
+
+statics.add_static('buffer', buffer)
 
 statics.add_static('call', call)
 
@@ -2643,6 +2709,8 @@ statics.add_static('discard', discard)
 
 statics.add_static('disjunct', disjunct)
 
+statics.add_static('distance', distance)
+
 statics.add_static('drop', drop)
 
 statics.add_static('dropLabel', dropLabel)
@@ -2660,6 +2728,8 @@ statics.add_static('elementMap', elementMap)
 statics.add_static('element_map', element_map)
 
 statics.add_static('emit', emit)
+
+statics.add_static('envelope', envelope)
 
 statics.add_static('fail', fail)
 
